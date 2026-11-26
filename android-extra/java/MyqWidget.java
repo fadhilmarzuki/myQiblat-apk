@@ -30,6 +30,27 @@ public class MyqWidget extends AppWidgetProvider {
     static final int GOLD = Color.parseColor("#E8C468");
     static final int DARK = Color.parseColor("#1D1A0C");
     static final int WHITE = Color.parseColor("#F3F1E8");
+    static final String[] HARI = {"Ahad", "Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"};
+    static final String[] BLN = {"Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogo", "Sep", "Okt", "Nov", "Dis"};
+    static final String[] HM = {"Muharam", "Safar", "Rabiulawal", "Rabiulakhir", "Jamadilawal", "Jamadilakhir", "Rejab", "Syaaban", "Ramadan", "Syawal", "Zulkaedah", "Zulhijah"};
+
+    static String greg(long ms) {
+        Calendar k = Calendar.getInstance();
+        k.setTimeInMillis(ms);
+        return HARI[k.get(Calendar.DAY_OF_WEEK) - 1] + ", " + k.get(Calendar.DAY_OF_MONTH) + " " + BLN[k.get(Calendar.MONTH)] + " " + k.get(Calendar.YEAR);
+    }
+
+    static String hijriIcu(long ms) {
+        if (Build.VERSION.SDK_INT < 24) return "";
+        try {
+            android.icu.util.IslamicCalendar ic = new android.icu.util.IslamicCalendar();
+            ic.setCalculationType(android.icu.util.IslamicCalendar.CalculationType.ISLAMIC_UMALQURA);
+            ic.setTimeInMillis(ms);
+            return ic.get(android.icu.util.Calendar.DAY_OF_MONTH) + " " + HM[ic.get(android.icu.util.Calendar.MONTH)] + " " + ic.get(android.icu.util.Calendar.YEAR) + "H";
+        } catch (Exception e) {
+            return "";
+        }
+    }
 
     @Override
     public void onUpdate(Context c, AppWidgetManager m, int[] ids) {
@@ -66,7 +87,8 @@ public class MyqWidget extends AppWidgetProvider {
 
     static JSONObject data(Context c) {
         try {
-            String s = c.getSharedPreferences(PREF, Context.MODE_PRIVATE).getString("data", null);
+            String s = c.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE).getString("myq_widget", null);
+            if (s == null) s = c.getSharedPreferences(PREF, Context.MODE_PRIVATE).getString("data", null);
             return s == null ? null : new JSONObject(s);
         } catch (Exception e) {
             return null;
@@ -100,17 +122,18 @@ public class MyqWidget extends AppWidgetProvider {
             days = o.optJSONObject("days");
             if (days != null) d = days.optJSONObject(key(now));
         }
+        v.setTextViewText(R.id.w_date, greg(now));
+        v.setTextViewText(R.id.w_hijri, d != null && d.optString("h").length() > 0 ? d.optString("h") : hijriIcu(now));
         if (d == null) {
-            v.setTextViewText(R.id.w_next, "Buka myQiblat sekali untuk memaparkan waktu solat");
+            v.setTextViewText(R.id.w_zone, "📍 Lokasi belum dikemas kini");
+            v.setTextViewText(R.id.w_next, o == null ? "Buka app myQiblat untuk memaparkan waktu solat" : "Data waktu tamat — buka app myQiblat");
             v.setTextViewText(R.id.w_cd, "");
             return v;
         }
         try {
-            v.setTextViewText(R.id.w_date, d.optString("g"));
-            v.setTextViewText(R.id.w_hijri, d.optString("h"));
             String zone = o.optString("zone", "");
             String qib = o.optString("qibla", "");
-            v.setTextViewText(R.id.w_zone, "📍 " + zone + (qib.length() > 0 ? "   ·   🧭 Qiblat " + qib : ""));
+            v.setTextViewText(R.id.w_zone, "📍 " + zone + (qib.length() > 0 ? "  ·  🧭 " + qib : ""));
             JSONArray t = d.getJSONArray("t");
             long[] nx = next(days, now);
             int hi = (nx != null && nx[2] == 0) ? (int) nx[1] : -1;
