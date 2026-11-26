@@ -829,6 +829,7 @@ function chime(){try{unlock();const t0=actx.currentTime;[[659,0],[523,.55],[784,
 const AZ_CACHE='myqiblat-audio-v1', AZ={n:'azan.mp3',s:'azan-subuh.mp3'};
 async function azCached(name){try{const c=await caches.open(AZ_CACHE);const r=await c.match(name);return r?await r.blob():null;}catch(e){return null;}}
 async function azPrefetch(){
+  if(window.__NAT){azNote('✅ Azan myQiblat (biasa &amp; Subuh) terbina dalam APK — berbunyi tanpa internet, walaupun app ditutup.');return;}
   if(!('caches' in window))return;
   let ok=0;
   for(const n of [AZ.n,AZ.s]){
@@ -913,7 +914,13 @@ $('azanSFile').onchange=()=>pickFile($('azanSFile'),'azanS','azanSName');
 (async()=>{const a=await idbGet('azan'),s=await idbGet('azanS');if(a)$('azanName').textContent=a.name;if(s)$('azanSName').textContent=s.name;})();
 function permTxt(){if(window.__NAT){$('sPerm').textContent=natPerm==='granted'?'✅ Notifikasi dibenarkan':natPerm==='denied'?'⛔ Notifikasi disekat':'Benarkan notifikasi';return;}const p=('Notification' in window)?Notification.permission:'unsupported';$('sPerm').textContent=p==='granted'?'✅ Notifikasi dibenarkan':p==='denied'?'⛔ Notifikasi disekat':p==='unsupported'?'Notifikasi tidak disokong':'Benarkan notifikasi';}
 $('sPerm').onclick=async()=>{if(window.__NAT){await natPermAsk();if(natPerm==='denied')setStatus('Notifikasi disekat. Buka Tetapan telefon → Apl → myQiblat → Pemberitahuan.',1);return;}if('Notification' in window&&Notification.permission==='default')await Notification.requestPermission();permTxt();if(Notification.permission==='denied')setStatus('Notifikasi disekat. Buka tetapan Chrome → Tetapan tapak → Pemberitahuan untuk membenarkan.',1);};
-$('sTest').onclick=async()=>{unlock();if(window.__NAT&&LN){if(natPerm!=='granted')await natPermAsk();try{await LN.schedule({notifications:[{id:999,title:'Ujian bunyi myQiblat',body:'Beginilah bunyi pemberitahuan waktu Zohor. Ketik ⏹ dalam app untuk hentikan.',channelId:chFor('dhuhr'),schedule:{at:new Date(Date.now()+3000),allowWhileIdle:true}}]});setStatus('🔔 Bunyi ujian dalam 3 saat… (boleh tutup app untuk uji)');}catch(e){setStatus('Gagal: '+(e.message||e),1);}return;}if('Notification' in window&&Notification.permission==='default'){await Notification.requestPermission();permTxt();}
+$('sTest').onclick=async()=>{unlock();if(window.__NAT&&LN){const b=$('sTest');
+  if(b.dataset.on){clearInterval(+b.dataset.iv);delete b.dataset.on;b.textContent='▶ Uji bunyi';try{await LN.cancel({notifications:[{id:999}]});await LN.removeAllDeliveredNotifications();}catch(e){}return;}
+  if(natPerm!=='granted')await natPermAsk();
+  try{await LN.schedule({notifications:[{id:999,title:'Ujian bunyi myQiblat',body:'Beginilah bunyi pemberitahuan waktu Zohor.',channelId:chFor('dhuhr'),schedule:{at:new Date(Date.now()+3000),allowWhileIdle:true}}]});}
+  catch(e){toast('⚠️ Gagal menguji bunyi: '+(e.message||e));return;}
+  let n=3;b.dataset.on=1;b.textContent='⏳ Berbunyi dalam 3…';toast('🔔 Bunyi ujian dalam 3 saat. Anda boleh tutup app untuk menguji azan semasa app ditutup.');
+  const iv=setInterval(()=>{n--;if(n>0)b.textContent=`⏳ Berbunyi dalam ${n}…`;else if(n===0)b.textContent='⏹ Hentikan bunyi';else if(n<-90){clearInterval(iv);delete b.dataset.on;b.textContent='▶ Uji bunyi';}},1000);b.dataset.iv=iv;return;}if('Notification' in window&&Notification.permission==='default'){await Notification.requestPermission();permTxt();}
   if(!$('ovl').classList.contains('hide')){stopAll();return;}
   fire({key:'dhuhr',t:Date.now()});};
 
@@ -1143,6 +1150,7 @@ if(NAT){
   try{LN.addListener('localNotificationReceived',n=>{const x=n.extra||{};if(x.key&&document.visibilityState==='visible'){$('ovlSub').textContent=MAIN.includes(x.key)?'Telah masuk waktu':'Peringatan';$('ovlName').textContent=LABEL[x.key];$('ovlZone').textContent=`${fmtT(x.t)} · ${zoneLabel(cfg.zone)}`;$('ovl').classList.remove('hide');}});}catch(e){}
   $('bgNote').className='note';
   $('bgNote').innerHTML='📱 <b>Versi APK:</b> azan dijadualkan oleh Android untuk 14 hari dan berbunyi walaupun app ditutup. Untuk hasil terbaik: Tetapan telefon → Apl → myQiblat → Bateri → <b>Tanpa had (Unrestricted)</b>. Buka app sekurang-kurangnya seminggu sekali supaya jadual dikemas kini.';
+  azNote('✅ Azan myQiblat (biasa &amp; Subuh) terbina dalam APK — berbunyi tanpa internet, walaupun app ditutup.');
   const own=$('srcOwn'); if(own){own.disabled=true;own.title='Tidak disokong dalam versi APK';own.textContent='Fail sendiri (web sahaja)';}
 }
 
@@ -1927,7 +1935,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState!==
 const $=id=>document.getElementById(id);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const VER='v17';
+const VER='v18';
 const NAT=!!window.__NAT, CP=NAT?window.Capacitor:null;
 const plug=n=>CP?((CP.Plugins&&CP.Plugins[n])||CP.registerPlugin(n)):null;
 if(NAT){ /* navigator.share dalam WebView APK -> plugin Share */
