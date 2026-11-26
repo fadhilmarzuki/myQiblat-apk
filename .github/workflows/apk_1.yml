@@ -1,0 +1,217 @@
+name: Bina APK myQiblat
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'index.html'
+      - 'manifest.webmanifest'
+      - 'icon-512.png'
+      - 'azan.mp3'
+      - 'azan-subuh.mp3'
+      - 'android-extra/**'
+      - '.github/workflows/apk.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Sediakan projek Capacitor
+        run: |
+          mkdir -p app/www
+          cp index.html manifest.webmanifest *.png app/www/
+          cd app
+          cat > package.json <<'EOF'
+          {
+            "name": "myqiblat",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "@capacitor/android": "^7.0.0",
+              "@capacitor/cli": "^7.0.0",
+              "@capacitor/core": "^7.0.0",
+              "@capacitor/filesystem": "^7.0.0",
+              "@capacitor/local-notifications": "^7.0.0",
+              "@capacitor/share": "^7.0.0"
+            }
+          }
+          EOF
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.fadhilmarzuki.myqiblat",
+            "appName": "myQiblat",
+            "webDir": "www",
+            "backgroundColor": "#0b3d2e",
+            "android": { "adjustMarginsForEdgeToEdge": "force" },
+            "plugins": {
+              "LocalNotifications": { "smallIcon": "ic_stat_myq", "iconColor": "#e8c468" }
+            }
+          }
+          EOF
+          npm install --no-audit --no-fund
+          npx cap add android
+          npx cap sync android
+
+      - name: Masukkan azan, nada, ikon & kebenaran
+        run: |
+          cd app/android/app/src/main
+          mkdir -p res/raw res/drawable
+          cp "$GITHUB_WORKSPACE/azan.mp3" res/raw/azan.mp3
+          cp "$GITHUB_WORKSPACE/azan-subuh.mp3" res/raw/azan_subuh.mp3
+          # widget skrin utama
+          cp -r "$GITHUB_WORKSPACE/android-extra/res/." res/
+          JDIR=$(dirname $(find java -name MainActivity.java))
+          cp "$GITHUB_WORKSPACE"/android-extra/java/*.java "$JDIR/"
+          python3 - <<'PY'
+          import wave, struct, math
+          def tone(path, notes, rate=22050):
+              total = int(rate * 2.4)
+              buf = [0.0] * total
+              for f, start, dur in notes:
+                  s0 = int(start * rate)
+                  for i in range(int(dur * rate)):
+                      if s0 + i >= total: break
+                      env = math.exp(-3.2 * i / rate)
+                      buf[s0 + i] += 0.45 * env * math.sin(2 * math.pi * f * i / rate)
+              with wave.open(path, 'w') as w:
+                  w.setnchannels(1); w.setsampwidth(2); w.setframerate(rate)
+                  w.writeframes(b''.join(struct.pack('<h', int(max(-1, min(1, v)) * 32000)) for v in buf))
+          tone('res/raw/nada.wav', [(659, 0, 1.2), (523, .55, 1.2), (784, 1.1, 1.3)])
+          with wave.open('res/raw/senyap.wav', 'w') as w:
+              w.setnchannels(1); w.setsampwidth(2); w.setframerate(8000)
+              w.writeframes(b'\x00\x00' * 4000)
+          PY
+          command -v convert >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick)
+          SRC="$GITHUB_WORKSPACE/icon-512.png"
+          for d in mdpi:48:108 hdpi:72:162 xhdpi:96:216 xxhdpi:144:324 xxxhdpi:192:432; do
+            IFS=: read n s f <<< "$d"
+            mkdir -p res/mipmap-$n
+            convert "$SRC" -resize ${s}x${s} res/mipmap-$n/ic_launcher.png
+            convert "$SRC" -resize ${s}x${s} \( -size ${s}x${s} xc:none -fill white -draw "circle $((s/2)),$((s/2)) $((s/2)),0" \) -compose DstIn -composite res/mipmap-$n/ic_launcher_round.png
+            inner=$((f*66/108))
+            convert "$SRC" -resize ${inner}x${inner} -background none -gravity center -extent ${f}x${f} res/mipmap-$n/ic_launcher_foreground.png
+          done
+          cat > res/values/ic_launcher_background.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <color name="ic_launcher_background">#0B3D2E</color>
+          </resources>
+          EOF
+          convert -size 96x96 xc:none -fill white -draw "rectangle 22,24 74,36" -draw "rectangle 22,44 74,80" res/drawable/ic_stat_myq.png
+          python3 - <<'PY'
+          p = 'AndroidManifest.xml'
+          s = open(p).read()
+          perms = ['ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION', 'CAMERA', 'POST_NOTIFICATIONS',
+                   'USE_EXACT_ALARM', 'RECEIVE_BOOT_COMPLETED', 'VIBRATE', 'WAKE_LOCK']
+          add = ''.join(f'    <uses-permission android:name="android.permission.{x}" />\n' for x in perms if f'permission.{x}"' not in s)
+          if 'SCHEDULE_EXACT_ALARM' not in s:
+              add += '    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />\n'
+          add += '    <uses-feature android:name="android.hardware.camera" android:required="false" />\n'
+          s = s.replace('</manifest>', add + '</manifest>')
+          s = s.replace('<activity', '<activity\n            android:screenOrientation="portrait"', 1)
+          s = s.replace('</application>', '''        <receiver android:name=".MyqWidget" android:exported="false" android:label="myQiblat">
+                      <intent-filter>
+                          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                      </intent-filter>
+                      <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_myq_info" />
+                  </receiver>
+              </application>''', 1)
+          open(p, 'w').write(s)
+          PY
+          cat AndroidManifest.xml
+
+      - name: Saiz tulisan tetap (abaikan saiz fon sistem)
+        run: |
+          f=$(find app/android/app/src/main/java -name MainActivity.java)
+          pkg=$(grep '^package' "$f")
+          cat > "$f" <<EOF
+          $pkg
+
+          import android.os.Bundle;
+          import android.webkit.WebSettings;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  registerPlugin(WidgetBridge.class);
+                  super.onCreate(savedInstanceState);
+                  WebSettings ws = getBridge().getWebView().getSettings();
+                  ws.setTextZoom(100);
+                  ws.setSupportZoom(false);
+                  ws.setBuiltInZoomControls(false);
+                  getBridge().getWebView().setHorizontalScrollBarEnabled(false);
+                  getBridge().getWebView().setOverScrollMode(android.view.View.OVER_SCROLL_NEVER);
+              }
+          }
+          EOF
+          cat "$f"
+
+      - name: Versi & tandatangan
+        env:
+          KS_B64: ${{ secrets.MYQ_KEYSTORE }}
+        run: |
+          cd app/android/app
+          sed -i "s/versionCode 1$/versionCode ${{ github.run_number }}/; s/versionName \"1.0\"/versionName \"1.0.${{ github.run_number }}\"/" build.gradle
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > myqiblat.keystore
+            python3 - <<'PY'
+          p = 'build.gradle'
+          s = open(p).read()
+          s = s.replace('android {', '''android {
+              signingConfigs {
+                  release {
+                      storeFile file("myqiblat.keystore")
+                      storePassword System.getenv("MYQ_KS_PASS")
+                      keyAlias "myqiblat"
+                      keyPassword System.getenv("MYQ_KS_PASS")
+                  }
+              }''', 1)
+          s = s.replace('minifyEnabled false', 'minifyEnabled false\n            signingConfig signingConfigs.release', 1)
+          open(p, 'w').write(s)
+          PY
+            echo "SIGNED=1" >> $GITHUB_ENV
+          else
+            echo "::warning::Secret MYQ_KEYSTORE tiada - bina versi debug."
+          fi
+          grep -n "version\|signing" build.gradle
+
+      - name: Bina APK
+        env:
+          MYQ_KS_PASS: ${{ secrets.MYQ_KS_PASS }}
+        run: |
+          cd app/android
+          chmod +x gradlew
+          if [ "$SIGNED" = "1" ]; then
+            ./gradlew assembleRelease --no-daemon
+            cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/myQiblat.apk"
+          else
+            ./gradlew assembleDebug --no-daemon
+            cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/myQiblat.apk"
+          fi
+          ls -la "$GITHUB_WORKSPACE/myQiblat.apk"
+
+      - name: Terbitkan di Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-1.0.${{ github.run_number }}
+          name: myQiblat APK 1.0.${{ github.run_number }}
+          body: |
+            Muat turun **myQiblat.apk** di bawah dan pasang di telefon Android.
+            Pautan tetap versi terkini: https://github.com/${{ github.repository }}/releases/latest/download/myQiblat.apk
+          files: myQiblat.apk
+          make_latest: true
