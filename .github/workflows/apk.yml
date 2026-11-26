@@ -122,6 +122,32 @@ jobs:
           PY
           cat AndroidManifest.xml
 
+      - name: Saiz tulisan tetap (abaikan saiz fon sistem)
+        run: |
+          f=$(find app/android/app/src/main/java -name MainActivity.java)
+          pkg=$(grep '^package' "$f")
+          cat > "$f" <<EOF
+          $pkg
+
+          import android.os.Bundle;
+          import android.webkit.WebSettings;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  WebSettings ws = getBridge().getWebView().getSettings();
+                  ws.setTextZoom(100);
+                  ws.setSupportZoom(false);
+                  ws.setBuiltInZoomControls(false);
+                  getBridge().getWebView().setHorizontalScrollBarEnabled(false);
+                  getBridge().getWebView().setOverScrollMode(android.view.View.OVER_SCROLL_NEVER);
+              }
+          }
+          EOF
+          cat "$f"
+
       - name: Versi & tandatangan
         env:
           KS_B64: ${{ secrets.MYQ_KEYSTORE }}
