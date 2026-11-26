@@ -9,6 +9,7 @@ on:
       - 'icon-512.png'
       - 'azan.mp3'
       - 'azan-subuh.mp3'
+      - 'android-extra/**'
       - '.github/workflows/apk.yml'
 
 permissions:
@@ -71,6 +72,10 @@ jobs:
           mkdir -p res/raw res/drawable
           cp "$GITHUB_WORKSPACE/azan.mp3" res/raw/azan.mp3
           cp "$GITHUB_WORKSPACE/azan-subuh.mp3" res/raw/azan_subuh.mp3
+          # widget skrin utama
+          cp -r "$GITHUB_WORKSPACE/android-extra/res/." res/
+          JDIR=$(dirname $(find java -name MainActivity.java))
+          cp "$GITHUB_WORKSPACE"/android-extra/java/*.java "$JDIR/"
           python3 - <<'PY'
           import wave, struct, math
           def tone(path, notes, rate=22050):
@@ -118,6 +123,13 @@ jobs:
           add += '    <uses-feature android:name="android.hardware.camera" android:required="false" />\n'
           s = s.replace('</manifest>', add + '</manifest>')
           s = s.replace('<activity', '<activity\n            android:screenOrientation="portrait"', 1)
+          s = s.replace('</application>', '''        <receiver android:name=".MyqWidget" android:exported="false" android:label="myQiblat">
+                      <intent-filter>
+                          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                      </intent-filter>
+                      <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_myq_info" />
+                  </receiver>
+              </application>''', 1)
           open(p, 'w').write(s)
           PY
           cat AndroidManifest.xml
@@ -136,6 +148,7 @@ jobs:
           public class MainActivity extends BridgeActivity {
               @Override
               public void onCreate(Bundle savedInstanceState) {
+                  registerPlugin(WidgetBridge.class);
                   super.onCreate(savedInstanceState);
                   WebSettings ws = getBridge().getWebView().getSettings();
                   ws.setTextZoom(100);
