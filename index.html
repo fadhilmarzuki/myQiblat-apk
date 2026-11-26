@@ -1,0 +1,2029 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>myQiblat</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="myQiblat">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Amiri+Quran&display=swap">
+<style>
+:root{--bg:#0b3d2e;--bg2:#0f4f3c;--card:#135943;--gold:#e8c468;--txt:#f3f1e8;--mut:#b7cfc4;--ok:#3ddc84;--warn:#ffb347}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+body{padding:calc(env(safe-area-inset-top) + 12px) 14px calc(env(safe-area-inset-bottom) + 20px);max-width:520px;margin:0 auto}
+h1{font-size:1.25rem;text-align:center;letter-spacing:.5px}
+.sub{text-align:center;color:var(--mut);font-size:.82rem;margin-top:2px}
+.dialWrap{position:relative;width:min(86vw,360px);aspect-ratio:1;margin:18px auto 8px}
+.pointer{position:absolute;left:50%;top:-14px;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:24px solid var(--gold);z-index:3;filter:drop-shadow(0 2px 3px #0008)}
+.dial{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#16654c 0%,#0d4636 70%,#09372a 100%);box-shadow:0 0 0 4px #e8c46855,inset 0 0 30px #0008;will-change:transform}
+.dial svg{width:100%;height:100%}
+.center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;z-index:2}
+.big{font-size:2.6rem;font-weight:700;font-variant-numeric:tabular-nums;text-shadow:0 2px 6px #000a}
+.small{font-size:.85rem;color:var(--mut)}
+.status{margin:6px auto 0;text-align:center;font-weight:600;font-size:1.05rem;min-height:1.4em}
+.aligned .dial{box-shadow:0 0 0 5px var(--ok),0 0 28px var(--ok),inset 0 0 30px #0008}
+.aligned .status{color:var(--ok)}
+.btn{display:block;width:100%;padding:14px;border:0;border-radius:12px;background:var(--gold);color:#1d1a0c;font-weight:700;font-size:1rem;margin-top:12px;cursor:pointer}
+.btn.sec{background:var(--card);color:var(--txt);border:1px solid #ffffff22}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.cell{background:var(--card);border-radius:10px;padding:10px}
+.cell b{display:block;font-size:1.1rem;font-variant-numeric:tabular-nums}
+.cell span{font-size:.75rem;color:var(--mut)}
+.card{background:var(--card);border-radius:12px;padding:12px 14px;margin-top:12px;font-size:.88rem;line-height:1.5;text-align:justify}
+.card h3{font-size:.95rem;margin-bottom:6px;color:var(--gold);text-align:left}
+.warn{color:var(--warn)}
+details summary{cursor:pointer;font-weight:600;color:var(--gold)}
+input{width:100%;padding:9px;border-radius:8px;border:1px solid #ffffff33;background:#0b3d2e;color:var(--txt);font-size:.95rem;margin-top:4px}
+label{font-size:.8rem;color:var(--mut);display:block;margin-top:8px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.hide{display:none}
+body{padding-bottom:calc(env(safe-area-inset-bottom) + 84px)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:#082a20;border-top:1px solid #e8c46844;padding-bottom:env(safe-area-inset-bottom);z-index:50}
+nav.tabs button{flex:1;background:none;border:0;color:var(--mut);padding:10px 0 12px;font-size:.8rem;font-weight:600}
+nav.tabs button i{display:block;font-style:normal;font-size:1.35rem;margin-bottom:2px}
+nav.tabs button.on{color:var(--gold)}
+.next{background:linear-gradient(135deg,#1a7a5a,#0f5540);border:1px solid #e8c46855;border-radius:16px;padding:16px;text-align:center;margin-top:14px}
+.next .nm{font-size:1rem;color:var(--gold);font-weight:700;letter-spacing:.5px}
+.next .cd{font-size:2.4rem;font-weight:700;font-variant-numeric:tabular-nums;margin:2px 0}
+.plist{margin-top:12px;background:var(--card);border-radius:12px;overflow:hidden}
+.prow{display:flex;align-items:center;padding:12px 14px;border-bottom:1px solid #ffffff14;gap:10px}
+.prow:last-child{border-bottom:0}
+.prow .pn{flex:1;font-weight:600}
+.prow .pt{font-size:1.15rem;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;min-width:72px}
+.prow.cur{background:#e8c46826}.prow.cur .pn,.prow.cur .pt{color:var(--gold)}
+.prow.minor .pn,.prow.minor .pt{color:var(--mut);font-weight:500;font-size:.95rem}
+.bell{background:none;border:0;font-size:1.15rem;width:34px;opacity:.95}
+.bell.off{opacity:.35;filter:grayscale(1)}
+select{width:100%;padding:9px;border-radius:8px;border:1px solid #ffffff33;background:#0b3d2e;color:var(--txt);font-size:.95rem;margin-top:4px}
+.seg{display:flex;gap:6px;margin-top:6px}.seg button{flex:1;padding:9px;border-radius:8px;border:1px solid #ffffff33;background:#0b3d2e;color:var(--txt);font-weight:600}
+.seg button.on{background:var(--gold);color:#1d1a0c;border-color:var(--gold)}
+.note{font-size:.78rem;color:var(--mut);margin-top:6px;line-height:1.45}
+.ovl{position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;z-index:99;padding:24px}
+.ovl.hide{display:none}
+nav.tabs button{font-size:.7rem;padding:8px 0 10px}
+nav.tabs button i{font-size:1.25rem}
+.mfBanner{display:block;background:linear-gradient(135deg,#7a5a12,#4d3a0c);border:1px solid var(--gold);border-radius:12px;padding:10px 12px;margin-top:10px;font-size:.85rem;line-height:1.45;color:var(--txt);text-align:left;width:100%}
+.mfBanner b{color:var(--gold)}
+.mfBanner.hide{display:none}
+.dcard{display:block;width:100%;text-align:left;background:var(--card);border:1px solid #ffffff1f;border-radius:14px;padding:14px;margin-top:10px;color:var(--txt)}
+.dcard b{display:block;font-size:1rem;color:var(--gold)}
+.dcard span{font-size:.8rem;color:var(--mut)}
+.dtools{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.dtools button{background:var(--card);border:1px solid #ffffff33;color:var(--txt);border-radius:10px;padding:8px 12px;font-weight:700;font-size:.85rem}
+.dtools label{display:flex;align-items:center;gap:6px;margin:0;font-size:.82rem;color:var(--txt)}
+.arb{font-family:"Scheherazade New","Amiri","Noto Naskh Arabic",serif;direction:rtl;text-align:justify;text-align-last:right;font-size:var(--ars,30px);line-height:2.05;color:#fffbea;background:#08291f;border:1px solid #e8c46833;border-radius:14px;padding:14px 16px;margin-top:12px}
+.arb p{margin:0 0 .35em}
+.arb .rep{display:inline-block;direction:ltr;font-family:system-ui,sans-serif;font-size:.8rem;background:var(--gold);color:#1d1a0c;border-radius:999px;padding:1px 8px;margin:0 6px;vertical-align:middle;font-weight:700}
+.arb .inst{direction:ltr;text-align:left;font-family:system-ui,sans-serif;font-size:.85rem;color:var(--mut);font-style:italic;margin:.4em 0 .6em;line-height:1.5}
+.mitem{background:var(--card);border:1px solid #ffffff1a;border-radius:14px;padding:10px 12px 12px;margin-top:12px}
+.mitem.kub{border:1.5px solid var(--gold)}
+.mitem .mh{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:.88rem}
+.mitem .mh b{color:var(--gold)}
+.mitem .mh span{color:var(--mut);font-size:.78rem}
+.mitem .kb{background:var(--gold);color:#1d1a0c!important;border-radius:999px;padding:1px 8px;font-weight:700}
+.mitem .arb{margin-top:8px}
+.mitem .arb .bsm{display:block;text-align:center;margin-bottom:.2em}
+.tnm{color:var(--gold);font-weight:700;unicode-bidi:isolate}
+.nat .fsBtn,.nat #installBtn{display:none!important}
+.gearBtn{position:absolute;left:0;top:2px;background:var(--card);border:1px solid #ffffff33;color:var(--txt);border-radius:10px;padding:5px 10px;font-size:.95rem}
+.hijToday{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}.hijToday b{color:var(--gold);font-size:1.05rem}.hijToday span{color:var(--mut);font-size:.82rem}
+.hfast{margin-top:8px;background:#3ddc8422;border:1px solid #3ddc8466;border-radius:10px;padding:7px 10px;font-size:.85rem}.hfast.bad{background:#ff6b6b22;border-color:#ff6b6b66}
+.hlist{margin-top:8px}.hrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #ffffff14}.hrow i{font-style:normal;font-size:1.2rem;width:26px;text-align:center}
+.hrow div{flex:1}.hrow b{display:block;font-size:.9rem}.hrow span{color:var(--mut);font-size:.76rem}.hrow em{font-style:normal;color:var(--gold);font-weight:700;font-size:.85rem;white-space:nowrap}
+.ramCard{border:1.5px solid var(--gold)}.ramTop{display:flex;justify-content:space-between;align-items:baseline}.ramTop b{color:var(--gold);font-size:1.05rem}.ramTop span{color:var(--mut)}
+.ramCd{text-align:center;margin:8px 0}.ramCd span{display:block;color:var(--mut);font-size:.85rem}.ramCd b{font-size:2rem;font-variant-numeric:tabular-nums}
+.ramT{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ramT div{background:#082a20;border-radius:10px;padding:8px;font-size:.8rem;color:var(--mut);text-align:center}.ramT b{display:block;color:var(--txt);font-size:1.15rem}
+.arCam{position:fixed;inset:0;background:#000;z-index:90}.arCam.hide{display:none}
+#arView{position:absolute;inset:0;overflow:hidden}#arVid{width:100%;height:100%;object-fit:cover}
+.arLine{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:#ffffff88}
+.arCam.al .arLine{background:var(--ok);width:4px;margin-left:-2px;box-shadow:0 0 12px var(--ok)}
+.arMark{position:absolute;top:42%;transform:translate(-50%,-50%);text-align:center;display:none}
+.arMark .kb{width:54px;height:54px;margin:0 auto;background:#111;border:3px solid var(--gold);border-radius:4px;position:relative;box-shadow:0 0 16px #0009}
+.arMark .kb:after{content:'';position:absolute;left:0;right:0;top:14px;height:7px;background:var(--gold)}
+.arMark span{display:inline-block;margin-top:6px;background:#000a;color:var(--gold);padding:2px 10px;border-radius:999px;font-weight:700;font-size:.85rem}
+.arCam.al .arMark .kb{border-color:var(--ok)}
+.arEdge{position:absolute;top:42%;transform:translateY(-50%);background:#000b;color:var(--gold);font-weight:800;font-size:1.3rem;padding:10px 14px;border-radius:12px;display:none}
+.arTop{position:absolute;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 10px);background:#000a;border-radius:12px;padding:10px;text-align:center}
+.arTop b{display:block;font-size:1.1rem}.arCam.al .arTop b{color:var(--ok)}.arTop span{display:block;font-size:.8rem;color:var(--mut);margin-top:3px}
+.arBot{position:absolute;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 10px);background:#000a;border-radius:12px;padding:10px;text-align:center}
+.sh{color:var(--gold);font-size:.95rem;margin:16px 0 4px}
+.srow{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:12px;padding:10px;margin-top:8px}.srow i{font-style:normal;font-size:1.2rem}
+.srow>div{flex:1;min-width:0}.srow span{display:block;color:var(--mut);font-size:.76rem}.srow b{display:block;font-size:.88rem;word-break:break-word}.srow .chip{margin:0}
+.gWrap{max-width:420px;margin:8vh auto 0;text-align:center}.gIc{font-size:3.4rem}.gWrap h2{color:var(--gold);margin:8px 0}.gWrap p{line-height:1.55;text-align:justify}
+.gDots{margin:16px 0 4px}.gDots span{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ffffff33;margin:0 4px}.gDots span.on{background:var(--gold)}
+.bm{background:none;border:none;font-size:1rem;opacity:.35;padding:2px 6px;float:left}.bm.on{opacity:1}
+.bmi{display:flex;gap:6px;align-items:stretch;margin-top:6px}.bmi .dcard{flex:1;margin:0}.bmi .bmx{flex:0 0 40px;background:var(--card);border:1px solid #ffffff22;border-radius:12px;color:var(--mut)}
+.bmAr{display:block;font-family:"Scheherazade New",serif;direction:rtl;font-size:1.05rem;color:var(--txt);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.qbsm{font-family:"Amiri Quran","Scheherazade New",serif;text-align:center;font-size:calc(var(--ars,30px)*.95);color:var(--gold);margin:14px 0 4px;direction:rtl}
+.ayah{border-bottom:1px solid #ffffff14;padding:12px 2px}
+.qar{font-family:"Amiri Quran","Scheherazade New",serif;direction:rtl;text-align:right;font-size:var(--ars,30px);line-height:2.25;color:#fffbea}
+.qno{font-size:.8em;color:var(--gold);white-space:nowrap}
+.sAr{font-family:"Amiri Quran",serif;font-weight:400;margin-right:6px}
+.mtr{font-size:.9rem;line-height:1.6;text-align:justify;margin-top:8px;color:#e9efe9}
+.mtr.hide{display:none}
+.trb{background:var(--card);border-radius:14px;padding:12px 14px;margin-top:12px;font-size:.92rem;line-height:1.65;text-align:justify}
+.trb h4{color:var(--gold);font-size:.9rem;margin-bottom:6px}
+.trb p{margin:0 0 .7em}
+.trb .inst{color:var(--mut);font-style:italic;font-size:.85rem}
+
+.fsBtn{position:absolute;right:0;top:2px;background:var(--card);border:1px solid #ffffff33;color:var(--txt);border-radius:10px;padding:6px 10px;font-size:.8rem;font-weight:600}
+@media (display-mode: fullscreen),(display-mode: standalone){.fsBtn{display:none}}
+.qw{background:var(--card);border-radius:14px;padding:10px 12px;margin-top:10px;border:1px solid #e8c46833;cursor:pointer}
+.qw .top{display:flex;justify-content:space-between;align-items:baseline}
+.qw .nm{color:var(--gold);font-weight:700;font-size:.9rem}
+.qw .cd{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+.qw .times{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:8px;text-align:center}
+.qw .times div{background:#0b3d2e;border-radius:8px;padding:5px 2px;font-size:.68rem;color:var(--mut)}
+.qw .times div b{display:block;font-size:.85rem;color:var(--txt);font-variant-numeric:tabular-nums}
+.qw .times div.cur{background:#e8c46833}.qw .times div.cur b,.qw .times div.cur{color:var(--gold)}
+.modal{position:fixed;inset:0;background:var(--bg);z-index:80;overflow:auto;padding:calc(env(safe-area-inset-top) + 12px) 10px 30px}
+.modal.hide{display:none}
+.mtab{width:100%;border-collapse:collapse;font-size:.78rem;margin-top:10px;font-variant-numeric:tabular-nums}
+.mtab th{background:#082a20;color:var(--gold);padding:6px 2px;position:sticky;top:0;font-weight:600}
+.mtab td{padding:6px 2px;border-bottom:1px solid #ffffff14;text-align:center}
+.mtab td:first-child{text-align:left;padding-left:4px;white-space:nowrap}
+.mtab tr.today td{background:#e8c46833;color:var(--gold);font-weight:700}
+.mtab tr.fri td:first-child{color:var(--ok)}
+.chip{display:inline-block;padding:6px 12px;border-radius:999px;border:1px solid #ffffff33;margin:6px 6px 0 0;font-size:.8rem;background:#0b3d2e;color:var(--txt)}
+.chip.on{background:var(--gold);color:#1d1a0c;border-color:var(--gold)}
+.mq{background:var(--card);border-radius:12px;padding:12px;margin-top:10px}
+.mq .t{display:flex;justify-content:space-between;gap:8px}
+.mq .t b{font-size:.95rem}
+.mq .d{color:var(--gold);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.mq .a{font-size:.78rem;color:var(--mut);margin-top:3px}
+.mq .l{display:flex;gap:8px;margin-top:8px}
+.mq .l a{flex:1;text-align:center;padding:8px;border-radius:8px;background:#0b3d2e;color:var(--txt);text-decoration:none;font-size:.82rem;font-weight:600;border:1px solid #ffffff22}
+#tabT{position:relative}
+.tsb{display:grid;grid-template-columns:66px 1fr 66px;height:calc(100dvh - 150px - env(safe-area-inset-bottom));min-height:420px;margin:0 -14px;user-select:none;-webkit-user-select:none}
+.strip{position:relative;touch-action:none;overflow:hidden;background:linear-gradient(90deg,#082a20,#0b3d2e)}
+.strip.r{background:linear-gradient(270deg,#082a20,#0b3d2e)}
+.strip svg{position:absolute;inset:0;width:100%;height:100%}
+.tc{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 6px;touch-action:manipulation}
+.tc .ar{font-size:2rem;line-height:1.6;direction:rtl;font-family:"Amiri","Scheherazade New","Noto Naskh Arabic",serif;color:var(--gold)}
+.tc .rm{font-weight:700;font-size:1.05rem;margin-top:2px}
+.tc .mn{font-size:.75rem;color:var(--mut);margin-top:2px}
+.tc .cnt{font-size:4.2rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1;margin-top:14px}
+.tc .tg{font-size:.85rem;color:var(--mut)}
+.tc .ring{width:150px;height:8px;background:#0b3d2e;border-radius:4px;overflow:hidden;margin-top:8px}
+.tc .ring i{display:block;height:100%;background:var(--gold);width:0;transition:width .15s}
+.tc select{margin-top:4px;font-size:.85rem;padding:7px}
+.tc .row button{padding:9px;font-size:.8rem;margin-top:8px}
+.flash{animation:fl .6s}
+@keyframes fl{0%{color:var(--ok);transform:scale(1.15)}100%{transform:scale(1)}}
+
+.ar{font-size:1.25rem;line-height:2;direction:rtl;text-align:right;margin:8px 0 2px;color:#fbe7a1;font-family:"Amiri","Scheherazade New","Noto Naskh Arabic",serif}
+#tabM p{margin-top:4px}#tabM li{margin-top:4px}
+.ovl .box{background:var(--card);border:2px solid var(--gold);border-radius:18px;padding:24px;text-align:center;width:100%;max-width:360px}
+.ovl .box h2{color:var(--gold);font-size:1.6rem;margin:6px 0}
+</style>
+</head>
+<body>
+<div style="position:relative"><button class="gearBtn" id="setBtn" aria-label="Tetapan">⚙️</button><button class="fsBtn" id="fsBtn">⛶ Penuh</button>
+<h1><img src="icon-192.png" alt="" style="width:30px;height:30px;border-radius:8px;vertical-align:-7px;margin-right:6px">myQiblat</h1></div>
+
+<section id="tabQ">
+<button class="mfBanner hide" id="bannerQ"></button>
+<div class="qw" id="qw">
+  <div class="top"><span class="nm" id="qwName">Waktu solat</span><span class="cd" id="qwCd">--:--:--</span></div>
+  <div class="times" id="qwTimes"><div>Tetapkan zon di tab Waktu Solat</div></div>
+</div>
+<div class="sub" id="locTxt" style="margin-top:6px">Lokasi belum diperoleh</div>
+<div class="dialWrap" id="wrap">
+  <div class="pointer"></div>
+  <div class="dial" id="dial"><svg id="svg" viewBox="0 0 200 200"></svg></div>
+  <div class="center">
+    <div class="big" id="diffTxt">--°</div>
+    <div class="small" id="diffSub">Tekan Mula</div>
+  </div>
+</div>
+<div class="status" id="status"></div>
+
+<button class="btn sec hide" id="installBtn">📲 Pasang myQiblat di telefon</button>
+<button class="btn" id="startBtn">▶ Mula (GPS + Kompas)</button>
+<button class="btn sec" id="arBtn">📷 Qiblat kamera (AR)</button>
+
+<div class="grid">
+  <div class="cell"><span>Arah Qiblat (dari Utara Benar)</span><b id="qb">--</b></div>
+  <div class="cell"><span>Arah telefon sekarang</span><b id="hd">--</b></div>
+  <div class="cell"><span>Jarak ke Kaabah</span><b id="dist">--</b></div>
+  <div class="cell"><span>Ketepatan kompas / GPS</span><b id="acc">--</b></div>
+</div>
+
+<div class="card" id="calCard">
+  <h3>Sebelum guna</h3>
+  Pegang telefon <b>mendatar</b> (skrin menghadap ke atas), jauh daripada besi, magnet, kereta, speaker atau casing bermagnet. Untuk kalibrasi, gerakkan telefon membentuk angka <b>8</b> beberapa kali. Apabila anak panah emas di atas bertemu ikon Kaabah dan dail bertukar hijau, anda sedang menghadap qiblat.
+</div>
+
+<div class="card">
+  <h3>☀️ Semakan dengan matahari (paling tepat)</h3>
+  <div id="sunBox">Perlukan lokasi.</div>
+</div>
+
+<div class="card">
+  <details>
+    <summary>Tetapan lanjutan</summary>
+    <label>Deklinasi magnet (°, timur = +). Di Malaysia kurang daripada 1°, boleh biar 0.</label>
+    <input id="decl" type="number" step="0.1" value="0">
+    <label>Lokasi manual (jika GPS tidak tersedia)</label>
+    <div class="row"><input id="mLat" type="number" step="any" placeholder="Latitud cth 6.1184"><input id="mLon" type="number" step="any" placeholder="Longitud cth 100.3685"></div>
+    <button class="btn sec" id="mBtn">Guna lokasi manual</button>
+  </details>
+</div>
+
+<div class="card small">
+  Kiraan menggunakan bulatan besar (great-circle) ke Kaabah (21.42252°U, 39.82621°T), kaedah yang sama digunakan dalam penentuan arah qiblat rasmi. Ketepatan akhir bergantung pada sensor kompas telefon; sahkan dengan kaedah matahari atau arah qiblat masjid berhampiran.
+</div>
+
+</section>
+
+<section id="tabW" class="hide">
+  <button class="mfBanner hide" id="bannerW"></button>
+  <div class="sub" id="wZoneTxt">Zon belum dipilih</div>
+  <div class="sub" id="wDateTxt"></div>
+  <div class="card ramCard hide" id="ramCard"></div>
+  <div class="next">
+    <div class="nm" id="nextName">—</div>
+    <div class="cd" id="nextCd">--:--:--</div>
+    <div class="small" id="nextAt">Pilih zon atau guna lokasi</div>
+  </div>
+  <div class="plist" id="plist"></div>
+  <button class="btn sec" id="monBtn">📅 Jadual waktu solat sebulan</button>
+  <div class="status" id="wStatus"></div>
+  <div class="card" id="hijCard">
+    <h3>📆 Takwim Hijrah &amp; tarikh penting</h3>
+    <div id="hijBody"><div class="note">Mengira…</div></div>
+    <button class="btn sec" id="imskBtn">🌙 Jadual Imsakiyah Ramadan</button>
+  </div>
+
+  <div class="card">
+    <h3>📍 Zon waktu solat (JAKIM)</h3>
+    <div class="seg"><button id="zGps">Ikut lokasi (GPS)</button><button id="zMan">Pilih manual</button></div>
+    <div id="zManBox" class="hide">
+      <label>Zon</label>
+      <select id="zSel"><option value="">Memuatkan senarai zon…</option></select>
+    </div>
+    <button class="btn sec" id="zSync">🔄 Segerak semula dengan JAKIM</button>
+    <div class="note" id="zInfo"></div>
+  </div>
+
+  <div class="card">
+    <h3>🔔 Pemberitahuan azan</h3>
+    <label>Jenis bunyi</label>
+    <select id="sMode">
+      <option value="azan">Azan (fail audio pilihan anda)</option>
+      <option value="notif">Bunyi notifikasi telefon</option>
+      <option value="chime">Nada lembut (terbina dalam app)</option>
+      <option value="vib">Getar sahaja</option>
+    </select>
+    <div id="azanBox">
+      <label>Sumber azan</label>
+      <div class="seg"><button id="srcApp">Azan myQiblat</button><button id="srcOwn">Fail sendiri</button></div>
+      <div class="note" id="azAppNote"></div>
+      <div id="ownBox">
+      <label>Fail azan (MP3/M4A) — <span id="azanName">belum dipilih</span></label>
+      <input type="file" id="azanFile" accept="audio/*">
+      <label>Fail azan Subuh (pilihan) — <span id="azanSName">guna azan biasa</span></label>
+      <input type="file" id="azanSFile" accept="audio/*">
+      </div>
+    </div>
+    <label>Peringatan awal</label>
+    <select id="sPre"><option value="0">Tiada</option><option value="5">5 minit sebelum</option><option value="10">10 minit sebelum</option><option value="15">15 minit sebelum</option></select>
+    <div class="row"><button class="btn sec" id="sTest">▶ Uji bunyi</button><button class="btn sec" id="sPerm">Benarkan notifikasi</button></div>
+    <div class="note">Ketik ikon 🔔 di sebelah setiap waktu untuk hidup/matikan pemberitahuan waktu itu.</div>
+    <div class="note warn" id="bgNote">Penting: sebagai app web, myQiblat hanya boleh membunyikan azan dengan pasti ketika app <b>sedang dibuka</b> (boleh skrin malap). Jika app ditutup sepenuhnya, Android mungkin menangguhkan atau tidak menghantar pemberitahuan.</div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:10px"><input type="checkbox" id="sWake" style="width:auto;margin:0"> Kekalkan skrin hidup semasa app dibuka (sesuai ketika dicas)</label>
+  </div>
+  <div class="card small">Sumber waktu: <b>e-Solat JAKIM</b> (melalui api.waktusolat.app, sandaran terus ke e-solat.gov.my). Imsak = 10 minit sebelum Subuh. Data sebulan disimpan dalam telefon supaya boleh dilihat tanpa internet.</div>
+</section>
+
+<section id="tabM" class="hide">
+  <h2 style="text-align:center;font-size:1.05rem;margin-top:10px">🧳 Panduan Solat Musafir</h2>
+  <div class="sub">Ikut Fatwa Negeri Kedah (29 Okt 2022): 2 marhalah = 81 km darat / 43.74 batu nautika laut</div>
+
+  <div class="card">
+    <h3>🏠 Lokasi rumah (tempat bermastautin)</h3>
+    <div id="mHomeTxt" class="small">Belum ditetapkan</div>
+    <button class="btn sec" id="mHomeGps">📍 Tetapkan lokasi semasa sebagai rumah</button>
+    <label>atau cari nama tempat / alamat</label>
+    <div class="row"><input id="mHomeQ" placeholder="cth: Taman Seri Putra, Alor Setar"><button class="btn sec" id="mHomeS" style="flex:0 0 70px;margin-top:4px;padding:9px">Cari</button></div>
+    <div id="mHomeR"></div>
+  </div>
+
+  <div class="card">
+    <h3>📍 Destinasi</h3>
+    <div class="seg"><button id="mDNow" class="on">Lokasi saya sekarang</button><button id="mDSearch">Cari destinasi</button></div>
+    <div id="mDBox" class="hide">
+      <div class="row"><input id="mDQ" placeholder="cth: Kuah, Langkawi"><button class="btn sec" id="mDS" style="flex:0 0 70px;margin-top:4px;padding:9px">Cari</button></div>
+      <div id="mDR"></div>
+    </div>
+    <div id="mDTxt" class="small" style="margin-top:6px"></div>
+    <label>Jenis perjalanan</label>
+    <div class="seg"><button id="mRoad" class="on">🚗 Darat (termasuk feri)</button><button id="mSea">⛴️ Laut</button></div>
+    <button class="btn" id="mCheck">Semak had jarak</button>
+    <div id="mRes"></div>
+  </div>
+
+  <div class="card">
+    <h3>📅 Tempoh menetap di destinasi</h3>
+    <label>Berapa hari anda berniat menetap? (tidak termasuk hari tiba dan hari keluar)</label>
+    <input id="mDays" type="number" min="0" step="1" placeholder="cth: 2">
+    <div id="mDaysRes" class="note"></div>
+  </div>
+
+  <div class="card">
+    <h3>🕒 Waktu jamak hari ini (ikut zon JAKIM anda)</h3>
+    <div id="mWin" class="small">Pilih zon di tab Waktu Solat dahulu.</div>
+  </div>
+
+  <div class="card"><details open><summary>Syarat harus jamak &amp; qasar</summary>
+    <ol style="margin:8px 0 0 18px">
+      <li>Jarak perjalanan sehala ke destinasi <b>81 km atau lebih</b> (darat) atau <b>43.74 batu nautika</b> (laut). Ukuran ini <i>taqribi</i> (anggaran).</li>
+      <li>Diukur ikut <b>laluan terdekat</b> yang lazim. Sengaja memilih jalan jauh semata-mata untuk cukupkan jarak <b>tidak dibenarkan</b>.</li>
+      <li>Rukhsah bermula setelah <b>keluar dari sempadan kampung / taman perumahan / mukim</b> tempat tinggal, bukan dari pintu rumah.</li>
+      <li>Destinasi perjalanan <b>jelas</b> (bukan merayau tanpa tujuan) dan perjalanan <b>bukan untuk maksiat</b>.</li>
+      <li>Tidak berniat menetap <b>4 hari atau lebih</b> (tidak termasuk hari tiba &amp; keluar). Jika berniat begitu, rukhsah hanya sepanjang perjalanan; sebaik tiba, solat seperti biasa.</li>
+      <li>Jika menetap kurang 4 hari, boleh jamak &amp; qasar selama 3 hari (tidak termasuk hari tiba &amp; keluar) dan sepanjang perjalanan pergi &amp; balik.</li>
+    </ol></details></div>
+
+  <div class="card"><details><summary>Qasar (memendekkan)</summary>
+    <p style="margin-top:8px">Solat 4 rakaat sahaja dipendekkan kepada 2 rakaat: <b>Zohor, Asar, Isyak</b>. Subuh (2) dan Maghrib (3) <b>tidak</b> boleh diqasar.</p>
+    <p style="margin-top:6px">Syarat: berniat qasar ketika takbiratul ihram; tidak berimamkan orang yang solat penuh (jika berimamkan orang yang bermukim, wajib solat penuh); masih musafir sehingga selesai solat.</p>
+    <p style="margin-top:6px"><b>Contoh niat (dalam hati):</b> "Sahaja aku solat fardu Zohor dua rakaat qasar kerana Allah Taala."</p>
+  </details></div>
+
+  <div class="card"><details><summary>Jamak (menghimpunkan)</summary>
+    <p style="margin-top:8px">Pasangan yang boleh dijamak: <b>Zohor + Asar</b> dan <b>Maghrib + Isyak</b>. Subuh tidak boleh dijamak.</p>
+    <p style="margin-top:6px"><b>Jamak Taqdim</b> (dalam waktu pertama, cth. Asar ditarik ke waktu Zohor): (1) mesti tertib, solat pertama dahulu; (2) niat jamak dalam solat pertama, sebelum salam; (3) berturut-turut tanpa diselangi perbuatan lain yang lama; (4) masih musafir hingga mula solat kedua.</p>
+    <p style="margin-top:6px"><b>Jamak Takhir</b> (dalam waktu kedua, cth. Zohor dilewatkan ke waktu Asar): (1) berniat untuk takhir ketika masih dalam waktu solat pertama; (2) masih musafir hingga selesai kedua-dua solat. Tertib tidak disyaratkan.</p>
+    <p style="margin-top:6px"><b>Contoh niat:</b> "Sahaja aku solat fardu Zohor dua rakaat qasar dihimpunkan bersama Asar secara jamak taqdim kerana Allah Taala."</p>
+  </details></div>
+
+  <div class="card"><details><summary>Perjalanan laut &amp; udara</summary>
+    <p style="margin-top:8px">Fatwa Kedah menetapkan had laut <b>43.74 batu nautika (81 km)</b>. Bagi perjalanan feri/bot, jarak diukur ikut laluan air terdekat antara jeti/pantai; app mengira jarak garis lurus (great-circle), iaitu jarak terdekat yang mungkin di atas air. Jika perjalanan bercampur darat + feri, pilih mod <b>Darat</b> supaya laluan feri dimasukkan dalam kiraan.</p>
+    <p style="margin-top:6px">Solat di atas kapal/feri: jika mampu, berdiri dan menghadap qiblat (guna tab Qiblat); jika tidak mampu, solat mengikut kemampuan dan menghadap arah yang boleh.</p>
+  </details></div>
+
+  <div class="card small">Rujukan: Keputusan Jawatankuasa Fatwa Negeri Kedah (29 Okt 2022) kadar dua marhalah; Jabatan Mufti Wilayah Persekutuan, Al-Kafi #255 &amp; #1181. Panduan ini ringkasan umum; rujuk Jabatan Mufti Negeri Kedah untuk kes khusus. Jarak jalan dikira melalui OpenStreetMap (OSRM); semak juga di Google Maps/Waze.</div>
+</section>
+
+
+<section id="tabK" class="hide">
+  <h2 style="text-align:center;font-size:1.05rem;margin-top:10px">🕌 Masjid &amp; Surau Berdekatan</h2>
+  <div class="sub" id="kLoc">Tekan Cari untuk guna lokasi semasa</div>
+  <div class="card" style="text-align:left">
+    <label>Jejari carian</label>
+    <div class="seg" id="kRad"><button data-r="2000">2 km</button><button data-r="5000" class="on">5 km</button><button data-r="10000">10 km</button><button data-r="20000">20 km</button></div>
+    <button class="btn" id="kFind">📍 Cari berdekatan saya</button>
+    <div id="kChips"></div>
+  </div>
+  <div id="kList"></div>
+  <div class="card small">Data daripada OpenStreetMap (sumbangan komuniti) — sesetengah masjid/surau mungkin tiada atau tiada nama. Jarak ialah garis lurus; tekan Google Maps untuk laluan sebenar.</div>
+</section>
+
+<section id="tabT" class="hide">
+  <div class="tsb">
+    <div class="strip l" id="stripL"><svg id="svgL"></svg></div>
+    <div class="tc" id="tc">
+      <select id="tDz"></select>
+      <div class="ar" id="tAr"></div>
+      <div class="rm" id="tRm"></div>
+      <div class="mn" id="tMn"></div>
+      <div class="cnt" id="tCnt">0</div>
+      <div class="tg" id="tTg">/ 33</div>
+      <div class="ring"><i id="tBar"></i></div>
+      <div class="small" id="tInfo" style="margin-top:8px"></div>
+      <div class="row" style="width:100%;max-width:240px"><select id="tTarget"><option value="33">Sasaran 33</option><option value="99">Sasaran 99</option><option value="100">Sasaran 100</option><option value="1000">Sasaran 1000</option><option value="0">Tanpa had</option></select></div>
+      <div class="row" style="width:100%;max-width:240px"><button class="btn sec" id="tUndo">↶ Tolak 1</button><button class="btn sec" id="tReset">⟲ Set semula</button></div>
+      <div class="small" style="margin-top:10px;max-width:220px">Sapu bijik tasbih <b>ke bawah</b> atau sentuh bijik dengan ibu jari kiri/kanan — setiap sentuhan = satu kiraan. Boleh juga ketik nombor.</div>
+    </div>
+    <div class="strip r" id="stripR"><svg id="svgR"></svg></div>
+  </div>
+</section>
+
+<section id="tabD" class="hide">
+  <div id="dList">
+    <h2 style="text-align:center;font-size:1.05rem;margin-top:10px">🤲 Doa &amp; Surah</h2>
+    <h3 style="color:var(--gold);font-size:.95rem;margin-top:12px">Doa &amp; Zikir</h3>
+    <div id="dCards"></div>
+    <h3 style="color:var(--gold);font-size:.95rem;margin-top:18px">Surah Lazim</h3>
+    <div id="qsCards"></div>
+    <div class="card small">Teks Arab hendaklah sentiasa disemak dengan sumber bercetak. Jika terdapat perbezaan dengan amalan masjid setempat, ikutlah bimbingan imam/guru anda.</div>
+  </div>
+  <div id="sView" class="hide">
+    <button class="btn sec" id="sBack" style="margin-top:6px">← Senarai doa &amp; surah</button>
+    <h2 id="sTitle" style="text-align:center;font-size:1.15rem;margin-top:12px;color:var(--gold)"></h2>
+    <div class="sub" id="sInfo"></div>
+    <div class="dtools"><button id="sMinus" aria-label="Kecilkan tulisan">A−</button><button id="sPlus" aria-label="Besarkan tulisan">A+</button><label><input type="checkbox" id="sTrOn" style="width:auto;margin:0"> Tunjuk terjemahan</label></div>
+    <div id="sBody"></div>
+  </div>
+  <div id="mView" class="hide">
+    <button class="btn sec" id="mBack" style="margin-top:6px">← Senarai doa</button>
+    <h2 style="text-align:center;font-size:1.1rem;margin-top:12px;color:var(--gold)">Al-Ma'thurat</h2>
+    <div class="sub">Himpunan zikir & doa susunan Imam Hassan al-Banna</div>
+    <div class="seg" style="margin-top:10px"><button id="mtPagi">☀️ Pagi</button><button id="mtPetang">🌇 Petang</button></div>
+    <div class="seg"><button id="mtSughra">Sughra</button><button id="mtKubra">Kubra</button></div>
+    <div class="dtools"><button id="mMinus" aria-label="Kecilkan tulisan">A−</button><button id="mPlus" aria-label="Besarkan tulisan">A+</button><label><input type="checkbox" id="mTrOn" style="width:auto;margin:0"> Tunjuk terjemahan</label></div>
+    <div class="note" id="mInfo"></div>
+    <div id="mList"></div>
+    <div class="note" style="margin-top:12px">Teks Arab disusun berpandukan Al-Ma'thurat (Imam Hassan al-Banna). Terjemahan Bahasa Melayu disediakan untuk myQiblat. Bacaan bertanda <b style="color:var(--gold)">Kubra</b> ialah bacaan tambahan dalam Ma'thurat Kubra.</div>
+  </div>
+  <div id="tView" class="hide">
+    <button class="btn sec" id="tBack" style="margin-top:6px">← Senarai doa</button>
+    <h2 style="text-align:center;font-size:1.1rem;margin-top:12px;color:var(--gold)">Tahlil Ringkas &amp; Doa Arwah</h2>
+    <div class="sub">Susunan bacaan tahlil yang lazim di Malaysia</div>
+    <div class="card" style="margin-top:10px">
+      <div class="small" style="margin-bottom:6px">Nama arwah (untuk bahagian doa):</div>
+      <div class="seg"><button id="tgL">👳 Arwah lelaki</button><button id="tgP">🧕 Arwah wanita</button></div>
+      <input id="tNama" placeholder="cth: Ahmad bin Ali / أحمد بن علي" style="margin-top:8px">
+    </div>
+    <div class="dtools"><button id="tMinus" aria-label="Kecilkan tulisan">A−</button><button id="tPlus" aria-label="Besarkan tulisan">A+</button><label><input type="checkbox" id="tTrOn" style="width:auto;margin:0"> Tunjuk terjemahan</label></div>
+    <div class="note" id="tInfo"></div>
+    <div id="tList"></div>
+    <div class="note" style="margin-top:12px">Susunan dan teks doa berpandukan akuislam.com. Ayat al-Quran: Tanzil (rasm Uthmani) melalui alquran.cloud, terjemahan Abdullah Muhammad Basmeih. Terjemahan bacaan lain disediakan untuk myQiblat. Jika berbeza dengan amalan setempat, ikutlah bimbingan imam.</div>
+  </div>
+  <div id="dView" class="hide">
+    <button class="btn sec" id="dBack" style="margin-top:6px">← Senarai doa</button>
+    <h2 id="dTitle" style="text-align:center;font-size:1.1rem;margin-top:12px;color:var(--gold)"></h2>
+    <div class="sub" id="dSub"></div>
+    <div class="dtools"><button id="dMinus" aria-label="Kecilkan tulisan">A−</button><button id="dPlus" aria-label="Besarkan tulisan">A+</button><label><input type="checkbox" id="dTrOn" style="width:auto;margin:0"> Tunjuk terjemahan</label></div>
+    <div class="arb" id="dAr"></div>
+    <div class="trb" id="dTr"></div>
+    <div class="note" id="dSrc" style="margin-top:10px"></div>
+  </div>
+</section>
+
+<nav class="tabs"><button id="tQ" class="on"><i>🧭</i>Qiblat</button><button id="tW"><i>🕰️</i>Solat</button><button id="tM"><i>🧳</i>Musafir</button><button id="tK"><i>🕌</i>Masjid</button><button id="tT"><i>📿</i>Tasbih</button><button id="tD"><i>🤲</i>Doa</button></nav>
+<div class="modal hide" id="mon">
+  <div class="row" style="align-items:center"><button class="btn sec" id="monPrev" style="flex:0 0 52px;margin:0;padding:10px">◀</button><div style="text-align:center"><b id="monTitle">—</b><div class="small" id="monZone"></div></div><button class="btn sec" id="monNext" style="flex:0 0 52px;margin:0;padding:10px">▶</button></div>
+  <div id="monBody"></div>
+  <div class="row"><button class="btn" id="monShare">📤 Kongsi</button><button class="btn sec" id="monCopy">📋 Salin teks</button></div>
+  <button class="btn sec" id="monClose">✕ Tutup</button>
+  <div class="note" id="monNote">Sumber: e-Solat JAKIM.</div>
+</div>
+
+
+<div class="modal hide" id="imsk">
+  <div style="text-align:center"><b id="imskTitle">Imsakiyah Ramadan</b><div class="small" id="imskZone"></div></div>
+  <div id="imskBody"></div>
+  <div class="row"><button class="btn" id="imskShare">📤 Kongsi</button><button class="btn sec" id="imskCopy">📋 Salin teks</button></div>
+  <button class="btn sec" id="imskClose">✕ Tutup</button>
+  <div class="note" id="imskNote">Sumber: e-Solat JAKIM. Imsak = 10 minit sebelum Subuh.</div>
+</div>
+<div class="arCam hide" id="ar">
+  <div id="arView"><video id="arVid" playsinline muted autoplay></video>
+    <div class="arLine"></div><div class="arMark" id="arMark"><div class="kb"></div><span>Qiblat</span></div>
+    <div class="arEdge" id="arL" style="left:10px"></div><div class="arEdge" id="arR" style="right:10px"></div></div>
+  <div class="arTop"><b id="arMsg">Membuka kamera…</b><span id="arInfo"></span><span id="arErr" class="warn"></span></div>
+  <div class="arBot"><div class="small">Pegang telefon tegak. Panduan visual sahaja — sahkan dengan kompas mendatar atau kaedah matahari.</div><button class="btn" id="arClose">✕ Tutup kamera</button></div>
+</div>
+<div class="modal hide" id="setM">
+  <div style="display:flex;align-items:center;gap:10px"><h2 style="flex:1;margin:0;font-size:1.15rem;color:var(--gold);white-space:nowrap">⚙️ Tetapan</h2><button class="btn sec" id="setClose" style="width:auto;margin:0;padding:8px 16px">✕ Tutup</button></div>
+  <div id="setBody"></div>
+</div>
+<div class="modal hide" id="guide">
+  <div class="gWrap"><div id="gBody"></div><div class="gDots" id="gDots"></div>
+  <div class="row"><button class="btn sec" id="gSkip">Langkau</button><button class="btn" id="gNext">Seterusnya ›</button></div></div>
+</div>
+<div class="ovl hide" id="ovl"><div class="box"><div class="small" id="ovlSub">Telah masuk waktu</div><h2 id="ovlName">Zohor</h2><div class="small" id="ovlZone"></div><button class="btn" id="ovlStop">⏹ Hentikan</button></div></div>
+
+<script>window.__NAT=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());if(window.__NAT)document.documentElement.classList.add('nat');window.__myqNew=!localStorage.getItem('qiblat_loc')&&!localStorage.getItem('ws_cfg')&&!localStorage.getItem('onb_done');</script>
+<script>
+(function(){
+const KAABA={lat:21.422524,lon:39.826206};
+const R=Math.PI/180, D=180/Math.PI;
+const $=id=>document.getElementById(id);
+let loc=null, qibla=null, heading=null, sinS=0, cosS=0, hasSm=false, lastVib=0, wasAligned=false, gotEvent=false;
+
+/* ---------- Dial drawing ---------- */
+function drawDial(){
+  const s=$('svg'); let h='';
+  for(let i=0;i<360;i+=5){
+    const long=i%30===0, len=long?10:5;
+    const a=(i-90)*R, r1=96, r2=96-len;
+    h+=`<line x1="${100+r1*Math.cos(a)}" y1="${100+r1*Math.sin(a)}" x2="${100+r2*Math.cos(a)}" y2="${100+r2*Math.sin(a)}" stroke="${long?'#f3f1e8':'#b7cfc4'}" stroke-width="${long?1.4:.7}"/>`;
+  }
+  const L={0:'U',90:'T',180:'S',270:'B'};
+  for(const k in L){const a=(k-90)*R;h+=`<text x="${100+74*Math.cos(a)}" y="${100+74*Math.sin(a)+5}" text-anchor="middle" font-size="14" font-weight="700" fill="${k==0?'#ff6b6b':'#f3f1e8'}">${L[k]}</text>`;}
+  if(qibla!==null){
+    const a=(qibla-90)*R;
+    h+=`<line x1="100" y1="100" x2="${100+60*Math.cos(a)}" y2="${100+60*Math.sin(a)}" stroke="#e8c468" stroke-width="2.5" stroke-dasharray="4 3"/>`;
+    const x=100+84*Math.cos(a), y=100+84*Math.sin(a);
+    h+=`<g transform="translate(${x},${y}) rotate(${qibla})"><rect x="-8" y="-8" width="16" height="16" rx="1.5" fill="#111" stroke="#e8c468" stroke-width="1.5"/><rect x="-8" y="-4" width="16" height="2.5" fill="#e8c468"/></g>`;
+  }
+  s.innerHTML=h;
+}
+
+/* ---------- Geodesy ---------- */
+function bearing(lat1,lon1,lat2,lon2){
+  const p1=lat1*R,p2=lat2*R,dl=(lon2-lon1)*R;
+  const y=Math.sin(dl)*Math.cos(p2), x=Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl);
+  return (Math.atan2(y,x)*D+360)%360;
+}
+function distKm(lat1,lon1,lat2,lon2){
+  const dp=(lat2-lat1)*R, dl=(lon2-lon1)*R;
+  const a=Math.sin(dp/2)**2+Math.cos(lat1*R)*Math.cos(lat2*R)*Math.sin(dl/2)**2;
+  return 6371.0088*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+const norm=a=>((a%360)+360)%360;
+const sdiff=a=>{a=norm(a);return a>180?a-360:a;};
+const fmt=a=>a.toFixed(1)+'°';
+
+/* ---------- Sun position (NOAA-style) ---------- */
+function sunPos(date,lat,lon){
+  const jd=date.getTime()/86400000+2440587.5, d=jd-2451545.0;
+  const g=norm(357.529+0.98560028*d)*R, q=norm(280.459+0.98564736*d);
+  const L=(q+1.915*Math.sin(g)+0.020*Math.sin(2*g))*R, e=(23.439-0.00000036*d)*R;
+  const ra=Math.atan2(Math.cos(e)*Math.sin(L),Math.cos(L)), dec=Math.asin(Math.sin(e)*Math.sin(L));
+  const gmst=norm((18.697374558+24.06570982441908*d)*15);
+  const H=(gmst+lon)*R-ra, phi=lat*R;
+  const alt=Math.asin(Math.sin(phi)*Math.sin(dec)+Math.cos(phi)*Math.cos(dec)*Math.cos(H));
+  const az=Math.atan2(-Math.sin(H),Math.tan(dec)*Math.cos(phi)-Math.sin(phi)*Math.cos(H));
+  return {alt:alt*D, az:norm(az*D)};
+}
+function hhmm(dt){return dt.toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'});}
+/* find today's times when shadow of a vertical pole points AWAY from qibla (sun az == qibla) or TO qibla (sun az == qibla+180) */
+function sunCross(target){
+  const out=[]; const now=new Date(); const t0=new Date(now); t0.setHours(0,0,0,0);
+  let prev=null;
+  for(let m=0;m<=1440;m+=2){
+    const t=new Date(t0.getTime()+m*60000), p=sunPos(t,loc.lat,loc.lon);
+    const dd=sdiff(p.az-target);
+    if(prev && p.alt>3 && Math.sign(dd)!==Math.sign(prev.dd) && Math.abs(dd-prev.dd)<90) out.push(t);
+    prev={dd};
+  }
+  return out;
+}
+function renderSun(){
+  if(!loc){return;}
+  const p=sunPos(new Date(),loc.lat,loc.lon);
+  let h='';
+  if(p.alt>2){
+    const shadow=norm(p.az+180), rel=norm(qibla-shadow);
+    h+=`Matahari sekarang pada azimut <b>${fmt(p.az)}</b> (ketinggian ${p.alt.toFixed(0)}°). Bayang batang tegak menghala ke <b>${fmt(shadow)}</b>.<br>`;
+    h+=`Qiblat = putar <b>${fmt(rel)}</b> ikut arah jam dari arah bayang.<br>`;
+  } else h+='Matahari di bawah ufuk sekarang.<br>';
+  const away=sunCross(qibla), to=sunCross(norm(qibla+180));
+  if(away.length) h+=`<br>Hari ini jam <b>${away.map(hhmm).join(', ')}</b>: matahari tepat di arah qiblat, jadi <b>bayang tegak menunjuk berlawanan qiblat</b> (hadap matahari = hadap qiblat).`;
+  if(to.length) h+=`<br>Hari ini jam <b>${to.map(hhmm).join(', ')}</b>: <b>bayang tegak menunjuk terus ke arah qiblat</b>.`;
+  if(!away.length&&!to.length) h+='<br>Tiada waktu hari ini di mana bayang selari dengan qiblat; guna kiraan sudut di atas.';
+  h+=`<br><br><span class="small">Rasdul Qiblat (matahari tegak atas Kaabah, sah seluruh dunia yang melihat matahari): <b>27/28 Mei ~5:16 ptg</b> dan <b>15/16 Julai ~5:28 ptg</b> waktu Malaysia.</span>`;
+  $('sunBox').innerHTML=h;
+}
+
+/* ---------- Location ---------- */
+function setLoc(lat,lon,acc){
+  loc={lat,lon,acc};
+  qibla=bearing(lat,lon,KAABA.lat,KAABA.lon);
+  $('qb').textContent=fmt(qibla);
+  $('dist').textContent=Math.round(distKm(lat,lon,KAABA.lat,KAABA.lon)).toLocaleString('ms-MY')+' km';
+  $('locTxt').textContent=`📍 ${lat.toFixed(4)}, ${lon.toFixed(4)}`+(acc?` (±${Math.round(acc)} m)`:' (manual)');
+  try{localStorage.setItem('qiblat_loc',JSON.stringify({lat,lon}));}catch(e){}
+  if(/Koordinat|Lokasi|GPS/.test($('status').textContent)) $('status').textContent='';
+  if(acc){try{localStorage.setItem('myq_lastloc',JSON.stringify({lat,lon,acc,at:Date.now()}));}catch(e){} window.dispatchEvent(new CustomEvent('myq-loc',{detail:{lat,lon,acc}}));}
+  drawDial(); renderSun(); updateAcc(); render();
+}
+function getGPS(){
+  if(!navigator.geolocation){$('status').textContent='GPS tidak disokong. Guna lokasi manual.';return;}
+  $('locTxt').textContent='Mendapatkan lokasi…';
+  navigator.geolocation.getCurrentPosition(
+    p=>setLoc(p.coords.latitude,p.coords.longitude,p.coords.accuracy),
+    err=>{$('locTxt').textContent='Lokasi gagal: '+err.message+'. Guna lokasi manual atau lokasi terakhir.';
+      try{const s=JSON.parse(localStorage.getItem('qiblat_loc'));if(s)setLoc(s.lat,s.lon,null);}catch(e){}},
+    {enableHighAccuracy:true,timeout:20000,maximumAge:0});
+}
+
+/* ---------- Compass ---------- */
+let compAcc=null;
+function screenAngle(){return (screen.orientation&&screen.orientation.angle)||window.orientation||0;}
+function onHeading(raw,accuracy){
+  gotEvent=true;
+  const decl=parseFloat($('decl').value)||0;
+  const h=norm(raw+screenAngle()+decl)*R;
+  if(!hasSm){sinS=Math.sin(h);cosS=Math.cos(h);hasSm=true;}
+  else{const k=0.18;sinS+=k*(Math.sin(h)-sinS);cosS+=k*(Math.cos(h)-cosS);}
+  heading=norm(Math.atan2(sinS,cosS)*D);
+  if(accuracy!=null) compAcc=accuracy;
+}
+let diag={abs:0,rel:0,relNull:0,sensor:''};
+function handleIOS(e){ if(e.webkitCompassHeading!=null) onHeading(e.webkitCompassHeading,e.webkitCompassAccuracy); }
+function handleAbs(e){ diag.abs++; if(e.alpha!=null) onHeading(360-e.alpha,null); }
+function handleRel(e){
+  diag.rel++; if(e.alpha==null) diag.relNull++;
+  if(e.webkitCompassHeading!=null) return handleIOS(e);
+  if(e.absolute&&e.alpha!=null&&!diag.abs) onHeading(360-e.alpha,null);
+}
+/* Fallback: Generic Sensor API (Chrome Android) */
+function trySensorAPI(){
+  if(!('AbsoluteOrientationSensor' in window)){diag.sensor='tiada API';return;}
+  try{
+    const s=new AbsoluteOrientationSensor({frequency:30,referenceFrame:'screen'});
+    s.addEventListener('reading',()=>{
+      const [x,y,z,w]=s.quaternion;
+      const h=Math.atan2(2*(x*y-z*w),1-2*(x*x+z*z))*D; // arah bahagian atas telefon, dari Utara
+      onHeading(norm(h)-screenAngle(),null); // referenceFrame:'screen' sudah ambil kira putaran skrin
+    });
+    s.addEventListener('error',ev=>{diag.sensor=ev.error.name; showDiag();});
+    s.start(); diag.sensor='dimulakan';
+  }catch(e){diag.sensor=e.name;}
+}
+function showDiag(){
+  if(gotEvent) return;
+  let why='';
+  if(diag.sensor==='NotAllowedError'||(diag.abs===0&&diag.rel===0))
+    why='Chrome menyekat <b>penderia gerakan</b>. Ketik ikon di kiri alamat laman → <b>Kebenaran / Permissions</b> → <b>Penderia gerakan (Motion sensors)</b> → Benarkan, kemudian muat semula. Atau: Chrome ⋮ → Tetapan → Tetapan tapak → Penderia gerakan.';
+  else if(diag.relNull>0||diag.sensor==='NotReadableError')
+    why='Telefon ini nampaknya <b>tiada magnetometer (kompas)</b> atau ia tidak boleh dibaca. Guna darjah qiblat + kaedah matahari di bawah.';
+  else why='Isyarat kompas tidak diterima.';
+  $('status').innerHTML=`<span class="warn">${why}</span><br><span class="small">Diag: abs=${diag.abs}, rel=${diag.rel}, null=${diag.relNull}, sensor=${diag.sensor}</span>`;
+}
+
+async function startCompass(){
+  if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
+    try{const r=await DeviceOrientationEvent.requestPermission(); if(r!=='granted'){$('status').textContent='Izin kompas ditolak.';return;}}
+    catch(e){$('status').textContent='Izin kompas gagal: '+e.message;return;}
+  }
+  window.addEventListener('deviceorientationabsolute',handleAbs,true);
+  window.addEventListener('deviceorientation',handleRel,true);
+  setTimeout(()=>{ if(!gotEvent) trySensorAPI(); },1500);
+  setTimeout(showDiag,4000);
+}
+
+function updateAcc(){
+  let a=[];
+  if(compAcc!=null) a.push(compAcc<0?'kompas ?':'±'+Math.round(compAcc)+'°');
+  if(loc&&loc.acc) a.push('±'+Math.round(loc.acc)+' m');
+  $('acc').textContent=a.length?a.join(' / '):'--';
+}
+
+/* ---------- Render loop ---------- */
+function render(){
+  if(heading!=null){
+    $('dial').style.transform=`rotate(${-heading}deg)`;
+    $('hd').textContent=fmt(heading);
+    if(qibla!=null){
+      const d=sdiff(qibla-heading), ad=Math.abs(d);
+      $('diffTxt').textContent=ad.toFixed(0)+'°';
+      const aligned=ad<=2;
+      $('wrap').classList.toggle('aligned',aligned); document.body.classList.toggle('aligned',aligned);
+      $('diffSub').textContent=aligned?'Menghadap Qiblat':(d>0?'Pusing ke kanan ↻':'Pusing ke kiri ↺');
+      $('status').textContent=aligned?'✅ Anda menghadap Qiblat':'';
+      if(aligned&&!wasAligned&&navigator.vibrate&&Date.now()-lastVib>1500){navigator.vibrate(120);lastVib=Date.now();}
+      wasAligned=aligned;
+      if(compAcc!=null&&compAcc>20) $('status').innerHTML='<span class="warn">Ketepatan kompas rendah — buat gerakan angka 8.</span>';
+    }
+  }
+  updateAcc();
+  requestAnimationFrame(render);
+}
+
+$('startBtn').onclick=()=>{ startCompass(); getGPS(); $('startBtn').textContent='↻ Kemas kini lokasi'; $('startBtn').onclick=getGPS; };
+$('mBtn').onclick=()=>{const a=parseFloat($('mLat').value),b=parseFloat($('mLon').value);
+  if(isFinite(a)&&isFinite(b)&&Math.abs(a)<=90&&Math.abs(b)<=180) setLoc(a,b,null); else $('status').textContent='Koordinat tidak sah.';};
+try{const s=JSON.parse(localStorage.getItem('qiblat_loc'));if(s)setLoc(s.lat,s.lon,null);}catch(e){}
+/* PWA */
+if('serviceWorker' in navigator&&!window.__NAT){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.remove('hide');});
+$('installBtn').onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.add('hide');};
+window.addEventListener('appinstalled',()=>$('installBtn').classList.add('hide'));
+window.QIB={q:()=>qibla,decl:()=>parseFloat($('decl').value)||0,started:()=>gotEvent};
+drawDial(); setInterval(()=>loc&&renderSun(),60000); requestAnimationFrame(render);
+})();
+
+/* skrin penuh (dalam pelayar) */
+(function(){const b=document.getElementById('fsBtn');if(!b)return;
+  if(!document.documentElement.requestFullscreen){b.style.display='none';return;}
+  b.onclick=()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen({navigationUI:'hide'}).catch(()=>{});};
+  document.addEventListener('fullscreenchange',()=>b.textContent=document.fullscreenElement?'✕ Keluar':'⛶ Penuh');})();
+</script>
+<script>
+/* ================= WAKTU SOLAT (JAKIM) ================= */
+(function(){
+const $=id=>document.getElementById(id);
+const TZ='Asia/Kuala_Lumpur', WS='https://api.waktusolat.app', ES='https://www.e-solat.gov.my/index.php?r=esolatApi/TakwimSolat&period=month&zone=';
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const ROWS=[['imsak','Imsak',1],['fajr','Subuh',0],['syuruk','Syuruk',1],['dhuhr','Zohor',0],['asr','Asar',0],['maghrib','Maghrib',0],['isha','Isyak',0]];
+const MAIN=['fajr','dhuhr','asr','maghrib','isha'];
+const LABEL=Object.fromEntries(ROWS.map(r=>[r[0],r[1]]));
+const HM=['Muharam','Safar','Rabiulawal','Rabiulakhir','Jamadilawal','Jamadilakhir','Rejab','Syaaban','Ramadan','Syawal','Zulkaedah','Zulhijah'];
+const FALLBACK={Johor:'JHR01 JHR02 JHR03 JHR04',Kedah:'KDH01 KDH02 KDH03 KDH04 KDH05 KDH06 KDH07',Kelantan:'KTN01 KTN02',Melaka:'MLK01','Negeri Sembilan':'NGS01 NGS02 NGS03',Pahang:'PHG01 PHG02 PHG03 PHG04 PHG05 PHG06 PHG07',Perlis:'PLS01','Pulau Pinang':'PNG01',Perak:'PRK01 PRK02 PRK03 PRK04 PRK05 PRK06 PRK07',Sabah:'SBH01 SBH02 SBH03 SBH04 SBH05 SBH06 SBH07 SBH08 SBH09',Selangor:'SGR01 SGR02 SGR03',Sarawak:'SWK01 SWK02 SWK03 SWK04 SWK05 SWK06 SWK07 SWK08 SWK09',Terengganu:'TRG01 TRG02 TRG03 TRG04','Wilayah Persekutuan':'WLY01 WLY02'};
+
+let cfg=Object.assign({mode:'gps',zone:'',sound:'notif',azanSrc:'app',pre:0,wake:false,bells:{imsak:0,fajr:1,syuruk:0,dhuhr:1,asr:1,maghrib:1,isha:1}},LS.get('ws_cfg',{}));
+const save=()=>{LS.set('ws_cfg',cfg);if(window.__NAT&&typeof natSchedule==='function')natSchedule();};
+let days=LS.get('ws_days',{}); // 'YYYY-MM-DD' -> {hijri, imsak, fajr, ...(ms)}
+let zones=LS.get('ws_zones',null);
+
+const ymd=ms=>new Date(ms+8*3600e3).toISOString().slice(0,10);
+const fmtT=ms=>new Date(ms).toLocaleTimeString('ms-MY',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:TZ}).replace(/\s?(PG|PTG|AM|PM)/i,m=>' '+m.trim().toLowerCase());
+function hijriTxt(h){if(!h)return'';const [y,m,d]=h.split('-').map(Number);return `${d} ${HM[m-1]||''} ${y}H`;}
+function zoneLabel(code){if(!code)return'';const z=(zones||[]).find(x=>x.jakimCode===code);return z?`${code} · ${z.daerah}`:code;}
+function setStatus(t,warn){$('wStatus').innerHTML=t?`<span class="${warn?'warn':''}">${t}</span>`:'';}
+
+/* ---------- data fetching ---------- */
+async function getJSON(url){const r=await fetch(url,{headers:{Accept:'application/json'},cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+function mergeV2(j,T){T=T||days;
+  (j.prayers||[]).forEach(p=>{if(!p.fajr)return;
+    T[ymd(p.fajr*1000)]={zone:j.zone,hijri:p.hijri,imsak:(p.fajr-600)*1000,fajr:p.fajr*1000,syuruk:p.syuruk*1000,dhuhr:p.dhuhr*1000,asr:p.asr*1000,maghrib:p.maghrib*1000,isha:p.isha*1000};});
+}
+const MON={Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
+function mergeES(j,zone,T){T=T||days;
+  (j.prayerTime||[]).forEach(p=>{const [d,m,y]=p.date.split('-');const key=`${y}-${MON[m]}-${d}`;
+    const t=s=>Date.parse(`${key}T${s.length===5?s+':00':s}+08:00`);
+    T[key]={zone,hijri:p.hijri,imsak:p.imsak?t(p.imsak):t(p.fajr)-600e3,fajr:t(p.fajr),syuruk:t(p.syuruk),dhuhr:t(p.dhuhr),asr:t(p.asr),maghrib:t(p.maghrib),isha:t(p.isha)};});
+}
+function pruneSave(){const cut=ymd(Date.now()).slice(0,8)+'01';for(const k in days)if(k<cut)delete days[k];LS.set('ws_days',days);LS.set('ws_synced',Date.now());window.dispatchEvent(new Event('myq-days'));}
+async function loadZone(zone,y,m){
+  const q=(y&&m)?`?year=${y}&month=${m}`:'';
+  try{mergeV2(await getJSON(`${WS}/v2/solat/${zone}${q}`));return 'api.waktusolat.app';}
+  catch(e){ if(q) throw e; mergeES(await getJSON(ES+zone),zone); return 'e-solat.gov.my'; }
+}
+async function zoneFromGPS(){
+  const pos=await new Promise((res,rej)=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>res(p.coords),()=>{const s=LS.get('qiblat_loc',null);s?res({latitude:s.lat,longitude:s.lon}):rej(new Error('GPS gagal'));},{enableHighAccuracy:false,timeout:15000,maximumAge:600000}):rej(new Error('GPS tiada')));
+  const la=pos.latitude.toFixed(5), lo=pos.longitude.toFixed(5);
+  try{const j=await getJSON(`${WS}/v2/solat/gps/${la}/${lo}`);return {zone:j.zone,src:'api.waktusolat.app',j};}
+  catch(e){const z=await getJSON(`${WS}/zones/gps?lat=${la}&long=${lo}`);return {zone:z.zone,src:null};}
+}
+async function sync(force){
+  if(!navigator.onLine&&!force){render();return;}
+  setStatus('Menyegerak dengan JAKIM…');
+  try{
+    let src=null;
+    if(cfg.mode==='gps'){const r=await zoneFromGPS(); if(r.zone!==cfg.zone){ for(const k in days) delete days[k]; } cfg.zone=r.zone; save(); if(r.j){mergeV2(r.j);src=r.src;}}
+    if(!cfg.zone){setStatus('Pilih zon dahulu.',1);return;}
+    if(!src){ for(const k in days) if(days[k].zone!==cfg.zone) delete days[k]; src=await loadZone(cfg.zone); }
+    // pastikan esok ada (hujung bulan)
+    const tmr=ymd(Date.now()+864e5);
+    if(!days[tmr]){const d=new Date(Date.now()+864e5+8*3600e3);try{await loadZone(cfg.zone,d.getUTCFullYear(),d.getUTCMonth()+1);}catch(e){}}
+    pruneSave();
+    $('zInfo').textContent=`Disegerak ${new Date().toLocaleString('ms-MY',{timeZone:TZ})} · sumber ${src}`;
+    setStatus('');
+  }catch(e){
+    setStatus(`Gagal menyegerak (${e.message}). ${Object.keys(days).length?'Memaparkan data tersimpan.':'Pastikan ada internet, atau pilih zon manual.'}`,1);
+  }
+  render(); if(cfg.mode==='man') $('zSel').value=cfg.zone;
+}
+async function loadZones(){
+  try{const z=await getJSON(`${WS}/zones`); if(Array.isArray(z)&&z.length){zones=z;LS.set('ws_zones',z);}}catch(e){}
+  fillZones();
+}
+function fillZones(){
+  const sel=$('zSel'); let h='<option value="">— Pilih zon —</option>';
+  if(zones){const g={};zones.forEach(z=>(g[z.negeri]=g[z.negeri]||[]).push(z));
+    for(const n in g){h+=`<optgroup label="${n}">`+g[n].map(z=>`<option value="${z.jakimCode}">${z.jakimCode} — ${z.daerah}</option>`).join('')+'</optgroup>';}}
+  else for(const n in FALLBACK){h+=`<optgroup label="${n}">`+FALLBACK[n].split(' ').map(c=>`<option value="${c}">${c}</option>`).join('')+'</optgroup>';}
+  sel.innerHTML=h; sel.value=cfg.zone||'';
+}
+
+/* ---------- render ---------- */
+function events(){ // semua waktu hari ini & esok
+  const out=[];[ymd(Date.now()),ymd(Date.now()+864e5)].forEach(k=>{const d=days[k];if(d)ROWS.forEach(([key])=>out.push({key,t:d[key],day:k}));});
+  return out.sort((a,b)=>a.t-b.t);
+}
+function render(){
+  const now=Date.now(), today=days[ymd(now)];
+  $('wZoneTxt').textContent=cfg.zone?`📍 ${zoneLabel(cfg.zone)}${cfg.mode==='gps'?' (ikut lokasi)':''}`:'Zon belum dipilih';
+  $('wDateTxt').textContent=new Date().toLocaleDateString('ms-MY',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:TZ})+(today?` · ${hijriTxt(today.hijri)}`:'');
+  if(!today){$('plist').innerHTML='<div class="prow"><span class="pn small">Tiada data untuk hari ini. Tekan Segerak.</span></div>';$('nextName').textContent='—';$('nextCd').textContent='--:--:--';return;}
+  let cur=null; MAIN.concat('syuruk').forEach(k=>{if(today[k]<=now&&(!cur||today[k]>today[cur]))cur=k;});
+  if(cur==='syuruk')cur=null;
+  $('plist').innerHTML=ROWS.map(([k,n,minor])=>`<div class="prow${minor?' minor':''}${k===cur?' cur':''}"><span class="pn">${n}</span><span class="pt">${fmtT(today[k])}</span><button class="bell${cfg.bells[k]?'':' off'}" data-k="${k}" aria-label="Pemberitahuan ${n}">${cfg.bells[k]?'🔔':'🔕'}</button></div>`).join('');
+  tickNext();
+}
+function widget(nx){
+  const now=Date.now(), t=days[ymd(now)];
+  if(!t){$('qwName').textContent='Waktu solat';$('qwCd').textContent='--:--:--';$('qwTimes').innerHTML='<div style="grid-column:1/-1">Tetapkan zon di tab Solat</div>';return;}
+  let cur=null; MAIN.forEach(k=>{if(t[k]<=now)cur=k;}); if(t.syuruk<=now&&now<t.dhuhr)cur=null;
+  const key=MAIN.map(k=>k+(k===cur?1:0)).join()+ymd(now);
+  if(widget.k!==key){widget.k=key;$('qwTimes').innerHTML=MAIN.map(k=>`<div class="${k===cur?'cur':''}">${LABEL[k]}<b>${fmtT(t[k]).replace(/ (pg|ptg|mlm|am|pm)$/i,'')}</b></div>`).join('');}
+  if(nx){const s=Math.floor((nx.t-now)/1000),p=n=>String(n).padStart(2,'0');$('qwName').textContent=`Menjelang ${LABEL[nx.key]} · ${fmtT(nx.t)}`;$('qwCd').textContent=`${p(Math.floor(s/3600))}:${p(Math.floor(s/60)%60)}:${p(s%60)}`;}
+}
+function tickNext(){
+  const now=Date.now(); const nx=events().find(e=>MAIN.includes(e.key)&&e.t>now);
+  widget(nx);
+  if(!nx){$('nextName').textContent='—';$('nextCd').textContent='--:--:--';$('nextAt').textContent='Segerak untuk data seterusnya';return;}
+  const s=Math.floor((nx.t-now)/1000),p=n=>String(n).padStart(2,'0');
+  $('nextName').textContent=`Menjelang ${LABEL[nx.key]}`;
+  $('nextCd').textContent=`${p(Math.floor(s/3600))}:${p(Math.floor(s/60)%60)}:${p(s%60)}`;
+  $('nextAt').textContent=`${LABEL[nx.key]} pada ${fmtT(nx.t)}${nx.day!==ymd(now)?' (esok)':''}`;
+}
+
+/* ---------- audio ---------- */
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('myqiblat',1);r.onupgradeneeded=()=>r.result.createObjectStore('f');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function idbPut(k,v){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction('f','readwrite');t.objectStore('f').put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});}
+async function idbGet(k){try{const d=await idb();return await new Promise((res,rej)=>{const q=d.transaction('f').objectStore('f').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error);});}catch(e){return null;}}
+const au=new Audio(); au.preload='auto'; let actx=null, curURL=null;
+function unlock(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume();}catch(e){}}
+document.addEventListener('pointerdown',unlock,{once:false,passive:true});
+function chime(){try{unlock();const t0=actx.currentTime;[[659,0],[523,.55],[784,1.1]].forEach(([f,d])=>{const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t0+d);g.gain.linearRampToValueAtTime(.35,t0+d+.05);g.gain.exponentialRampToValueAtTime(.001,t0+d+1.4);o.connect(g).connect(actx.destination);o.start(t0+d);o.stop(t0+d+1.5);});}catch(e){}}
+/* azan myQiblat dari repo, disimpan dalam cache untuk luar talian */
+const AZ_CACHE='myqiblat-audio-v1', AZ={n:'azan.mp3',s:'azan-subuh.mp3'};
+async function azCached(name){try{const c=await caches.open(AZ_CACHE);const r=await c.match(name);return r?await r.blob():null;}catch(e){return null;}}
+async function azPrefetch(){
+  if(!('caches' in window))return;
+  let ok=0;
+  for(const n of [AZ.n,AZ.s]){
+    if(await azCached(n)){ok++;continue;}
+    if(!navigator.onLine)continue;
+    try{azNote('⏳ Memuat turun '+n+'…');const r=await fetch(n,{cache:'no-store'});if(!r.ok)throw 0;const c=await caches.open(AZ_CACHE);await c.put(n,r);ok++;}catch(e){}
+  }
+  azNote(ok===2?'✅ Azan myQiblat (biasa &amp; Subuh) tersimpan dalam telefon — boleh berbunyi tanpa internet.':'⚠️ Azan belum lengkap disimpan. Buka app sekali ketika ada internet.');
+}
+function azNote(t){const e=$('azAppNote');if(e)e.innerHTML=t;}
+async function playAzan(isSubuh){
+  let blob=null;
+  if(cfg.azanSrc==='own'){const f=(isSubuh&&await idbGet('azanS'))||await idbGet('azan');blob=f&&f.blob;}
+  else{blob=(isSubuh&&await azCached(AZ.s))||await azCached(AZ.n);}
+  if(curURL){URL.revokeObjectURL(curURL);curURL=null;}
+  if(blob){curURL=URL.createObjectURL(blob);au.src=curURL;}
+  else if(cfg.azanSrc!=='own'&&navigator.onLine){au.src=isSubuh?AZ.s:AZ.n;}
+  else{chime();return false;}
+  au.currentTime=0;
+  try{await au.play();return true;}catch(e){chime();return false;}
+}
+function stopAll(){au.pause();au.currentTime=0;$('ovl').classList.add('hide');if(window.__NAT&&LN)LN.removeAllDeliveredNotifications().catch(()=>{});}
+$('ovlStop').onclick=stopAll;
+
+/* ---------- pemberitahuan ---------- */
+async function notify(title,body,silent,tag){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  const opt={body,icon:'icon-192.png',badge:'icon-192.png',tag,renotify:true,silent,vibrate:[400,150,400,150,400],requireInteraction:false};
+  try{const reg=await navigator.serviceWorker.ready;await reg.showNotification(title,opt);}catch(e){try{new Notification(title,opt);}catch(_){}}
+}
+function fire(ev){
+  const n=LABEL[ev.key], zone=zoneLabel(cfg.zone);
+  if(window.__NAT){if(!ev.pre&&document.visibilityState==='visible'){$('ovlSub').textContent=MAIN.includes(ev.key)?'Telah masuk waktu':'Peringatan';$('ovlName').textContent=n;$('ovlZone').textContent=`${fmtT(ev.t)} · ${zone}`;$('ovl').classList.remove('hide');setTimeout(()=>$('ovl').classList.add('hide'),60000);}return;}
+  if(ev.pre){notify(`${n} dalam ${cfg.pre} minit`,`${n} pada ${fmtT(ev.t)} · ${zone}`,cfg.sound!=='notif',`pre-${ev.key}`); if(document.visibilityState==='visible'&&cfg.sound!=='vib')chime(); return;}
+  const isMain=MAIN.includes(ev.key);
+  const title=isMain?`Telah masuk waktu ${n}`:(ev.key==='imsak'?'Waktu Imsak':'Syuruk — tamat waktu Subuh');
+  notify(title,`${fmtT(ev.t)} · ${zone}`,cfg.sound!=='notif',`w-${ev.key}`);
+  if(navigator.vibrate)navigator.vibrate([400,150,400,150,400]);
+  if(cfg.sound==='azan'&&isMain) playAzan(ev.key==='fajr');
+  else if(cfg.sound==='chime'||(cfg.sound==='azan'&&!isMain)) chime();
+  if(document.visibilityState==='visible'){$('ovlSub').textContent=isMain?'Telah masuk waktu':'Peringatan';$('ovlName').textContent=n;$('ovlZone').textContent=`${fmtT(ev.t)} · ${zone}`;$('ovl').classList.remove('hide');
+    if(!(cfg.sound==='azan'&&isMain))setTimeout(()=>$('ovl').classList.add('hide'),20000);}
+}
+au.onended=()=>$('ovl').classList.add('hide');
+let fired=new Set(LS.get('ws_fired',[]));
+function checkAlerts(){
+  const now=Date.now(); let changed=false;
+  events().forEach(e=>{
+    const list=[];
+    if(cfg.bells[e.key]) list.push({...e,id:`${e.key}@${e.t}`});
+    if(cfg.bells[e.key]&&cfg.pre>0&&MAIN.includes(e.key)) list.push({...e,pre:1,t:e.t-cfg.pre*60e3,real:e.t,id:`pre-${e.key}@${e.t}`});
+    list.forEach(x=>{ if(x.t<=now&&now-x.t<180000&&!fired.has(x.id)){fired.add(x.id);changed=true;fire(x.pre?{...x,t:x.real}:x);} });
+  });
+  if(changed){fired=new Set([...fired].slice(-60));LS.set('ws_fired',[...fired]);}
+}
+
+/* ---------- wake lock ---------- */
+let wl=null;
+async function applyWake(){try{if(cfg.wake&&document.visibilityState==='visible'&&'wakeLock' in navigator){if(!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>wl=null);}}else if(wl){await wl.release();wl=null;}}catch(e){}}
+
+/* ---------- UI ---------- */
+function showTab(w){w=+w||0;['tabQ','tabW','tabM','tabK','tabT','tabD'].forEach((id,i)=>$(id).classList.toggle('hide',i!==w));['tQ','tW','tM','tK','tT','tD'].forEach((id,i)=>$(id).classList.toggle('on',i===w));LS.set('ws_tab',w);if(w===1)render();if(w===2&&window.renderMusafir)renderMusafir();if(w===4&&window.renderTasbih)renderTasbih();window.scrollTo(0,0);}
+window.showTab=showTab;
+['tQ','tW','tM','tK','tT','tD'].forEach((id,i)=>$(id).onclick=()=>showTab(i));
+$('qw').onclick=()=>showTab(1);
+function setMode(m){cfg.mode=m;save();$('zGps').classList.toggle('on',m==='gps');$('zMan').classList.toggle('on',m==='man');$('zManBox').classList.toggle('hide',m!=='man');}
+$('zGps').onclick=()=>{setMode('gps');sync(true);};
+$('zMan').onclick=()=>{setMode('man');if(!zones)loadZones();};
+$('zSel').onchange=()=>{const z=$('zSel').value;if(!z)return;if(z!==cfg.zone){for(const k in days)delete days[k];}cfg.zone=z;save();sync(true);};
+$('zSync').onclick=()=>sync(true);
+$('plist').onclick=e=>{const b=e.target.closest('.bell');if(!b)return;const k=b.dataset.k;cfg.bells[k]=cfg.bells[k]?0:1;save();render();if(cfg.bells[k]&&'Notification' in window&&Notification.permission==='default')Notification.requestPermission();};
+$('sMode').value=cfg.sound; $('sPre').value=String(cfg.pre); $('sWake').checked=!!cfg.wake;
+const showAz=()=>{$('azanBox').classList.toggle('hide',cfg.sound!=='azan');$('srcApp').classList.toggle('on',cfg.azanSrc!=='own');$('srcOwn').classList.toggle('on',cfg.azanSrc==='own');$('ownBox').classList.toggle('hide',cfg.azanSrc!=='own');$('azAppNote').classList.toggle('hide',cfg.azanSrc==='own');};
+$('srcApp').onclick=()=>{cfg.azanSrc='app';save();showAz();azPrefetch();};
+$('srcOwn').onclick=()=>{cfg.azanSrc='own';save();showAz();};
+$('sMode').onchange=()=>{cfg.sound=$('sMode').value;save();showAz();};
+$('sPre').onchange=()=>{cfg.pre=+$('sPre').value;save();};
+$('sWake').onchange=()=>{cfg.wake=$('sWake').checked;save();applyWake();};
+async function pickFile(inp,key,lbl){const f=inp.files[0];if(!f)return;try{await idbPut(key,{name:f.name,blob:f});$(lbl).textContent=f.name;}catch(e){$(lbl).textContent='gagal simpan';}}
+$('azanFile').onchange=()=>pickFile($('azanFile'),'azan','azanName');
+$('azanSFile').onchange=()=>pickFile($('azanSFile'),'azanS','azanSName');
+(async()=>{const a=await idbGet('azan'),s=await idbGet('azanS');if(a)$('azanName').textContent=a.name;if(s)$('azanSName').textContent=s.name;})();
+function permTxt(){if(window.__NAT){$('sPerm').textContent=natPerm==='granted'?'✅ Notifikasi dibenarkan':natPerm==='denied'?'⛔ Notifikasi disekat':'Benarkan notifikasi';return;}const p=('Notification' in window)?Notification.permission:'unsupported';$('sPerm').textContent=p==='granted'?'✅ Notifikasi dibenarkan':p==='denied'?'⛔ Notifikasi disekat':p==='unsupported'?'Notifikasi tidak disokong':'Benarkan notifikasi';}
+$('sPerm').onclick=async()=>{if(window.__NAT){await natPermAsk();if(natPerm==='denied')setStatus('Notifikasi disekat. Buka Tetapan telefon → Apl → myQiblat → Pemberitahuan.',1);return;}if('Notification' in window&&Notification.permission==='default')await Notification.requestPermission();permTxt();if(Notification.permission==='denied')setStatus('Notifikasi disekat. Buka tetapan Chrome → Tetapan tapak → Pemberitahuan untuk membenarkan.',1);};
+$('sTest').onclick=async()=>{unlock();if(window.__NAT&&LN){if(natPerm!=='granted')await natPermAsk();try{await LN.schedule({notifications:[{id:999,title:'Ujian bunyi myQiblat',body:'Beginilah bunyi pemberitahuan waktu Zohor. Ketik ⏹ dalam app untuk hentikan.',channelId:chFor('dhuhr'),schedule:{at:new Date(Date.now()+3000),allowWhileIdle:true}}]});setStatus('🔔 Bunyi ujian dalam 3 saat… (boleh tutup app untuk uji)');}catch(e){setStatus('Gagal: '+(e.message||e),1);}return;}if('Notification' in window&&Notification.permission==='default'){await Notification.requestPermission();permTxt();}
+  if(!$('ovl').classList.contains('hide')){stopAll();return;}
+  fire({key:'dhuhr',t:Date.now()});};
+
+/* ---------- jadual bulanan ---------- */
+const BM=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+let monY,monM,monData=null;
+function hm(ms){return new Date(ms).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:TZ});}
+function monthKeys(T,y,m){const pre=`${y}-${String(m).padStart(2,'0')}-`;return Object.keys(T).filter(k=>k.startsWith(pre)).sort();}
+async function openMonth(y,m){
+  monY=y;monM=m;$('mon').classList.remove('hide');$('monTitle').textContent=`${BM[m-1]} ${y}`;$('monZone').textContent=zoneLabel(cfg.zone);
+  if(!cfg.zone){$('monBody').innerHTML='<div class="note warn">Pilih zon dahulu.</div>';return;}
+  let T=days; const nd=new Date(Date.UTC(y,m,0)).getUTCDate();
+  if(monthKeys(days,y,m).length<nd){
+    $('monBody').innerHTML='<div class="note">Memuatkan…</div>'; T={};
+    try{mergeV2(await getJSON(`${WS}/v2/solat/${cfg.zone}?year=${y}&month=${m}`),T);}
+    catch(e){ $('monBody').innerHTML=`<div class="note warn">Gagal memuatkan (${e.message}). Perlukan internet.</div>`; monData=null; return;}
+    if(y===+ymd(Date.now()).slice(0,4)&&m===+ymd(Date.now()).slice(5,7)){Object.assign(days,T);pruneSave();}
+  }
+  const ks=monthKeys(T,y,m), today=ymd(Date.now());
+  monData=ks.map(k=>({k,...T[k]}));
+  $('monBody').innerHTML=`<table class="mtab"><tr><th>Tarikh</th><th>Imsak</th><th>Subuh</th><th>Syuruk</th><th>Zohor</th><th>Asar</th><th>Maghrib</th><th>Isyak</th></tr>`+
+    monData.map(d=>{const dt=new Date(d.k+'T12:00:00+08:00');const wd=dt.toLocaleDateString('ms-MY',{weekday:'short',timeZone:TZ});const fri=dt.getUTCDay()===5;
+      return `<tr class="${d.k===today?'today':''}${fri?' fri':''}"><td>${+d.k.slice(8)} ${wd}</td>${['imsak','fajr','syuruk','dhuhr','asr','maghrib','isha'].map(x=>`<td>${hm(d[x])}</td>`).join('')}</tr>`;}).join('')+'</table>';
+}
+function monthText(){
+  if(!monData)return '';
+  return `Waktu Solat ${BM[monM-1]} ${monY}\nZon ${zoneLabel(cfg.zone)} (JAKIM)\n\nTarikh | Subuh | Zohor | Asar | Maghrib | Isyak\n`+
+    monData.map(d=>`${d.k.slice(8)}/${d.k.slice(5,7)} | ${hm(d.fajr)} | ${hm(d.dhuhr)} | ${hm(d.asr)} | ${hm(d.maghrib)} | ${hm(d.isha)}`).join('\n')+'\n\nSumber: e-Solat JAKIM · myQiblat';
+}
+$('monBtn').onclick=()=>{const t=ymd(Date.now());openMonth(+t.slice(0,4),+t.slice(5,7));};
+$('monPrev').onclick=()=>{let y=monY,m=monM-1;if(m<1){m=12;y--;}openMonth(y,m);};
+$('monNext').onclick=()=>{let y=monY,m=monM+1;if(m>12){m=1;y++;}openMonth(y,m);};
+$('monClose').onclick=()=>$('mon').classList.add('hide');
+$('monCopy').onclick=async()=>{try{await navigator.clipboard.writeText(monthText());$('monNote').textContent='✅ Jadual disalin. Tampal di WhatsApp/nota.';}catch(e){$('monNote').textContent='Gagal menyalin: '+e.message;}};
+$('monShare').onclick=async()=>{const text=monthText();if(!text)return;if(navigator.share){try{await navigator.share({title:'Waktu Solat',text});}catch(e){}}else $('monCopy').click();};
+
+/* ---------- tukar zon automatik ---------- */
+function toast(t){let el=document.getElementById('toast');if(!el){el=document.createElement('div');el.id='toast';el.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 76px);background:#082a20;border:1px solid var(--gold);border-radius:12px;padding:12px;z-index:90;font-size:.88rem;box-shadow:0 6px 20px #000a';document.body.appendChild(el);}
+  el.innerHTML=t;el.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>el.style.display='none',8000);}
+const dKm=(a,b)=>{const R=Math.PI/180,dp=(b.lat-a.lat)*R,dl=(b.lon-a.lon)*R,x=Math.sin(dp/2)**2+Math.cos(a.lat*R)*Math.cos(b.lat*R)*Math.sin(dl/2)**2;return 12742*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));};
+window.addEventListener('myq-loc',async e=>{
+  const p=e.detail, last=LS.get('ws_lastpos',null);
+  if(last&&dKm(last,p)<5&&cfg.zone)return;
+  let z=null;
+  try{const r=await getJSON(`${WS}/zones/gps?lat=${p.lat.toFixed(5)}&long=${p.lon.toFixed(5)}`);z=r.zone||r.jakimCode||null;}catch(err){return;}
+  LS.set('ws_lastpos',{lat:p.lat,lon:p.lon});
+  if(!z||z===cfg.zone)return;
+  if(cfg.mode==='gps'){
+    const old=cfg.zone; for(const k in days)delete days[k]; cfg.zone=z; save();
+    await sync(true);
+    toast(`🔄 Zon waktu solat ditukar automatik: <b>${old||'—'}</b> → <b>${zoneLabel(z)}</b>. Waktu & azan kini ikut zon baharu.`);
+  } else {
+    toast(`📍 Anda kini dalam zon <b>${zoneLabel(z)}</b>, tetapi app ditetapkan pada zon manual <b>${cfg.zone}</b>. <button class="chip on" id="toZone">Tukar zon</button>`);
+    const b=document.getElementById('toZone'); if(b) b.onclick=()=>{for(const k in days)delete days[k];cfg.zone=z;save();sync(true);document.getElementById('toast').style.display='none';};
+  }
+});
+
+/* ---------- B3: Takwim Hijrah & tarikh penting ---------- */
+const HF=(()=>{try{return new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{timeZone:TZ,year:'numeric',month:'numeric',day:'numeric'});}catch(e){return null;}})();
+const noon=k=>Date.parse(k+'T12:00:00+08:00');
+function hRaw(ms){if(!HF)return null;const p={};try{HF.formatToParts(new Date(ms)).forEach(x=>p[x.type]=x.value);}catch(e){return null;}return {y:parseInt(p.year),m:+p.month,d:+p.day};}
+let hOff=null;
+function hCal(){
+  const k=ymd(Date.now()), t=days[k];
+  if(t&&t.hijri&&HF){const [y,m,d]=t.hijri.split('-').map(Number);
+    for(const s of [0,-1,1,-2,2]){const r=hRaw(noon(k)+s*864e5);if(r&&r.y===y&&r.m===m&&r.d===d){LS.set('hij_off',s);return hOff=s;}}}
+  return hOff=LS.get('hij_off',0);
+}
+function hOf(k){const t=days[k];if(t&&t.hijri){const [y,m,d]=t.hijri.split('-').map(Number);return {y,m,d,j:1};}
+  if(hOff==null)hCal(); return hRaw(noon(k)+hOff*864e5);}
+const addD=(k,n)=>ymd(noon(k)+n*864e5);
+let hMap=null;
+function buildMap(){const t=ymd(Date.now()), sig=t+Object.keys(days).length+cfg.zone;
+  if(hMap&&hMap.sig===sig)return hMap.a; hCal();
+  const a=[];for(let i=0;i<400;i++){const k=addD(t,i);a.push({k,i,h:hOf(k)});}
+  hMap={sig,a};return a;}
+const EV=[[9,1,'Awal Ramadan','🌙'],[10,1,'Hari Raya Aidilfitri','🎉'],[12,9,'Hari Arafah','🕋'],[12,10,'Hari Raya Aidiladha','🐑'],[1,1,'Awal Muharam (Maal Hijrah)','📅'],[1,10,'Hari Asyura','💧'],[3,12,'Maulidur Rasul','💚'],[7,27,'Israk & Mikraj','✨'],[8,15,'Nisfu Syaaban','🌕'],[9,17,'Nuzul al-Quran','📖']];
+const WD=k=>new Date(noon(k)).getUTCDay();
+const dTxt=k=>new Date(noon(k)).toLocaleDateString('ms-MY',{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:TZ});
+const hTxt=h=>h?`${h.d} ${HM[h.m-1]} ${h.y}H`:'';
+function fastNote(h,wd){
+  if(!h)return null;
+  if((h.m===10&&h.d===1)||(h.m===12&&h.d>=10&&h.d<=13))return {bad:1,t:h.m===10?'Hari Raya Aidilfitri — haram berpuasa':(h.d===10?'Hari Raya Aidiladha — haram berpuasa':'Hari Tasyrik — haram berpuasa')};
+  if(h.m===9)return {t:'Puasa wajib Ramadan'};
+  const r=[];
+  if(h.m===12&&h.d===9)r.push('Puasa Hari Arafah');
+  if(h.m===12&&h.d===8)r.push('Puasa Tarwiyah');
+  if(h.m===1&&h.d===9)r.push("Puasa Tasu'a");
+  if(h.m===1&&h.d===10)r.push('Puasa Asyura');
+  if(h.d>=13&&h.d<=15)r.push('Puasa Ayyamul Bidh ('+h.d+' haribulan)');
+  if(h.m===10&&h.d>=2)r.push('Boleh puasa 6 Syawal');
+  if(wd===1)r.push('Puasa sunat Isnin');
+  if(wd===4)r.push('Puasa sunat Khamis');
+  return r.length?{t:r.join(' · ')}:null;
+}
+function renderTakwim(){
+  const el=$('hijBody'); if(!el)return;
+  if(!HF&&!Object.keys(days).length){el.innerHTML='<div class="note">Takwim Hijrah tidak disokong pelayar ini.</div>';return;}
+  const a=buildMap(), t=a[0], h=t.h;
+  let s=`<div class="hijToday"><b>${hTxt(h)}</b><span>${dTxt(t.k)}</span></div>`;
+  const ft=fastNote(h,WD(t.k)), fm=fastNote(a[1].h,WD(a[1].k));
+  if(ft)s+=`<div class="hfast${ft.bad?' bad':''}">Hari ini: ${ft.t}</div>`;
+  if(fm&&!fm.bad&&a[1].h&&a[1].h.m!==9)s+=`<div class="hfast">Esok: ${fm.t} — niat & bersahur malam ini</div>`;
+  const ev=EV.map(e=>{const x=a.find(o=>o.h&&o.h.m===e[0]&&o.h.d===e[1]);return x?{e,x}:null;}).filter(Boolean).sort((p,q)=>p.x.i-q.x.i);
+  s+='<div class="hlist">'+ev.map(({e,x})=>`<div class="hrow"><i>${e[3]}</i><div><b>${e[2]}</b><span>${hTxt(x.h)} · ${dTxt(x.k)}</span></div><em>${x.i===0?'Hari ini':x.i===1?'Esok':x.i+' hari'}</em></div>`).join('')+'</div>';
+  const nb=a.find(o=>o.i>0&&o.h&&o.h.d===13&&!(o.h.m===12)&&o.h.m!==9), nI=a.find(o=>o.i>0&&WD(o.k)===1), nK=a.find(o=>o.i>0&&WD(o.k)===4);
+  s+=`<div class="note" style="margin-top:8px"><b>Puasa sunat seterusnya:</b> Isnin ${nI?dTxt(nI.k):''} · Khamis ${nK?dTxt(nK.k):''}${nb?` · Ayyamul Bidh bermula ${dTxt(nb.k)} (13–15 ${HM[nb.h.m-1]})`:''}</div>`;
+  s+=`<div class="note">Tarikh Hijrah bulan semasa ikut takwim JAKIM. Tarikh akan datang ialah anggaran; awal Ramadan, Syawal dan Zulhijah tertakluk kepada pengisytiharan rasmi (rukyah).</div>`;
+  el.innerHTML=s;
+  const nr=a.find(o=>o.h&&o.h.m===9);
+  $('imskBtn').textContent=`🌙 Jadual Imsakiyah Ramadan ${nr?nr.h.y+'H':''}`;
+  renderRam();
+}
+
+/* ---------- B4: Mod Ramadan (imsakiyah) ---------- */
+function renderRam(){
+  const c=$('ramCard'); if(!c)return;
+  const k=ymd(Date.now()), h=hOf(k), t=days[k];
+  if(!h||h.m!==9||!t){c.classList.add('hide');return;}
+  c.classList.remove('hide');
+  const now=Date.now(), tm=days[addD(k,1)];
+  let nx=null;
+  if(now<t.imsak)nx={n:'Imsak (tamat sahur)',t:t.imsak};
+  else if(now<t.maghrib)nx={n:'Berbuka puasa',t:t.maghrib};
+  else if(tm)nx={n:'Imsak esok (tamat sahur)',t:tm.imsak};
+  const p=n=>String(n).padStart(2,'0'); let cd='--:--:--';
+  if(nx){const s=Math.max(0,Math.floor((nx.t-now)/1000));cd=`${p(Math.floor(s/3600))}:${p(Math.floor(s/60)%60)}:${p(s%60)}`;}
+  const sh=LS.get('ram_sahur',45);
+  c.innerHTML=`<div class="ramTop"><b>🌙 Ramadan hari ke-${h.d}</b><span>${h.y}H</span></div>
+   <div class="ramCd"><span>${nx?'Menjelang '+nx.n:''}</span><b>${cd}</b></div>
+   <div class="ramT"><div>Sahur tamat (Imsak)<b>${fmtT(t.imsak)}</b></div><div>Berbuka (Maghrib)<b>${fmtT(t.maghrib)}</b></div></div>
+   <div class="small" style="margin-top:6px">🔔 Peringatan sahur: ${sh?sh+' minit sebelum imsak':'tutup'} · ubah di ⚙️ Tetapan</div>`;
+}
+function sahurCheck(){
+  if(window.__NAT)return;
+  const sh=LS.get('ram_sahur',45); if(!sh)return;
+  const now=Date.now();
+  [ymd(now),addD(ymd(now),1)].forEach(k=>{const t=days[k],h=hOf(k);if(!t||!h||h.m!==9)return;
+    const at=t.imsak-sh*60e3, id='sahur@'+t.imsak;
+    if(now>=at&&now-at<180000&&!fired.has(id)){fired.add(id);LS.set('ws_fired',[...fired].slice(-60));
+      notify('Waktu sahur 🌙',`Imsak pada ${fmtT(t.imsak)} (${sh} minit lagi) · ${zoneLabel(cfg.zone)}`,false,'sahur');
+      if(navigator.vibrate)navigator.vibrate([300,120,300]);
+      if(cfg.sound!=='vib')chime();
+      if(document.visibilityState==='visible'){$('ovlSub').textContent='Peringatan';$('ovlName').textContent='Waktu Sahur';$('ovlZone').textContent=`Imsak ${fmtT(t.imsak)} · ${sh} minit lagi`;$('ovl').classList.remove('hide');setTimeout(()=>$('ovl').classList.add('hide'),30000);}
+    }});
+}
+let imsk=null;
+async function openImsk(){
+  $('imsk').classList.remove('hide'); $('imskZone').textContent=zoneLabel(cfg.zone);
+  if(!cfg.zone){$('imskBody').innerHTML='<div class="note warn">Pilih zon waktu solat dahulu.</div>';return;}
+  const a=buildMap(); const st=a.find(o=>o.h&&o.h.m===9);
+  if(!st){$('imskBody').innerHTML='<div class="note warn">Tarikh Ramadan tidak dapat dikira.</div>';return;}
+  let y0=st.h.y, k0=st.k; if(st.i===0){let i=0;while(i<30&&hOf(addD(k0,-1))&&hOf(addD(k0,-1)).m===9){k0=addD(k0,-1);i++;}}
+  $('imskTitle').textContent=`Imsakiyah Ramadan ${y0}H`;
+  const ck=LS.get('imsk_cache',null);
+  if(ck&&ck.zone===cfg.zone&&ck.y===y0&&ck.rows&&ck.rows.length>=28&&(!navigator.onLine||Date.now()-(ck.at||0)<3*864e5)){imsk=ck;drawImsk();return;}
+  $('imskBody').innerHTML='<div class="note">Memuatkan jadual Ramadan daripada JAKIM…</div>';
+  const T={}, need=new Set();
+  for(let i=-3;i<=33;i++){const k=addD(k0,i);need.add(k.slice(0,7));}
+  try{for(const ym of need){const [yy,mm]=ym.split('-').map(Number);mergeV2(await getJSON(`${WS}/v2/solat/${cfg.zone}?year=${yy}&month=${mm}`),T);}}
+  catch(e){$('imskBody').innerHTML=`<div class="note warn">Gagal memuatkan (${esc2(e.message)}). Perlukan internet sekali; selepas itu jadual disimpan dalam telefon.</div>`;return;}
+  const ks=Object.keys(T).sort();
+  let rows=ks.filter(k=>T[k].hijri&&+T[k].hijri.split('-')[1]===9&&+T[k].hijri.split('-')[0]===y0).map(k=>({k,d:+T[k].hijri.split('-')[2],...T[k]}));
+  let est=false;
+  if(rows.length<28){est=true;rows=[];for(let i=0;i<30;i++){const k=addD(k0,i);if(T[k])rows.push({k,d:i+1,...T[k]});}}
+  imsk={zone:cfg.zone,y:y0,est,at:Date.now(),rows:rows.map(r=>({k:r.k,d:r.d,imsak:r.imsak,fajr:r.fajr,maghrib:r.maghrib,isha:r.isha}))};
+  LS.set('imsk_cache',imsk); drawImsk();
+}
+const esc2=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function drawImsk(){
+  const today=ymd(Date.now());
+  $('imskBody').innerHTML=`<table class="mtab"><tr><th>Ramadan</th><th>Tarikh</th><th>Imsak</th><th>Subuh</th><th>Berbuka</th><th>Isyak</th></tr>`+
+   imsk.rows.map(r=>{const dt=new Date(noon(r.k));return `<tr class="${r.k===today?'today':''}${dt.getUTCDay()===5?' fri':''}"><td>${r.d}</td><td>${dt.toLocaleDateString('ms-MY',{day:'numeric',month:'short',weekday:'short',timeZone:TZ})}</td><td>${hm(r.imsak)}</td><td>${hm(r.fajr)}</td><td><b>${hm(r.maghrib)}</b></td><td>${hm(r.isha)}</td></tr>`;}).join('')+'</table>'+
+   (imsk.est?'<div class="note warn">Tarikh Ramadan ialah anggaran; tertakluk kepada pengisytiharan rasmi.</div>':'');
+}
+function imskText(){if(!imsk)return'';return `Imsakiyah Ramadan ${imsk.y}H\nZon ${zoneLabel(imsk.zone)} (JAKIM)\n\nRamadan | Tarikh | Imsak | Subuh | Berbuka\n`+imsk.rows.map(r=>`${r.d} | ${r.k.slice(8)}/${r.k.slice(5,7)} | ${hm(r.imsak)} | ${hm(r.fajr)} | ${hm(r.maghrib)}`).join('\n')+'\n\nSumber: e-Solat JAKIM · myQiblat';}
+$('imskBtn').onclick=openImsk;
+$('imskClose').onclick=()=>$('imsk').classList.add('hide');
+$('imskCopy').onclick=async()=>{try{await navigator.clipboard.writeText(imskText());$('imskNote').textContent='✅ Jadual disalin.';}catch(e){$('imskNote').textContent='Gagal menyalin: '+e.message;}};
+$('imskShare').onclick=async()=>{const text=imskText();if(!text)return;if(navigator.share){try{await navigator.share({title:'Imsakiyah Ramadan',text});}catch(e){}}else $('imskCopy').click();};
+window.addEventListener('myq-days',()=>{hMap=null;renderTakwim();});
+setInterval(()=>{sahurCheck();if(!$('tabW').classList.contains('hide'))renderRam();},1000);
+setInterval(()=>{if(hMap&&hMap.sig.slice(0,10)!==ymd(Date.now()))renderTakwim();},60000);
+setTimeout(renderTakwim,50);
+
+
+/* ---------- VERSI APK (Capacitor): azan dijadual oleh Android ---------- */
+const NAT=!!window.__NAT;
+const LN=NAT?((window.Capacitor.Plugins&&window.Capacitor.Plugins.LocalNotifications)||window.Capacitor.registerPlugin('LocalNotifications')):null;
+let natPerm='prompt';
+async function natSetup(){
+  if(!LN)return;
+  try{const p=await LN.checkPermissions();natPerm=p.display;}catch(e){}
+  const CH=[['azan','Azan',5,'azan.mp3'],['azan_subuh','Azan Subuh',5,'azan_subuh.mp3'],['notif','Waktu solat (bunyi notifikasi)',4,null],['nada','Waktu solat (nada lembut)',4,'nada.wav'],['getar','Waktu solat (getar sahaja)',4,'senyap.wav'],['peringatan','Peringatan awal & sahur',4,'nada.wav']];
+  for(const [id,name,importance,sound] of CH){try{const o={id,name,importance,visibility:1,vibration:true,lights:true,lightColor:'#e8c468'};if(sound)o.sound=sound;await LN.createChannel(o);}catch(e){}}
+}
+const dayNo=k=>Math.round(Date.parse(k+'T00:00:00Z')/864e5);
+function chFor(key){const isMain=MAIN.includes(key);
+  if(cfg.sound==='azan')return isMain?(key==='fajr'?'azan_subuh':'azan'):'nada';
+  return {notif:'notif',chime:'nada',vib:'getar'}[cfg.sound]||'notif';}
+let natT=null;
+function natSchedule(){if(!LN)return;clearTimeout(natT);natT=setTimeout(natDo,800);}
+async function natDo(){
+  try{
+    const pend=await LN.getPending();
+    if(pend.notifications&&pend.notifications.length)await LN.cancel({notifications:pend.notifications.map(n=>({id:n.id}))});
+    if(natPerm!=='granted')return;
+    const now=Date.now(), zone=zoneLabel(cfg.zone), list=[], sh=LS.get('ram_sahur',45);
+    Object.keys(days).filter(k=>k>=ymd(now)).sort().slice(0,14).forEach(k=>{
+      const t=days[k], base=dayNo(k)*20;
+      ROWS.forEach(([key],ei)=>{
+        if(!cfg.bells[key]||!t[key])return; const at=t[key], n=LABEL[key], isMain=MAIN.includes(key);
+        if(at>now+3000)list.push({id:base+ei,title:isMain?`Telah masuk waktu ${n}`:(key==='imsak'?'Waktu Imsak':'Syuruk — tamat waktu Subuh'),body:`${fmtT(at)} · ${zone}`,channelId:chFor(key),schedule:{at:new Date(at),allowWhileIdle:true},extra:{key,t:at}});
+        if(cfg.pre>0&&isMain&&at-cfg.pre*6e4>now+3000)list.push({id:base+10+ei,title:`${n} dalam ${cfg.pre} minit`,body:`${n} pada ${fmtT(at)} · ${zone}`,channelId:'peringatan',schedule:{at:new Date(at-cfg.pre*6e4),allowWhileIdle:true}});
+      });
+      const h=hOf(k); if(sh&&h&&h.m===9&&t.imsak-sh*6e4>now+3000)list.push({id:base+19,title:'Waktu sahur 🌙',body:`Imsak pada ${fmtT(t.imsak)} (${sh} minit lagi) · ${zone}`,channelId:'peringatan',schedule:{at:new Date(t.imsak-sh*6e4),allowWhileIdle:true}});
+    });
+    if(list.length)await LN.schedule({notifications:list});
+    LS.set('nat_sched',{n:list.length,at:now,until:list.length?Math.max(...list.map(x=>+x.schedule.at)):0});
+  }catch(e){setStatus('Gagal menjadualkan azan: '+(e.message||e),1);}
+}
+async function natPermAsk(){if(!LN)return;try{const p=await LN.requestPermissions();natPerm=p.display;}catch(e){}permTxt();natSchedule();}
+if(NAT){
+  natSetup().then(()=>{permTxt();natSchedule();if(natPerm==='prompt')natPermAsk();});
+  window.addEventListener('myq-days',natSchedule);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')natSchedule();});
+  try{LN.addListener('localNotificationReceived',n=>{const x=n.extra||{};if(x.key&&document.visibilityState==='visible'){$('ovlSub').textContent=MAIN.includes(x.key)?'Telah masuk waktu':'Peringatan';$('ovlName').textContent=LABEL[x.key];$('ovlZone').textContent=`${fmtT(x.t)} · ${zoneLabel(cfg.zone)}`;$('ovl').classList.remove('hide');}});}catch(e){}
+  $('bgNote').className='note';
+  $('bgNote').innerHTML='📱 <b>Versi APK:</b> azan dijadualkan oleh Android untuk 14 hari dan berbunyi walaupun app ditutup. Untuk hasil terbaik: Tetapan telefon → Apl → myQiblat → Bateri → <b>Tanpa had (Unrestricted)</b>. Buka app sekurang-kurangnya seminggu sekali supaya jadual dikemas kini.';
+  const own=$('srcOwn'); if(own){own.disabled=true;own.title='Tidak disokong dalam versi APK';own.textContent='Fail sendiri (web sahaja)';}
+}
+
+window.MYQ={days:()=>days,ymd,fmtT,LABEL,toast};
+
+/* ---------- start ---------- */
+setMode(cfg.mode); showAz(); setTimeout(azPrefetch,4000); permTxt(); if(zones)fillZones(); else loadZones();
+{const t=LS.get('ws_tab',0);if(t)setTimeout(()=>showTab(t),0);}
+render();
+const stale=Date.now()-LS.get('ws_synced',0)>3*864e5;
+if(cfg.zone&&!days[ymd(Date.now()+864e5)]||stale) sync(false); else if(!cfg.zone&&cfg.mode==='gps'&&LS.get('ws_tab',0)==1) sync(false);
+let lastDay=ymd(Date.now());
+setInterval(()=>{checkAlerts();tickNext();const d=ymd(Date.now());if(d!==lastDay){lastDay=d;render();if(!days[ymd(Date.now()+864e5)])sync(false);}},1000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){checkAlerts();render();}applyWake();});
+applyWake();
+})();
+</script>
+<script>
+/* ================= MUSAFIR ================= */
+(function(){
+const $=id=>document.getElementById(id);
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const LIMIT=81, NM=1.852;
+let home=LS.get('mf_home',null), dest=null, destMode='now', trip='road';
+const R=Math.PI/180;
+function gc(a,b){const dp=(b.lat-a.lat)*R,dl=(b.lon-a.lon)*R;const x=Math.sin(dp/2)**2+Math.cos(a.lat*R)*Math.cos(b.lat*R)*Math.sin(dl/2)**2;return 6371.0088*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+const km=v=>v.toLocaleString('ms-MY',{maximumFractionDigits:1})+' km';
+const short=n=>n.split(',').slice(0,3).join(',');
+function showHome(){$('mHomeTxt').innerHTML=home?`🏠 <b>${home.name}</b><br>${home.lat.toFixed(5)}, ${home.lon.toFixed(5)}`:'Belum ditetapkan';}
+function gps(){return new Promise((res,rej)=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy}),e=>rej(new Error(e.message)),{enableHighAccuracy:true,timeout:20000,maximumAge:30000}):rej(new Error('GPS tidak disokong')));}
+async function geocode(q,box,pick){
+  if(!q.trim())return; $(box).innerHTML='<div class="note">Mencari…</div>';
+  try{const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=6&accept-language=ms&countrycodes=my,sg,th,bn,id&q=${encodeURIComponent(q)}`);const j=await r.json();
+    if(!j.length){$(box).innerHTML='<div class="note warn">Tiada hasil. Cuba nama lain.</div>';return;}
+    $(box).innerHTML=j.map((x,i)=>`<button class="btn sec" data-i="${i}" style="text-align:left;font-weight:500;font-size:.85rem;padding:10px;margin-top:6px">${short(x.display_name)}</button>`).join('');
+    $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{const x=j[+b.dataset.i];pick({lat:+x.lat,lon:+x.lon,name:short(x.display_name)});$(box).innerHTML='';});
+  }catch(e){$(box).innerHTML=`<div class="note warn">Carian gagal (${e.message}). Perlu internet.</div>`;}
+}
+$('mHomeGps').onclick=async()=>{$('mHomeTxt').textContent='Mendapatkan lokasi…';try{const p=await gps();home={lat:p.lat,lon:p.lon,name:'Lokasi rumah (GPS)'};LS.set('mf_home',home);showHome();{const l=LS.get('myq_lastloc',null);if(l)autoCheck(l);}}catch(e){$('mHomeTxt').innerHTML=`<span class="warn">GPS gagal: ${e.message}</span>`;}};
+$('mHomeS').onclick=()=>geocode($('mHomeQ').value,'mHomeR',p=>{home=p;LS.set('mf_home',home);showHome();{const l=LS.get('myq_lastloc',null);if(l)autoCheck(l);}});
+$('mHomeQ').onkeydown=e=>{if(e.key==='Enter')$('mHomeS').click();};
+function setDMode(m){destMode=m;$('mDNow').classList.toggle('on',m==='now');$('mDSearch').classList.toggle('on',m!=='now');$('mDBox').classList.toggle('hide',m==='now');if(m==='now'){dest=null;$('mDTxt').textContent='Lokasi semasa akan diambil melalui GPS.';}else $('mDTxt').textContent=dest?`🎯 ${dest.name}`:'';}
+$('mDNow').onclick=()=>setDMode('now'); $('mDSearch').onclick=()=>setDMode('search');
+$('mDS').onclick=()=>geocode($('mDQ').value,'mDR',p=>{dest=p;$('mDTxt').textContent=`🎯 ${p.name}`;});
+$('mDQ').onkeydown=e=>{if(e.key==='Enter')$('mDS').click();};
+function setTrip(t){trip=t;$('mRoad').classList.toggle('on',t==='road');$('mSea').classList.toggle('on',t==='sea');}
+$('mRoad').onclick=()=>setTrip('road'); $('mSea').onclick=()=>setTrip('sea');
+
+async function roadKm(a,b){
+  const u=`https://router.project-osrm.org/route/v1/driving/${a.lon},${a.lat};${b.lon},${b.lat}?overview=false&alternatives=3`;
+  const r=await fetch(u); if(!r.ok)throw new Error('HTTP '+r.status); const j=await r.json();
+  if(j.code!=='Ok'||!j.routes||!j.routes.length)throw new Error(j.code||'tiada laluan');
+  return Math.min(...j.routes.map(x=>x.distance))/1000;
+}
+function verdictHTML(ok,title,detail){
+  const c=ok===true?'var(--ok)':ok===false?'var(--warn)':'var(--gold)';
+  const ic=ok===true?'✅':ok===false?'⛔':'❔';
+  return `<div style="margin-top:12px;border:2px solid ${c};border-radius:12px;padding:12px"><div style="font-weight:700;color:${c};font-size:1.05rem">${ic} ${title}</div><div style="margin-top:6px">${detail}</div></div>`;
+}
+$('mCheck').onclick=async()=>{
+  if(!home){$('mRes').innerHTML=verdictHTML(null,'Tetapkan lokasi rumah dahulu','');return;}
+  $('mRes').innerHTML='<div class="note">Mengira…</div>';
+  let d=dest;
+  if(destMode==='now'){try{const p=await gps();d={lat:p.lat,lon:p.lon,name:'Lokasi semasa'};$('mDTxt').textContent=`📍 Lokasi semasa: ${p.lat.toFixed(4)}, ${p.lon.toFixed(4)} (±${Math.round(p.acc)} m)`;}catch(e){$('mRes').innerHTML=verdictHTML(null,'GPS gagal',e.message);return;}}
+  if(!d){$('mRes').innerHTML=verdictHTML(null,'Pilih destinasi dahulu','');return;}
+  const s=gc(home,d);
+  const gmap=`https://www.google.com/maps/dir/?api=1&origin=${home.lat},${home.lon}&destination=${d.lat},${d.lon}`;
+  const verify=`<div class="note">Semak laluan: <a href="${gmap}" target="_blank" rel="noopener" style="color:var(--gold)">Google Maps</a></div>`;
+  let h='';
+  if(trip==='sea'){
+    const nm=s/NM, ok=s>=LIMIT;
+    h=verdictHTML(ok, ok?'Had 2 marhalah (laut) DILEPASI':'Belum mencapai had 2 marhalah (laut)',
+      `Jarak laut terdekat (garis lurus): <b>${km(s)}</b> = <b>${nm.toFixed(2)} batu nautika</b><br>Had: 81 km / 43.74 batu nautika · ${ok?'lebihan':'kurang'} ${km(Math.abs(s-LIMIT))}`+
+      (Math.abs(s-LIMIT)<5?'<br><span class="warn">Hampir dengan had. Ukuran 2 marhalah adalah anggaran; berhati-hati (ihtiyat).</span>':''));
+  } else {
+    let r=null,err='';
+    try{r=await roadKm(home,d);}catch(e){err=e.message;}
+    if(r!=null){
+      const ok=r>=LIMIT;
+      h=verdictHTML(ok, ok?'Had 2 marhalah DILEPASI':'Belum mencapai had 2 marhalah',
+        `Laluan terdekat (jalan raya/feri): <b>${km(r)}</b><br>Garis lurus: ${km(s)} · Had: 81 km · ${ok?'lebihan':'kurang'} ${km(Math.abs(r-LIMIT))}`+
+        (Math.abs(r-LIMIT)<5?'<br><span class="warn">Hampir dengan had. Ukuran 2 marhalah adalah anggaran; berhati-hati (ihtiyat) dan semak laluan sebenar.</span>':''));
+    } else if(s>=LIMIT){
+      h=verdictHTML(true,'Had 2 marhalah DILEPASI',`Garis lurus sahaja sudah <b>${km(s)}</b>, jadi laluan jalan pasti lebih jauh daripada 81 km.<br><span class="note">(Jarak jalan tidak dapat dikira: ${err})</span>`);
+    } else if(s<LIMIT/1.5){
+      h=verdictHTML(false,'Hampir pasti belum mencapai had',`Garis lurus ${km(s)}. Jarak jalan biasanya tidak sampai 1.5× garis lurus.<br><span class="note">(Jarak jalan tidak dapat dikira: ${err})</span>`);
+    } else {
+      h=verdictHTML(null,'Tidak dapat dipastikan',`Garis lurus ${km(s)}. Jarak jalan mungkin melebihi atau kurang 81 km. Semak jarak laluan terdekat di Google Maps/Waze.<br><span class="note">(${err})</span>`);
+    }
+  }
+  $('mRes').innerHTML=h+verify+'<div class="note">Jarak diukur dari titik rumah; rukhsah hanya bermula selepas keluar sempadan kampung/taman/mukim anda.</div>';
+};
+$('mDays').oninput=()=>{const n=parseInt($('mDays').value,10);let t='';
+  if(isNaN(n))t='';
+  else if(n>=4)t='<span class="warn">Berniat menetap 4 hari atau lebih: anda boleh jamak &amp; qasar <b>semasa perjalanan sahaja</b>. Sebaik tiba di destinasi, solat penuh seperti biasa (status mukim).</span>';
+  else t='<span style="color:var(--ok)">Kurang 4 hari: boleh jamak &amp; qasar sepanjang perjalanan dan di destinasi (maksimum 3 hari, tidak termasuk hari tiba &amp; keluar), jika syarat jarak dipenuhi.</span>';
+  $('mDaysRes').innerHTML=t;};
+const TZ='Asia/Kuala_Lumpur';
+const ymd=ms=>new Date(ms+8*3600e3).toISOString().slice(0,10);
+const fmt=ms=>new Date(ms).toLocaleTimeString('ms-MY',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:TZ}).replace(/\s?(PG|PTG|AM|PM)/i,m=>' '+m.trim().toLowerCase());
+function wins(){
+  const days=LS.get('ws_days',{}), t=days[ymd(Date.now())], tm=days[ymd(Date.now()+864e5)];
+  if(!t){$('mWin').textContent='Tiada data waktu solat. Segerak di tab Waktu Solat dahulu.';return;}
+  const now=Date.now(), row=(nm,a,b,note)=>{const on=now>=a&&now<b;return `<div class="prow${on?' cur':''}" style="padding:9px 0"><span class="pn">${nm}<br><span class="small">${note}</span></span><span class="pt" style="font-size:.95rem">${fmt(a)} – ${fmt(b)}</span></div>`;};
+  $('mWin').innerHTML=
+    row('Zohor + Asar · Taqdim',t.dhuhr,t.asr,'dalam waktu Zohor')+
+    row('Zohor + Asar · Takhir',t.asr,t.maghrib,'dalam waktu Asar (niat takhir dalam waktu Zohor)')+
+    row('Maghrib + Isyak · Taqdim',t.maghrib,t.isha,'dalam waktu Maghrib')+
+    row('Maghrib + Isyak · Takhir',t.isha,tm?tm.fajr:t.isha+9*3600e3,'dalam waktu Isyak (niat takhir dalam waktu Maghrib)')+
+    '<div class="note">Waktu tamat ialah sebelum masuk waktu berikutnya. Waktu mengikut zon solat yang dipilih; jika anda sudah berada di zon lain, segerak semula ikut lokasi.</div>';
+}
+window.renderMusafir=()=>{showHome();wins();};
+setInterval(()=>{if(!$('tabM').classList.contains('hide'))wins();},30000);
+
+/* ---------- pengesanan musafir automatik ---------- */
+function jamakNow(){const M=window.MYQ;if(!M)return'';const d=M.days()[M.ymd(Date.now())];if(!d)return'';const n=Date.now();
+  if(n>=d.dhuhr&&n<d.asr)return 'Kini waktu Zohor: boleh jamak <b>taqdim</b> Zohor + Asar (qasar 2 + 2 rakaat).';
+  if(n>=d.asr&&n<d.maghrib)return 'Kini waktu Asar: boleh jamak <b>takhir</b> Zohor + Asar, jika telah berniat takhir dalam waktu Zohor.';
+  if(n>=d.maghrib&&n<d.isha)return 'Kini waktu Maghrib: boleh jamak <b>taqdim</b> Maghrib + Isyak (3 + 2 rakaat).';
+  if(n>=d.isha||n<d.fajr)return 'Kini waktu Isyak: boleh jamak <b>takhir</b> Maghrib + Isyak, jika telah berniat takhir dalam waktu Maghrib.';
+  if(n<d.dhuhr)return `Zohor ${M.fmtT(d.dhuhr)}: boleh jamak taqdim Zohor + Asar dalam waktu Zohor.`;return'';}
+function setBanner(st){['bannerQ','bannerW'].forEach(id=>{const b=$(id);if(!b)return;
+  if(st&&st.mus){b.innerHTML=`🧳 <b>Anda kini musafir</b> · ≈${km(st.dist)} dari rumah (${st.how}). Boleh jamak &amp; qasar jika tidak berniat menetap 4 hari atau lebih.<br>${jamakNow()}`;b.classList.remove('hide');}
+  else b.classList.add('hide');});}
+['bannerQ','bannerW'].forEach(id=>$(id).onclick=()=>window.showTab&&window.showTab(2));
+async function autoCheck(p){
+  if(!home){setBanner(null);return;}
+  const s=gc(home,p);let dist=s,how='garis lurus',mus=false,unsure=false;
+  if(s>=LIMIT)mus=true;
+  else if(s>=LIMIT/1.6){
+    const key=`${p.lat.toFixed(2)},${p.lon.toFixed(2)}|${home.lat.toFixed(3)},${home.lon.toFixed(3)}`, c=LS.get('mf_rc',{});
+    if(c.key===key)dist=c.km; else{try{dist=await roadKm(home,p);LS.set('mf_rc',{key,km:dist});}catch(e){unsure=true;}}
+    if(!unsure){how='laluan jalan terdekat';mus=dist>=LIMIT;}
+  }
+  const st={mus,unsure,dist,how,at:Date.now()};LS.set('mf_status',st);setBanner(st);
+}
+let lastLoc=0;
+async function locate(force){
+  if(!navigator.geolocation)return;
+  if(!force&&Date.now()-lastLoc<4*60e3)return;
+  try{if(navigator.permissions){const ps=await navigator.permissions.query({name:'geolocation'});if(ps.state!=='granted'&&!force)return;}}catch(e){}
+  lastLoc=Date.now();
+  navigator.geolocation.getCurrentPosition(p=>{const d={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};LS.set('myq_lastloc',{...d,at:Date.now()});window.dispatchEvent(new CustomEvent('myq-loc',{detail:d}));},()=>{},{enableHighAccuracy:false,timeout:20000,maximumAge:4*60e3});
+}
+window.myqLocate=locate;
+window.addEventListener('myq-loc',e=>autoCheck(e.detail));
+{const st=LS.get('mf_status',null);if(st&&Date.now()-st.at<60*60e3)setBanner(st);}
+setTimeout(()=>locate(false),1500);
+setInterval(()=>{if(document.visibilityState==='visible')locate(false);},10*60e3);
+setInterval(()=>{const st=LS.get('mf_status',null);if(st&&st.mus)setBanner(st);},60e3);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')locate(false);});
+showHome(); setDMode('now'); wins();
+})();
+</script>
+<script>
+/* ================= MASJID BERDEKATAN ================= */
+(function(){
+const $=id=>document.getElementById(id);
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const OVP=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
+const R=Math.PI/180, DIR=['U','TL','T','Tenggara','S','BD','B','BL'];
+let rad=LS.get('mq_rad',5000), list=[], filt='all', here=null;
+function dist(a,b){const dp=(b.lat-a.lat)*R,dl=(b.lon-a.lon)*R,x=Math.sin(dp/2)**2+Math.cos(a.lat*R)*Math.cos(b.lat*R)*Math.sin(dl/2)**2;return 12742*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+function brg(a,b){const p1=a.lat*R,p2=b.lat*R,dl=(b.lon-a.lon)*R;return ((Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))/R)+360)%360;}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function setRad(r){rad=r;LS.set('mq_rad',r);document.querySelectorAll('#kRad button').forEach(b=>b.classList.toggle('on',+b.dataset.r===r));}
+document.querySelectorAll('#kRad button').forEach(b=>b.onclick=()=>{setRad(+b.dataset.r);if(here)query();});
+function pos(){return new Promise((res,rej)=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lon:p.coords.longitude}),e=>rej(new Error(e.message)),{enableHighAccuracy:true,timeout:20000,maximumAge:60000}):rej(new Error('GPS tidak disokong')));}
+async function query(){
+  $('kList').innerHTML='<div class="card small">Mencari masjid &amp; surau…</div>';
+  const q=`[out:json][timeout:25];nwr["amenity"="place_of_worship"]["religion"="muslim"](around:${rad},${here.lat},${here.lon});out center tags;`;
+  let j=null,err='';
+  for(const u of OVP){try{const r=await fetch(u,{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'}});if(!r.ok)throw new Error('HTTP '+r.status);j=await r.json();break;}catch(e){err=e.message;}}
+  if(!j){$('kList').innerHTML=`<div class="card warn">Carian gagal (${esc(err)}). Perlukan internet; cuba lagi sebentar.</div>`;return;}
+  list=(j.elements||[]).map(el=>{const lat=el.lat??el.center?.lat, lon=el.lon??el.center?.lon, t=el.tags||{};if(lat==null)return null;
+    const name=t.name||t['name:ms']||'';
+    const type=/surau|musolla|musalla|mushol+a|madrasah|musalah/i.test(name)?'Surau':(name?'Masjid':'Lain');
+    const addr=[t['addr:street'],t['addr:city']||t['addr:place']||t['addr:suburb']].filter(Boolean).join(', ');
+    const p={lat,lon};return {name:name||'Masjid / surau (tiada nama dalam peta)',type,addr,lat,lon,d:dist(here,p),b:brg(here,p)};}).filter(Boolean).sort((a,b)=>a.d-b.d);
+  LS.set('mq_last',{at:Date.now(),here,list});
+  show();
+}
+function show(){
+  const n={all:list.length,Masjid:list.filter(x=>x.type==='Masjid').length,Surau:list.filter(x=>x.type==='Surau').length};
+  $('kChips').innerHTML=[['all','Semua'],['Masjid','Masjid'],['Surau','Surau']].map(([k,l])=>`<button class="chip${filt===k?' on':''}" data-f="${k}">${l} (${n[k]})</button>`).join('');
+  $('kChips').querySelectorAll('button').forEach(b=>b.onclick=()=>{filt=b.dataset.f;show();});
+  const L=list.filter(x=>filt==='all'||x.type===filt);
+  if(!L.length){$('kList').innerHTML=`<div class="card small">Tiada ditemui dalam ${rad/1000} km. Cuba besarkan jejari.</div>`;return;}
+  $('kList').innerHTML=L.slice(0,60).map(x=>`<div class="mq"><div class="t"><b>${x.type==='Surau'?'🕌':'🕌'} ${esc(x.name)}</b><span class="d">${x.d<1?Math.round(x.d*1000)+' m':x.d.toFixed(1)+' km'}</span></div>
+    <div class="a">${x.type!=='Lain'?x.type+' · ':''}arah ${DIR[Math.round(x.b/45)%8]} (${Math.round(x.b)}°)${x.addr?' · '+esc(x.addr):''}</div>
+    <div class="l"><a href="https://www.google.com/maps/dir/?api=1&destination=${x.lat},${x.lon}" target="_blank" rel="noopener">🗺️ Google Maps</a></div></div>`).join('');
+}
+$('kFind').onclick=async()=>{$('kLoc').textContent='Mendapatkan lokasi…';try{here=await pos();$('kLoc').textContent=`📍 ${here.lat.toFixed(4)}, ${here.lon.toFixed(4)}`;query();}catch(e){$('kLoc').innerHTML=`<span class="warn">GPS gagal: ${esc(e.message)}</span>`;}};
+setRad(rad);
+{const c=LS.get('mq_last',null);if(c&&c.list){here=c.here;list=c.list;$('kLoc').textContent=`Carian terakhir: ${new Date(c.at).toLocaleString('ms-MY',{timeZone:'Asia/Kuala_Lumpur'})} — tekan Cari untuk kemas kini`;show();}}
+})();
+</script>
+<script>
+/* ================= TASBIH ================= */
+(function(){
+const $=id=>document.getElementById(id);
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const DZ=[
+ {name:'Tasbih selepas solat (33 × 3)',seq:true},
+ {ar:'سُبْحَانَ ٱللَّٰهِ',rm:'Subhanallah',mn:'Maha Suci Allah'},
+ {ar:'ٱلْحَمْدُ لِلَّٰهِ',rm:'Alhamdulillah',mn:'Segala puji bagi Allah'},
+ {ar:'ٱللَّٰهُ أَكْبَرُ',rm:'Allahu Akbar',mn:'Allah Maha Besar'},
+ {ar:'لَا إِلَٰهَ إِلَّا ٱللَّٰهُ',rm:'La ilaha illallah',mn:'Tiada Tuhan melainkan Allah'},
+ {ar:'أَسْتَغْفِرُ ٱللَّٰهَ',rm:'Astaghfirullah',mn:'Aku memohon ampun kepada Allah'},
+ {ar:'سُبْحَانَ ٱللَّٰهِ وَبِحَمْدِهِ',rm:'Subhanallahi wa bihamdih',mn:'Maha Suci Allah dan segala puji bagi-Nya'},
+ {ar:'ٱللَّٰهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ',rm:'Allahumma solli ‘ala Muhammad',mn:'Ya Allah, limpahkan selawat ke atas Nabi Muhammad'}
+];
+const SEQ=[1,2,3];
+const today=()=>new Date(Date.now()+8*3600e3).toISOString().slice(0,10);
+let st=Object.assign({dz:0,step:0,count:0,rounds:0,total:0,target:33,day:today(),todayN:0},LS.get('tsb',{}));
+if(st.day!==today()){st.day=today();st.todayN=0;}
+let saveT=null; const save=()=>{clearTimeout(saveT);saveT=setTimeout(()=>LS.set('tsb',st),300);};
+const cur=()=>DZ[st.dz].seq?DZ[SEQ[st.step]]:DZ[st.dz];
+const tgt=()=>DZ[st.dz].seq?33:st.target;
+$('tDz').innerHTML=DZ.map((d,i)=>`<option value="${i}">${d.seq?d.name:d.rm}</option>`).join('');
+$('tDz').value=st.dz; $('tTarget').value=String(st.target);
+function ui(msg){
+  const d=cur(),T=tgt();
+  $('tAr').textContent=d.ar;$('tRm').textContent=d.rm;$('tMn').textContent=d.mn;
+  $('tCnt').textContent=st.count;$('tTg').textContent=T?`/ ${T}`:'tanpa had';
+  $('tBar').style.width=T?Math.min(100,st.count/T*100)+'%':'0';
+  $('tTarget').disabled=!!DZ[st.dz].seq;
+  $('tInfo').innerHTML=msg||(DZ[st.dz].seq?`Langkah ${st.step+1} / 3`:`Pusingan: ${st.rounds}`)+` · Hari ini: ${st.todayN}`;
+}
+function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
+function inc(){
+  st.count++;st.total++;st.todayN++;
+  const T=tgt(); let msg=null;
+  if(T&&st.count>=T){
+    vib([90,60,90]);
+    if(DZ[st.dz].seq){
+      if(st.step<2){st.step++;st.count=0;msg=`✓ Lengkap 33. Seterusnya: <b>${cur().rm}</b>`;}
+      else{st.step=0;st.count=0;st.rounds++;msg='✓ Lengkap 99. Sempurnakan yang ke-100 dengan:<br><i>La ilaha illallahu wahdahu la syarika lah, lahul mulku wa lahul hamdu wa huwa ‘ala kulli syai’in qadir.</i>';}
+    } else {st.rounds++;st.count=0;msg=`✓ Lengkap ${T} · Pusingan: ${st.rounds} · Hari ini: ${st.todayN}`;}
+    $('tCnt').classList.remove('flash');void $('tCnt').offsetWidth;$('tCnt').classList.add('flash');
+  } else if(st.count%33===0) vib(60); else vib(12);
+  save();ui(msg);
+}
+$('tDz').onchange=()=>{st.dz=+$('tDz').value;st.step=0;st.count=0;save();ui();draw();};
+$('tTarget').onchange=()=>{st.target=+$('tTarget').value;save();ui();};
+$('tReset').onclick=()=>{st.count=0;st.step=0;st.rounds=0;save();ui();draw();};
+$('tUndo').onclick=()=>{if(st.count>0){st.count--;st.total--;st.todayN=Math.max(0,st.todayN-1);save();ui();draw();}};
+$('tCnt').onclick=()=>{inc();draw();};
+
+/* ---- bijik tasbih ---- */
+const SP=50, RB=19; let off=0, anim=null;
+function beads(svg,side){
+  const w=svg.clientWidth||66,h=svg.clientHeight||500,cx=w/2,y0=h/2,n=Math.ceil(h/2/SP)+2,gid='g'+side;
+  let s=`<defs><radialGradient id="${gid}a" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#f6e7c8"/><stop offset=".45" stop-color="#b98a52"/><stop offset="1" stop-color="#5a3a1a"/></radialGradient>
+    <radialGradient id="${gid}b" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#fff6cf"/><stop offset=".5" stop-color="#e8c468"/><stop offset="1" stop-color="#8a6420"/></radialGradient>
+    <radialGradient id="${gid}c" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#d9c4a4"/><stop offset=".5" stop-color="#7d5a33"/><stop offset="1" stop-color="#3a2410"/></radialGradient></defs>
+    <line x1="${cx}" y1="0" x2="${cx}" y2="${h}" stroke="#d8c08a" stroke-opacity=".55" stroke-width="2"/>`;
+  for(let j=-n;j<=n;j++){
+    const y=y0+j*SP+off, L=st.count+1-j; if(y<-SP||y>h+SP)continue;
+    const sep=L>0&&L%33===0, r=sep?RB+3:RB, fill=sep?`url(#${gid}b)`:(j>=1?`url(#${gid}c)`:`url(#${gid}a)`);
+    s+=`<ellipse cx="${cx+2}" cy="${y+3}" rx="${r}" ry="${r*0.95}" fill="#000" opacity=".35"/><circle cx="${cx}" cy="${y}" r="${r}" fill="${fill}"/>`;
+  }
+  const my=y0+SP/2, mx=side==='L'?w-3:3, d=side==='L'?-9:9;
+  s+=`<path d="M${mx} ${my-7} L${mx+d} ${my} L${mx} ${my+7} Z" fill="#e8c468"/>`;
+  svg.innerHTML=s;
+}
+function draw(){if($('tabT').classList.contains('hide'))return;beads($('svgL'),'L');beads($('svgR'),'R');}
+let pending=null;
+function finishAnim(){if(anim){cancelAnimationFrame(anim);anim=null;off=0;const d=pending;pending=null;if(d)d();draw();}}
+function animateTo(target,done){finishAnim();pending=done||null;const from=off,t0=performance.now(),D=140;
+  const step=t=>{const k=Math.min(1,(t-t0)/D);off=from+(target-from)*(1-Math.pow(1-k,3));draw();if(k<1)anim=requestAnimationFrame(step);else{anim=null;off=0;const d=pending;pending=null;if(d)d();draw();}};anim=requestAnimationFrame(step);}
+['stripL','stripR'].forEach(id=>{
+  const el=$(id); let drag=null;
+  // satu sentuhan = satu bijik sahaja
+  el.addEventListener('pointerdown',e=>{if(drag)return;finishAnim();drag={y:e.clientY,id:e.pointerId,done:false};try{el.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();});
+  el.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id||drag.done)return;const dy=e.clientY-drag.y;drag.y=e.clientY;off=Math.max(0,Math.min(SP,off+dy));
+    if(off>=SP*0.4){drag.done=true;animateTo(SP,()=>inc());}else draw();e.preventDefault();});
+  const up=e=>{if(!drag||(e&&e.pointerId!==drag.id))return;const d=drag;drag=null;if(!d.done&&e.type==='pointerup')animateTo(SP,()=>inc());else if(!d.done)animateTo(0);};
+  el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+});
+window.addEventListener('resize',draw);
+window.renderTasbih=()=>{ui();requestAnimationFrame(draw);};
+ui();
+})();
+</script>
+<script>
+/* ================= KOLEKSI DOA ================= */
+(function(){
+const $=id=>document.getElementById(id);
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+/* ar: rentetan teks Arab, atau {t:teks, x:'3×'} untuk ulangan, atau {i:'arahan'} */
+const DOA=[
+{id:'solat',title:'Doa Selepas Solat',sub:'Doa lazim selepas solat fardu',
+ src:'Teks Arab mengikut teks rujukan yang diberikan oleh pemilik app. Terjemahan Bahasa Melayu disediakan untuk myQiblat.',
+ ar:[
+  'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ',
+  'اَلْحَمْدُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ، وَالصَّلَاةُ وَالسَّلَامُ عَلٰى سَيِّدِ الْمُرْسَلِيْنَ وَإِمَامِ الْمُتَّقِيْنَ، وَعَلٰى آلِهِ وَأَهْلِ بَيْتِهِ وَصَحْبِهِ أَجْمَعِيْنَ.',
+  'اَللّٰهُمَّ إِنَّا نَسْأَلُكَ سَلَامَةً فِي الدِّيْنِ، وَعَافِيَةً فِي الْجَسَدِ، وَزِيَادَةً فِي الْعِلْمِ، وَبَرَكَةً فِي الرِّزْقِ، وَتَوْبَةً قَبْلَ الْمَوْتِ، وَرَحْمَةً عِنْدَ الْمَوْتِ، وَمَغْفِرَةً بَعْدَ الْمَوْتِ.',
+  'اَللّٰهُمَّ هَوِّنْ عَلَيْنَا فِيْ سَكَرَاتِ الْمَوْتِ، وَالنَّجَاةَ مِنَ النَّارِ، وَالْعَفْوَ عِنْدَ الْحِسَابِ.',
+  'رَبَّنَا لَا تُزِغْ قُلُوْبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِنْ لَدُنْكَ رَحْمَةً، إِنَّكَ أَنْتَ الْوَهَّابُ.',
+  'اَللّٰهُمَّ أَحْيِنَا بِالْإِيْمَانِ، وَأَمِتْنَا بِالْإِيْمَانِ، وَأَدْخِلْنَا الْجَنَّةَ مَعَ الْإِيْمَانِ.',
+  'اَللّٰهُمَّ اغْفِرْ لَنَا ذُنُوْبَنَا وَلِوَالِدِيْنَا وَارْحَمْهُمَا كَمَا رَبَّيَانَا صَغِيْرًا.',
+  'اَللّٰهُمَّ اخْتِمْ لَنَا بِحُسْنِ الْخَاتِمَةِ، وَلَا تَخْتِمْ عَلَيْنَا بِسُوْءِ الْخَاتِمَةِ.',
+  'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً، وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ.',
+  'وَصَلَّى اللّٰهُ عَلٰى سَيِّدِنَا مُحَمَّدٍ وَعَلٰى آلِهِ وَصَحْبِهِ وَسَلَّمَ، وَالْحَمْدُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ.'
+ ],
+ tr:[
+  'Dengan nama Allah Yang Maha Pemurah lagi Maha Penyayang.',
+  'Segala puji bagi Allah, Tuhan sekalian alam. Selawat dan salam ke atas penghulu para rasul dan imam orang-orang yang bertakwa, serta ke atas keluarganya, ahli rumahnya dan seluruh sahabatnya.',
+  'Ya Allah, kami memohon kepada-Mu keselamatan dalam agama, kesihatan tubuh badan, tambahan ilmu, keberkatan rezeki, taubat sebelum mati, rahmat ketika mati dan keampunan selepas mati.',
+  'Ya Allah, permudahkanlah kami ketika sakaratul maut, dan kurniakanlah kami keselamatan daripada neraka serta kemaafan ketika dihisab.',
+  'Wahai Tuhan kami, janganlah Engkau pesongkan hati kami setelah Engkau beri petunjuk kepada kami, dan kurniakanlah kami rahmat daripada sisi-Mu. Sesungguhnya Engkaulah Maha Pemberi.',
+  'Ya Allah, hidupkanlah kami dengan iman, matikanlah kami dengan iman, dan masukkanlah kami ke dalam syurga bersama iman.',
+  'Ya Allah, ampunilah dosa-dosa kami dan dosa kedua ibu bapa kami, dan kasihanilah mereka berdua sebagaimana mereka memelihara kami semasa kecil.',
+  'Ya Allah, akhirilah hidup kami dengan pengakhiran yang baik (husnul khatimah), dan janganlah Engkau akhiri hidup kami dengan pengakhiran yang buruk (su\u2019ul khatimah).',
+  'Wahai Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat, dan peliharalah kami daripada azab neraka.',
+  'Semoga Allah melimpahkan selawat dan salam ke atas penghulu kami Muhammad, keluarga dan sahabatnya. Segala puji bagi Allah, Tuhan sekalian alam.'
+ ]},
+{id:'yasin',title:'Doa Selepas Yasin',sub:'Dibaca selepas tamat bacaan Surah Yasin',
+ src:'Teks Arab: dokumen "Doa Selepas Yasin" (TheMizzone.com). Terjemahan Bahasa Melayu disediakan untuk myQiblat.',
+ ar:[
+  'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ',
+  'اَلْحَمْدُ لِلّٰهِ رَبِّ الْعٰلَمِيْنَ، حَمْدًا يُوَافِيْ نِعَمَهُ وَيُكَافِئُ مَزِيْدَهُ، يَا رَبَّنَا لَكَ الْحَمْدُ كَمَا يَنْبَغِيْ لِجَلَالِ وَجْهِكَ وَعَظِيْمِ سُلْطَانِكَ. اَللّٰهُمَّ صَلِّ وَسَلِّمْ عَلٰى سَيِّدِنَا مُحَمَّدٍ وَعَلٰى آلِهِ وَصَحْبِهِ أَجْمَعِيْنَ.',
+  'اَللّٰهُمَّ بِحَقِّ يٰسٓ، وَالْقُرْآنِ الْحَكِيْمِ، وَبِمَنِ اخْتَرْتَهُ بِالرِّسَالَةِ وَالنُّبُوَّةِ وَالْوِلَايَةِ وَالْهِدَايَةِ إِلٰى صِرَاطِكَ الْمُسْتَقِيْمِ، وَبِجَمِيْعِ مَا جَاءَ بِهِ مِنْكَ جِبْرِيْلُ، تَنْزِيْلَ الْعَزِيْزِ الرَّحِيْمِ.',
+  'وَبِخَوَاصِّ الْحُرُوْفِ وَالْأَسْمَاءِ التَّامَّاتِ، وَبِمَا أَظْهَرْتَ فِي الْوُجُوْدِ لِكُلِّ مَوْجُوْدٍ مِنَ الْآيَاتِ الْبَيِّنَاتِ، وَبِخَفِيِّ لُطْفِكَ الْمُفَرِّجِ عَنْ كُلِّ مَهْمُوْمٍ، الْمُخَلِّصِ لِكُلِّ مَدْيُوْنٍ.',
+  'يَا مُجْرِيَ الْبِحَارِ وَالْعُيُوْنِ، يَا مَنْ خَزَائِنُهُ بَيْنَ الْكَافِ وَالنُّوْنِ، وَعَلِمَ بِمَا كَانَ قَبْلَ أَنْ يَكُوْنَ.',
+  'وَنَسْأَلُكَ اللّٰهُمَّ أَنْ تَسْلُكَ بِنَا جَادَّةَ رِضَاكَ، وَأَنْ تَجْعَلَنَا أَهْلًا وَمَحَلًّا لِسَعَادَتِكَ وَغِنَاكَ، وَأَنْ تُيَسِّرَ لَنَا جَمِيْعَ الْمُرَادَاتِ وَالْمَطَالِبِ، وَأَنْ تَجْعَلَ رِضَاكَ عَنَّا خَيْرَ مُصَاحِبٍ لَنَا وَرَفِيْقٍ، وَأَنْ تُتْحِفَنَا بِالْجَلَالَةِ وَالْمَهَابَةِ، وَأَنْ تَمُنَّ عَلَيْنَا بِسُرْعَةِ الْإِجَابَةِ.',
+  'اِسْتَجِبِ اللّٰهُمَّ دُعَاءَنَا، وَحَقِّقْ فِيْكَ رَجَاءَنَا، وَأَدْخِلْنَا فِيْ حِرْزِ لُطْفِكَ الْمَصُوْنِ، بِسِرِّ قَوْلِكَ: إِنَّمَا أَمْرُهُ إِذَا أَرَادَ شَيْئًا أَنْ يَقُوْلَ لَهُ كُنْ فَيَكُوْنُ، فَسُبْحَانَ الَّذِيْ بِيَدِهِ مَلَكُوْتُ كُلِّ شَيْءٍ وَإِلَيْهِ تُرْجَعُوْنَ.',
+  'سُبْحَانَ الْمُنَفِّسِ عَنْ كُلِّ مَهْمُوْمٍ، سُبْحَانَ الْمُنَفِّسِ عَنْ كُلِّ مَدْيُوْنٍ، سُبْحَانَ مَنْ أَمْرُهُ إِذَا أَرَادَ شَيْئًا أَنْ يَقُوْلَ لَهُ كُنْ فَيَكُوْنُ.',
+  'يَا مُفَرِّجَ الْهُمُوْمِ، يَا مُفَرِّجُ فَرِّجْ، يَا مُفَرِّجُ فَرِّجْ، فَرِّجْ عَنَّا هُمُوْمَنَا، يَا حَيُّ يَا قَيُّوْمُ، يَا ذَا الْجَلَالِ وَالْإِكْرَامِ.',
+  'وَصَلَّى اللّٰهُ عَلٰى سَيِّدِنَا مُحَمَّدٍ، وَعَلٰى آلِهِ وَصَحْبِهِ وَسَلَّمَ، وَالْحَمْدُ لِلّٰهِ رَبِّ الْعٰلَمِيْنَ.'
+ ],
+ tr:[
+  'Dengan nama Allah Yang Maha Pemurah lagi Maha Penyayang.',
+  'Segala puji bagi Allah, Tuhan sekalian alam, pujian yang menyamai nikmat-Nya dan mencukupi tambahan kurnia-Nya. Wahai Tuhan kami, bagi-Mu segala puji sebagaimana layak bagi kebesaran wajah-Mu dan keagungan kekuasaan-Mu. Ya Allah, limpahkan selawat dan salam ke atas penghulu kami Muhammad, keluarga dan seluruh sahabatnya.',
+  'Ya Allah, dengan kemuliaan Yasin dan al-Quran yang penuh hikmah, dengan kemuliaan orang yang Engkau pilih untuk risalah, kenabian, kewalian dan memberi petunjuk ke jalan-Mu yang lurus, dan dengan segala yang dibawa Jibril daripada-Mu, iaitu wahyu yang diturunkan oleh Tuhan Yang Maha Perkasa lagi Maha Penyayang.',
+  'Dengan keistimewaan huruf-huruf dan nama-nama-Mu yang sempurna, dengan tanda-tanda yang nyata yang Engkau zahirkan dalam kewujudan kepada setiap yang wujud, dan dengan kelembutan-Mu yang tersembunyi, yang melapangkan setiap orang yang berdukacita dan membebaskan setiap orang yang berhutang.',
+  'Wahai Tuhan yang mengalirkan lautan dan mata air, wahai Tuhan yang perbendaharaan-Nya di antara kaf dan nun ("kun" — jadilah), dan Dia mengetahui sesuatu sebelum ia wujud.',
+  'Kami memohon kepada-Mu ya Allah: bawalah kami melalui jalan keredaan-Mu; jadikanlah kami layak dan tempat yang menerima kebahagiaan dan kekayaan-Mu; permudahkanlah bagi kami segala hajat dan permintaan; jadikanlah keredaan-Mu terhadap kami sebaik-baik sahabat dan teman kami; kurniakanlah kami kemuliaan dan kewibawaan; dan anugerahkanlah kami dengan doa yang segera dimakbulkan.',
+  'Perkenankanlah doa kami ya Allah, tunaikanlah harapan kami kepada-Mu, dan masukkanlah kami ke dalam benteng kelembutan-Mu yang terpelihara, dengan rahsia firman-Mu: "Sesungguhnya urusan-Nya, apabila Dia menghendaki sesuatu, Dia hanya berkata kepadanya: Jadilah! Maka jadilah ia. Maka Maha Suci Tuhan yang di tangan-Nya kekuasaan atas segala sesuatu, dan kepada-Nya kamu dikembalikan." (Yasin: 82–83)',
+  'Maha Suci Tuhan yang melapangkan setiap orang yang berdukacita. Maha Suci Tuhan yang melapangkan setiap orang yang berhutang. Maha Suci Tuhan yang urusan-Nya, apabila Dia menghendaki sesuatu, Dia berkata kepadanya "Jadilah!", maka jadilah ia.',
+  'Wahai Tuhan yang melapangkan segala dukacita. Wahai Yang Melapangkan, lapangkanlah. Wahai Yang Melapangkan, lapangkanlah. Lapangkanlah daripada kami dukacita kami, wahai Yang Maha Hidup, wahai Yang Maha Berdiri Sendiri, wahai Tuhan yang memiliki kebesaran dan kemuliaan.',
+  'Semoga Allah melimpahkan selawat dan salam ke atas penghulu kami Muhammad, keluarga dan sahabatnya. Segala puji bagi Allah, Tuhan sekalian alam.'
+ ]},
+{id:'selamat',title:'Doa Selamat',sub:'Doa memohon keselamatan · lazim dibaca dalam majlis kesyukuran',
+ src:'Teks Arab: akuislam.com (Doa Selamat Lengkap). Terjemahan Bahasa Melayu disediakan untuk myQiblat.',
+ ar:[
+  'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ',
+  'اَللّٰهُمَّ إِنَّا نَسْتَحْفِظُكَ وَنَسْتَوْدِعُكَ أَدْيَانَنَا وَأَنْفُسَنَا وَأَهْلَنَا وَأَوْلَادَنَا وَأَمْوَالَنَا وَكُلَّ شَيْءٍ أَعْطَيْتَنَا.',
+  'اَللّٰهُمَّ اجْعَلْنَا وَإِيَّاهُمْ فِيْ كَنَفِكَ وَأَمَانِكَ وَعِيَاذِكَ مِنْ كُلِّ شَيْطَانٍ مَرِيْدٍ وَجَبَّارٍ عَنِيْدٍ وَذِيْ عَيْنٍ وَذِيْ بَغْيٍ وَذِيْ شَرٍّ كُلِّهِ، إِنَّكَ عَلٰى كُلِّ شَيْءٍ قَدِيْرٌ.',
+  'اَللّٰهُمَّ جَمِّلْنَا بِالْعَافِيَةِ وَالسَّلَامَةِ، وَحَقِّقْنَا بِالتَّقْوٰى وَالْاِسْتِقَامَةِ، وَأَعِذْنَا مِنْ مُوْجِبَاتِ النَّدَامَةِ، إِنَّكَ سَمِيْعُ الدُّعَاءِ.',
+  'اَللّٰهُمَّ اغْفِرْ لَنَا وَلِوَالِدِيْنَا وَأَوْلَادِنَا وَمَنْ مَشٰى مَعَنَا وَإِخْوَانِنَا فِي الدِّيْنِ وَأَصْحَابِنَا وَلِمَنْ أَحَبَّنَا فِيْكَ وَلِمَنْ أَحْسَنَ إِلَيْنَا.',
+  'وَلِجَمِيْعِ الْمُؤْمِنِيْنَ وَالْمُؤْمِنَاتِ وَالْمُسْلِمِيْنَ وَالْمُسْلِمَاتِ يَا رَبَّ الْعَالَمِيْنَ.',
+  'وَصَلَّى اللّٰهُ عَلٰى سَيِّدِنَا مُحَمَّدٍ وَعَلٰى آلِهِ وَصَحْبِهِ وَسَلَّمَ، وَارْزُقْنَا كَمَالَ الْمُتَابَعَةِ لَهُ ظَاهِرًا وَبَاطِنًا فِيْ سَلَامَةٍ وَعَافِيَةٍ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِيْنَ.',
+  'وَصَلَّى اللّٰهُ عَلٰى عَبْدِكَ وَرَسُوْلِكَ مُحَمَّدٍ وَعَلٰى آلِهِ وَصَحْبِهِ وَسَلَّمَ.',
+  'رَبَّنَا تَقَبَّلْ دُعَاءَنَا إِنَّكَ أَنْتَ السَّمِيْعُ الْعَلِيْمُ، وَتُبْ عَلَيْنَا إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيْمُ، وَلَا تَأْخُذْنَا بِالْعَظَائِمِ وَالْجَرَائِمِ يَا كَرِيْمُ، وَآخِرُ دَعْوَاهُمْ أَنِ الْحَمْدُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ.'
+ ],
+ tr:[
+  'Dengan nama Allah Yang Maha Pemurah lagi Maha Penyayang.',
+  'Ya Allah, sesungguhnya kami memohon pemeliharaan-Mu dan menyerahkan kepada jagaan-Mu agama kami, diri kami, keluarga kami, anak-anak kami, harta kami dan segala yang telah Engkau kurniakan kepada kami.',
+  'Ya Allah, letakkanlah kami dan mereka di bawah naungan, jaminan keamanan dan perlindungan-Mu daripada setiap syaitan yang derhaka, orang zalim yang degil, orang yang berniat jahat (dengan pandangan mata), orang yang melampaui batas dan setiap yang membawa kejahatan. Sesungguhnya Engkau Maha Berkuasa atas segala sesuatu.',
+  'Ya Allah, hiasilah kami dengan kesihatan dan keselamatan, teguhkanlah kami dengan takwa dan istiqamah, dan lindungilah kami daripada segala perkara yang membawa penyesalan. Sesungguhnya Engkau Maha Mendengar doa.',
+  'Ya Allah, ampunilah kami, kedua ibu bapa kami, anak-anak kami, mereka yang berjalan bersama kami, saudara-saudara kami seagama, sahabat-sahabat kami, mereka yang mengasihi kami kerana-Mu dan mereka yang telah berbuat baik kepada kami.',
+  'Dan (ampunilah) seluruh mukminin dan mukminat, muslimin dan muslimat, wahai Tuhan sekalian alam.',
+  'Semoga Allah melimpahkan selawat dan salam ke atas penghulu kami Muhammad, keluarga dan sahabatnya. Kurniakanlah kami kesempurnaan dalam mengikuti baginda zahir dan batin, dalam keadaan selamat dan sejahtera, dengan rahmat-Mu wahai Tuhan Yang Paling Penyayang di antara yang penyayang.',
+  'Semoga Allah melimpahkan selawat dan salam ke atas hamba-Mu dan rasul-Mu Muhammad, keluarga dan sahabatnya.',
+  'Wahai Tuhan kami, terimalah doa kami; sesungguhnya Engkau Maha Mendengar lagi Maha Mengetahui. Terimalah taubat kami; sesungguhnya Engkau Maha Penerima taubat lagi Maha Penyayang. Janganlah Engkau hukum kami kerana dosa-dosa besar dan kesalahan kami, wahai Tuhan Yang Maha Pemurah. Dan akhir seruan mereka ialah: segala puji bagi Allah, Tuhan sekalian alam.'
+ ]}
+];
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+/* Al-Ma'thurat — teks Arab disalin berpandukan susunan Al-Ma'thurat (Imam Hassan al-Banna).
+   Terjemahan Bahasa Melayu disediakan sendiri untuk myQiblat.
+   q: ayat al-Quran [ayat pertama, ...]; s: no. ayat pertama; b: mula dengan basmalah
+   {{pagi|petang}} = lafaz berbeza pagi/petang; k:1 = bacaan tambahan Kubra; x = bilangan ulangan */
+const MAT=[
+{h:"Ta'awwuz",ar:"أَعُوْذُ بِاللّٰهِ مِنَ الشَّيْطٰنِ الرَّجِيْمِ",
+ tr:"Aku berlindung kepada Allah daripada syaitan yang direjam."},
+{h:"Surah Al-Fatihah",ref:"1–7",s:1,q:["بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ","اَلْحَمْدُ لِلّٰهِ رَبِّ الْعٰلَمِيْنَ","الرَّحْمٰنِ الرَّحِيْمِ","مٰلِكِ يَوْمِ الدِّيْنِ","إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِيْنُ","اِهْدِنَا الصِّرَاطَ الْمُسْتَقِيْمَ","صِرَاطَ الَّذِيْنَ أَنْعَمْتَ عَلَيْهِمْ ۙ غَيْرِ الْمَغْضُوْبِ عَلَيْهِمْ وَلَا الضَّآلِّيْنَ"],
+ tr:"Dengan nama Allah Yang Maha Pemurah lagi Maha Penyayang. Segala puji bagi Allah, Tuhan sekalian alam; Yang Maha Pemurah lagi Maha Penyayang; Yang Menguasai hari pembalasan. Hanya Engkau yang kami sembah dan hanya kepada Engkau kami memohon pertolongan. Tunjukkanlah kami jalan yang lurus, iaitu jalan orang-orang yang Engkau kurniakan nikmat, bukan jalan orang yang dimurkai dan bukan pula jalan orang yang sesat."},
+{h:"Surah Al-Baqarah",ref:"1–5",b:1,s:1,q:["الٓمٓ","ذٰلِكَ الْكِتٰبُ لَا رَيْبَ ۛ فِيْهِ ۛ هُدًى لِّلْمُتَّقِيْنَ","الَّذِيْنَ يُؤْمِنُوْنَ بِالْغَيْبِ وَيُقِيْمُوْنَ الصَّلٰوةَ وَمِمَّا رَزَقْنٰهُمْ يُنْفِقُوْنَ","وَالَّذِيْنَ يُؤْمِنُوْنَ بِمَآ أُنْزِلَ إِلَيْكَ وَمَآ أُنْزِلَ مِنْ قَبْلِكَ ۚ وَبِالْاٰخِرَةِ هُمْ يُوْقِنُوْنَ","أُولٰٓئِكَ عَلٰى هُدًى مِّنْ رَّبِّهِمْ ۖ وَأُولٰٓئِكَ هُمُ الْمُفْلِحُوْنَ"],
+ tr:"Alif Lam Mim. Kitab ini tiada keraguan padanya; petunjuk bagi orang yang bertakwa, iaitu orang yang beriman kepada yang ghaib, mendirikan solat dan membelanjakan sebahagian rezeki yang Kami kurniakan kepada mereka; dan orang yang beriman kepada apa yang diturunkan kepadamu dan apa yang diturunkan sebelummu, serta mereka yakin akan hari akhirat. Mereka itulah yang berada di atas petunjuk daripada Tuhan mereka, dan merekalah orang-orang yang berjaya."},
+{h:"Ayat Kursi",ref:"Al-Baqarah 255",s:255,q:["اَللّٰهُ لَآ إِلٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّوْمُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَّلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمٰوٰتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِيْ يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيْهِمْ وَمَا خَلْفَهُمْ ۚ وَلَا يُحِيْطُوْنَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمٰوٰتِ وَالْأَرْضَ ۚ وَلَا يَئُوْدُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيْمُ"],
+ tr:"Allah, tiada Tuhan melainkan Dia, Yang Maha Hidup lagi terus-menerus mentadbir makhluk-Nya. Dia tidak mengantuk dan tidak tidur. Milik-Nya segala yang di langit dan di bumi. Tiada sesiapa dapat memberi syafaat di sisi-Nya melainkan dengan izin-Nya. Dia mengetahui apa yang di hadapan dan di belakang mereka, sedang mereka tidak mengetahui sesuatu pun daripada ilmu-Nya melainkan apa yang Dia kehendaki. Kursi-Nya meliputi langit dan bumi, dan Dia tidak berasa berat memelihara keduanya. Dialah Yang Maha Tinggi lagi Maha Agung."},
+{h:"Surah Al-Baqarah",ref:"256–257",s:256,q:["لَآ إِكْرَاهَ فِي الدِّيْنِ ۖ قَدْ تَّبَيَّنَ الرُّشْدُ مِنَ الْغَيِّ ۚ فَمَنْ يَّكْفُرْ بِالطَّاغُوْتِ وَيُؤْمِنْۢ بِاللّٰهِ فَقَدِ اسْتَمْسَكَ بِالْعُرْوَةِ الْوُثْقٰى لَا انْفِصَامَ لَهَا ۗ وَاللّٰهُ سَمِيْعٌ عَلِيْمٌ","اَللّٰهُ وَلِيُّ الَّذِيْنَ اٰمَنُوْا يُخْرِجُهُمْ مِّنَ الظُّلُمٰتِ إِلَى النُّوْرِ ۖ وَالَّذِيْنَ كَفَرُوْٓا أَوْلِيٰٓؤُهُمُ الطَّاغُوْتُ يُخْرِجُوْنَهُمْ مِّنَ النُّوْرِ إِلَى الظُّلُمٰتِ ۗ أُولٰٓئِكَ أَصْحٰبُ النَّارِ ۚ هُمْ فِيْهَا خٰلِدُوْنَ"],
+ tr:"Tiada paksaan dalam agama; sesungguhnya telah nyata kebenaran daripada kesesatan. Sesiapa yang mengingkari taghut dan beriman kepada Allah, maka dia telah berpegang pada tali yang amat kukuh yang tidak akan putus. Allah Maha Mendengar lagi Maha Mengetahui. Allah Pelindung orang yang beriman; Dia mengeluarkan mereka daripada kegelapan kepada cahaya. Orang yang kafir pula, pelindung mereka ialah taghut yang mengeluarkan mereka daripada cahaya kepada kegelapan. Mereka itulah ahli neraka, kekal di dalamnya."},
+{h:"Surah Al-Baqarah",ref:"284–286",s:284,q:["لِلّٰهِ مَا فِي السَّمٰوٰتِ وَمَا فِي الْأَرْضِ ۗ وَإِنْ تُبْدُوْا مَا فِيْٓ أَنْفُسِكُمْ أَوْ تُخْفُوْهُ يُحَاسِبْكُمْ بِهِ اللّٰهُ ۖ فَيَغْفِرُ لِمَنْ يَّشَآءُ وَيُعَذِّبُ مَنْ يَّشَآءُ ۗ وَاللّٰهُ عَلٰى كُلِّ شَيْءٍ قَدِيْرٌ","اٰمَنَ الرَّسُوْلُ بِمَآ أُنْزِلَ إِلَيْهِ مِنْ رَّبِّهِ وَالْمُؤْمِنُوْنَ ۚ كُلٌّ اٰمَنَ بِاللّٰهِ وَمَلٰٓئِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ ۚ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِّنْ رُّسُلِهِ ۚ وَقَالُوْا سَمِعْنَا وَأَطَعْنَا ۖ غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيْرُ","لَا يُكَلِّفُ اللّٰهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَآ إِنْ نَّسِيْنَآ أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَآ إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِيْنَ مِنْ قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ ۚ وَاعْفُ عَنَّا ۗ وَاغْفِرْ لَنَا ۗ وَارْحَمْنَا ۚ أَنْتَ مَوْلٰىنَا فَانْصُرْنَا عَلَى الْقَوْمِ الْكٰفِرِيْنَ"],
+ tr:"Milik Allah segala yang di langit dan di bumi. Sama ada kamu nyatakan atau sembunyikan apa yang ada dalam hatimu, Allah akan menghitungnya; Dia mengampuni sesiapa yang Dia kehendaki dan mengazab sesiapa yang Dia kehendaki. Allah berkuasa atas segala sesuatu. Rasul telah beriman kepada apa yang diturunkan kepadanya daripada Tuhannya, demikian juga orang beriman; semuanya beriman kepada Allah, malaikat-Nya, kitab-kitab-Nya dan rasul-rasul-Nya: \"Kami tidak membeza-bezakan antara seorang pun daripada rasul-Nya.\" Mereka berkata: \"Kami dengar dan kami taat; ampunilah kami wahai Tuhan kami, dan kepada-Mu tempat kembali.\" Allah tidak membebani seseorang melainkan sesuai dengan kesanggupannya; baginya pahala kebaikan yang diusahakannya dan atasnya dosa kejahatan yang dilakukannya. \"Wahai Tuhan kami, janganlah Engkau hukum kami jika kami lupa atau tersalah. Wahai Tuhan kami, janganlah Engkau bebankan kami bebanan berat seperti yang Engkau bebankan kepada orang sebelum kami. Wahai Tuhan kami, janganlah Engkau pikulkan kepada kami apa yang tidak terdaya kami memikulnya. Maafkanlah kami, ampunilah kami dan rahmatilah kami. Engkaulah Penolong kami, maka tolonglah kami menghadapi kaum yang kafir.\""},
+{k:1,h:"Surah Taha",ref:"1–2",b:1,s:1,q:["طٰهٰ","مَآ أَنْزَلْنَا عَلَيْكَ الْقُرْاٰنَ لِتَشْقٰٓى"],
+ tr:"Ta Ha. Kami tidak menurunkan al-Quran kepadamu (wahai Muhammad) untuk menyusahkanmu."},
+{k:1,h:"Surah Taha",ref:"111–112",s:111,q:["وَعَنَتِ الْوُجُوْهُ لِلْحَيِّ الْقَيُّوْمِ ۖ وَقَدْ خَابَ مَنْ حَمَلَ ظُلْمًا","وَمَنْ يَّعْمَلْ مِنَ الصّٰلِحٰتِ وَهُوَ مُؤْمِنٌ فَلَا يَخٰفُ ظُلْمًا وَّلَا هَضْمًا"],
+ tr:"Dan tunduklah segala wajah kepada Tuhan Yang Maha Hidup lagi terus-menerus mentadbir makhluk-Nya; dan sungguh rugilah orang yang memikul kezaliman. Sesiapa yang mengerjakan amal soleh sedang dia beriman, maka dia tidak perlu takut dianiaya dan tidak pula dikurangkan pahalanya."},
+{k:1,h:"Surah At-Taubah",ref:"129",s:129,q:["فَإِنْ تَوَلَّوْا فَقُلْ حَسْبِيَ اللّٰهُ لَآ إِلٰهَ إِلَّا هُوَ ۖ عَلَيْهِ تَوَكَّلْتُ ۖ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيْمِ"],
+ tr:"Jika mereka berpaling, katakanlah: \"Cukuplah Allah bagiku; tiada Tuhan melainkan Dia. Kepada-Nya aku bertawakal, dan Dialah Tuhan yang memiliki Arasy yang agung.\""},
+{k:1,h:"Surah Al-Isra'",ref:"110–111",s:110,q:["قُلِ ادْعُوا اللّٰهَ أَوِ ادْعُوا الرَّحْمٰنَ ۖ أَيًّا مَّا تَدْعُوْا فَلَهُ الْأَسْمَآءُ الْحُسْنٰى ۚ وَلَا تَجْهَرْ بِصَلَاتِكَ وَلَا تُخَافِتْ بِهَا وَابْتَغِ بَيْنَ ذٰلِكَ سَبِيْلًا","وَقُلِ الْحَمْدُ لِلّٰهِ الَّذِيْ لَمْ يَتَّخِذْ وَلَدًا وَّلَمْ يَكُنْ لَّهُ شَرِيْكٌ فِي الْمُلْكِ وَلَمْ يَكُنْ لَّهُ وَلِيٌّ مِّنَ الذُّلِّ ۖ وَكَبِّرْهُ تَكْبِيْرًا"],
+ tr:"Katakanlah: \"Serulah Allah atau serulah ar-Rahman; dengan nama mana pun kamu menyeru, bagi-Nya nama-nama yang terbaik.\" Janganlah engkau nyaringkan bacaan solatmu dan jangan pula engkau perlahankan, tetapi carilah jalan pertengahan antara keduanya. Dan katakanlah: \"Segala puji bagi Allah yang tidak mempunyai anak, tidak mempunyai sekutu dalam kerajaan-Nya, dan tidak memerlukan penolong kerana sesuatu kelemahan\"; dan agungkanlah Dia dengan sebenar-benar pengagungan."},
+{k:1,h:"Surah Al-Mu'minun",ref:"115–118",s:115,q:["أَفَحَسِبْتُمْ أَنَّمَا خَلَقْنٰكُمْ عَبَثًا وَّأَنَّكُمْ إِلَيْنَا لَا تُرْجَعُوْنَ","فَتَعٰلَى اللّٰهُ الْمَلِكُ الْحَقُّ ۖ لَآ إِلٰهَ إِلَّا هُوَ رَبُّ الْعَرْشِ الْكَرِيْمِ","وَمَنْ يَّدْعُ مَعَ اللّٰهِ إِلٰهًا اٰخَرَ لَا بُرْهَانَ لَهُ بِهِ فَإِنَّمَا حِسَابُهُ عِنْدَ رَبِّهِ ۚ إِنَّهُ لَا يُفْلِحُ الْكٰفِرُوْنَ","وَقُلْ رَّبِّ اغْفِرْ وَارْحَمْ وَأَنْتَ خَيْرُ الرّٰحِمِيْنَ"],
+ tr:"Adakah kamu menyangka bahawa Kami menciptakan kamu dengan sia-sia, dan kamu tidak akan dikembalikan kepada Kami? Maka Maha Tinggi Allah, Raja yang sebenar; tiada Tuhan melainkan Dia, Tuhan yang memiliki Arasy yang mulia. Sesiapa yang menyembah tuhan lain bersama Allah tanpa sebarang bukti, maka hisabnya di sisi Tuhannya; sesungguhnya orang-orang kafir tidak akan berjaya. Dan katakanlah: \"Wahai Tuhanku, ampunilah dan rahmatilah, dan Engkaulah sebaik-baik Pemberi rahmat.\""},
+{k:1,h:"Surah Ar-Rum",ref:"17–26",s:17,q:["فَسُبْحٰنَ اللّٰهِ حِيْنَ تُمْسُوْنَ وَحِيْنَ تُصْبِحُوْنَ","وَلَهُ الْحَمْدُ فِي السَّمٰوٰتِ وَالْأَرْضِ وَعَشِيًّا وَّحِيْنَ تُظْهِرُوْنَ","يُخْرِجُ الْحَيَّ مِنَ الْمَيِّتِ وَيُخْرِجُ الْمَيِّتَ مِنَ الْحَيِّ وَيُحْيِ الْأَرْضَ بَعْدَ مَوْتِهَا ۚ وَكَذٰلِكَ تُخْرَجُوْنَ","وَمِنْ اٰيٰتِهِ أَنْ خَلَقَكُمْ مِّنْ تُرَابٍ ثُمَّ إِذَآ أَنْتُمْ بَشَرٌ تَنْتَشِرُوْنَ","وَمِنْ اٰيٰتِهِ أَنْ خَلَقَ لَكُمْ مِّنْ أَنْفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوْٓا إِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَّوَدَّةً وَّرَحْمَةً ۚ إِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّتَفَكَّرُوْنَ","وَمِنْ اٰيٰتِهِ خَلْقُ السَّمٰوٰتِ وَالْأَرْضِ وَاخْتِلَافُ أَلْسِنَتِكُمْ وَأَلْوَانِكُمْ ۚ إِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّلْعٰلِمِيْنَ","وَمِنْ اٰيٰتِهِ مَنَامُكُمْ بِالَّيْلِ وَالنَّهَارِ وَابْتِغَآؤُكُمْ مِّنْ فَضْلِهِ ۚ إِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّسْمَعُوْنَ","وَمِنْ اٰيٰتِهِ يُرِيْكُمُ الْبَرْقَ خَوْفًا وَّطَمَعًا وَّيُنَزِّلُ مِنَ السَّمَآءِ مَآءً فَيُحْيِ بِهِ الْأَرْضَ بَعْدَ مَوْتِهَا ۚ إِنَّ فِيْ ذٰلِكَ لَاٰيٰتٍ لِّقَوْمٍ يَّعْقِلُوْنَ","وَمِنْ اٰيٰتِهِ أَنْ تَقُوْمَ السَّمَآءُ وَالْأَرْضُ بِأَمْرِهِ ۚ ثُمَّ إِذَا دَعَاكُمْ دَعْوَةً ۖ مِّنَ الْأَرْضِ إِذَآ أَنْتُمْ تَخْرُجُوْنَ","وَلَهُ مَنْ فِي السَّمٰوٰتِ وَالْأَرْضِ ۖ كُلٌّ لَّهُ قٰنِتُوْنَ"],
+ tr:"Maka bertasbihlah kepada Allah ketika kamu berada di waktu petang dan ketika kamu berada di waktu pagi. Bagi-Nya segala puji di langit dan di bumi, dan di waktu senja dan ketika kamu berada di waktu zohor. Dia mengeluarkan yang hidup daripada yang mati, mengeluarkan yang mati daripada yang hidup, dan menghidupkan bumi sesudah matinya; demikianlah kamu akan dikeluarkan (dibangkitkan). Antara tanda kekuasaan-Nya, Dia menciptakan kamu daripada tanah, kemudian kamu menjadi manusia yang bertebaran. Antara tanda kekuasaan-Nya, Dia menciptakan untuk kamu pasangan daripada jenis kamu sendiri supaya kamu tenteram bersamanya, dan dijadikan-Nya antara kamu kasih sayang dan belas kasihan; sesungguhnya pada yang demikian itu terdapat tanda-tanda bagi kaum yang berfikir. Antara tanda kekuasaan-Nya ialah penciptaan langit dan bumi serta perbezaan bahasa dan warna kulit kamu; sesungguhnya pada yang demikian itu terdapat tanda-tanda bagi orang yang berilmu. Antara tanda kekuasaan-Nya ialah tidur kamu pada waktu malam dan siang, serta usaha kamu mencari sebahagian kurnia-Nya; sesungguhnya pada yang demikian itu terdapat tanda-tanda bagi kaum yang mendengar. Antara tanda kekuasaan-Nya, Dia memperlihatkan kepada kamu kilat untuk menimbulkan takut dan harapan, dan Dia menurunkan air dari langit lalu menghidupkan bumi sesudah matinya; sesungguhnya pada yang demikian itu terdapat tanda-tanda bagi kaum yang menggunakan akal. Antara tanda kekuasaan-Nya ialah tegaknya langit dan bumi dengan perintah-Nya; kemudian apabila Dia menyeru kamu dengan sekali seruan dari bumi, serta-merta kamu keluar. Dan milik-Nya segala yang ada di langit dan di bumi; semuanya tunduk patuh kepada-Nya."},
+{k:1,h:"Surah Al-Mu'min (Ghafir)",ref:"1–3",b:1,s:1,q:["حٰمٓ","تَنْزِيْلُ الْكِتٰبِ مِنَ اللّٰهِ الْعَزِيْزِ الْعَلِيْمِ","غَافِرِ الذَّنْۢبِ وَقَابِلِ التَّوْبِ شَدِيْدِ الْعِقَابِ ذِي الطَّوْلِ ۖ لَآ إِلٰهَ إِلَّا هُوَ ۖ إِلَيْهِ الْمَصِيْرُ"],
+ tr:"Ha Mim. Kitab ini diturunkan daripada Allah Yang Maha Perkasa lagi Maha Mengetahui; Yang mengampuni dosa dan menerima taubat, keras hukuman-Nya, Yang memiliki kurnia yang luas. Tiada Tuhan melainkan Dia; kepada-Nya tempat kembali."},
+{k:1,h:"Surah Al-Hasyr",ref:"22–24",s:22,q:["هُوَ اللّٰهُ الَّذِيْ لَآ إِلٰهَ إِلَّا هُوَ ۚ عٰلِمُ الْغَيْبِ وَالشَّهَادَةِ ۚ هُوَ الرَّحْمٰنُ الرَّحِيْمُ","هُوَ اللّٰهُ الَّذِيْ لَآ إِلٰهَ إِلَّا هُوَ ۚ الْمَلِكُ الْقُدُّوْسُ السَّلٰمُ الْمُؤْمِنُ الْمُهَيْمِنُ الْعَزِيْزُ الْجَبَّارُ الْمُتَكَبِّرُ ۚ سُبْحٰنَ اللّٰهِ عَمَّا يُشْرِكُوْنَ","هُوَ اللّٰهُ الْخٰلِقُ الْبَارِئُ الْمُصَوِّرُ لَهُ الْأَسْمَآءُ الْحُسْنٰى ۚ يُسَبِّحُ لَهُ مَا فِي السَّمٰوٰتِ وَالْأَرْضِ ۖ وَهُوَ الْعَزِيْزُ الْحَكِيْمُ"],
+ tr:"Dialah Allah, tiada Tuhan melainkan Dia, Yang Mengetahui perkara ghaib dan yang nyata; Dialah Yang Maha Pemurah lagi Maha Penyayang. Dialah Allah, tiada Tuhan melainkan Dia; Raja, Yang Maha Suci, Yang Maha Sejahtera, Yang Memberi keamanan, Yang Maha Mengawasi, Yang Maha Perkasa, Yang Maha Kuasa, Yang Memiliki segala keagungan. Maha Suci Allah daripada apa yang mereka sekutukan. Dialah Allah, Yang Mencipta, Yang Mengadakan, Yang Membentuk rupa; bagi-Nya nama-nama yang terbaik. Bertasbih kepada-Nya segala yang di langit dan di bumi, dan Dialah Yang Maha Perkasa lagi Maha Bijaksana."},
+{k:1,h:"Surah Az-Zalzalah",ref:"1–8",b:1,s:1,q:["إِذَا زُلْزِلَتِ الْأَرْضُ زِلْزَالَهَا","وَأَخْرَجَتِ الْأَرْضُ أَثْقَالَهَا","وَقَالَ الْإِنْسَانُ مَا لَهَا","يَوْمَئِذٍ تُحَدِّثُ أَخْبَارَهَا","بِأَنَّ رَبَّكَ أَوْحٰى لَهَا","يَوْمَئِذٍ يَّصْدُرُ النَّاسُ أَشْتَاتًا لِّيُرَوْا أَعْمَالَهُمْ","فَمَنْ يَّعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَّرَهُ","وَمَنْ يَّعْمَلْ مِثْقَالَ ذَرَّةٍ شَرًّا يَّرَهُ"],
+ tr:"Apabila bumi digoncangkan dengan goncangannya yang dahsyat, dan bumi mengeluarkan segala isinya yang berat, lalu manusia bertanya: \"Apa yang terjadi kepadanya?\" Pada hari itu bumi menceritakan beritanya, kerana Tuhanmu telah memerintahkan kepadanya. Pada hari itu manusia keluar berkelompok-kelompok untuk diperlihatkan amalan mereka. Sesiapa yang mengerjakan kebaikan seberat zarah pun, dia akan melihatnya; dan sesiapa yang mengerjakan kejahatan seberat zarah pun, dia akan melihatnya."},
+{k:1,h:"Surah Al-Kafirun",ref:"1–6",b:1,s:1,q:["قُلْ يٰٓأَيُّهَا الْكٰفِرُوْنَ","لَآ أَعْبُدُ مَا تَعْبُدُوْنَ","وَلَآ أَنْتُمْ عٰبِدُوْنَ مَآ أَعْبُدُ","وَلَآ أَنَا عَابِدٌ مَّا عَبَدْتُّمْ","وَلَآ أَنْتُمْ عٰبِدُوْنَ مَآ أَعْبُدُ","لَكُمْ دِيْنُكُمْ وَلِيَ دِيْنِ"],
+ tr:"Katakanlah: \"Wahai orang-orang kafir, aku tidak menyembah apa yang kamu sembah, dan kamu bukan penyembah apa yang aku sembah. Aku tidak akan menyembah apa yang kamu sembah, dan kamu tidak akan menyembah apa yang aku sembah. Bagi kamu agama kamu, dan bagiku agamaku.\""},
+{k:1,h:"Surah An-Nasr",ref:"1–3",b:1,s:1,q:["إِذَا جَآءَ نَصْرُ اللّٰهِ وَالْفَتْحُ","وَرَأَيْتَ النَّاسَ يَدْخُلُوْنَ فِيْ دِيْنِ اللّٰهِ أَفْوَاجًا","فَسَبِّحْ بِحَمْدِ رَبِّكَ وَاسْتَغْفِرْهُ ۚ إِنَّهُ كَانَ تَوَّابًا"],
+ tr:"Apabila datang pertolongan Allah dan kemenangan, dan engkau melihat manusia memeluk agama Allah beramai-ramai, maka bertasbihlah dengan memuji Tuhanmu dan mohonlah keampunan daripada-Nya. Sesungguhnya Dia Maha Penerima taubat."},
+{h:"Surah Al-Ikhlas",ref:"1–4",b:1,s:1,q:["قُلْ هُوَ اللّٰهُ أَحَدٌ","اَللّٰهُ الصَّمَدُ","لَمْ يَلِدْ وَلَمْ يُوْلَدْ","وَلَمْ يَكُنْ لَّهُ كُفُوًا أَحَدٌ"],
+ tr:"Katakanlah: \"Dialah Allah Yang Maha Esa. Allah tempat bergantung segala sesuatu. Dia tidak beranak dan tidak diperanakkan, dan tiada sesuatu pun yang setara dengan-Nya.\""},
+{h:"Surah Al-Falaq",ref:"1–5",b:1,s:1,q:["قُلْ أَعُوْذُ بِرَبِّ الْفَلَقِ","مِنْ شَرِّ مَا خَلَقَ","وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ","وَمِنْ شَرِّ النَّفّٰثٰتِ فِي الْعُقَدِ","وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ"],
+ tr:"Katakanlah: \"Aku berlindung kepada Tuhan yang menguasai subuh, daripada kejahatan makhluk yang Dia ciptakan, daripada kejahatan malam apabila ia gelap-gelita, daripada kejahatan penghembus-penghembus pada simpulan, dan daripada kejahatan pendengki apabila dia dengki.\""},
+{h:"Surah An-Nas",ref:"1–6",b:1,s:1,q:["قُلْ أَعُوْذُ بِرَبِّ النَّاسِ","مَلِكِ النَّاسِ","إِلٰهِ النَّاسِ","مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ","الَّذِيْ يُوَسْوِسُ فِيْ صُدُوْرِ النَّاسِ","مِنَ الْجِنَّةِ وَالنَّاسِ"],
+ tr:"Katakanlah: \"Aku berlindung kepada Tuhan manusia, Raja manusia, Sembahan manusia, daripada kejahatan pembisik yang bersembunyi, yang membisikkan (kejahatan) ke dalam dada manusia, daripada kalangan jin dan manusia.\""},
+/* ---------------- Doa & zikir ---------------- */
+{h:"Pujian kepada Allah",x:"3×",ar:"{{أَصْبَحْنَا وَأَصْبَحَ|أَمْسَيْنَا وَأَمْسَى}} الْمُلْكُ لِلّٰهِ، وَالْحَمْدُ لِلّٰهِ، لَا شَرِيْكَ لَهُ، لَا إِلٰهَ إِلَّا هُوَ، وَإِلَيْهِ {{النُّشُوْرُ|الْمَصِيْرُ}}.",
+ tr:"Kami berada di waktu {{pagi|petang}} dan kerajaan pada waktu {{pagi|petang}} ini milik Allah. Segala puji bagi Allah, tiada sekutu bagi-Nya, tiada Tuhan melainkan Dia, dan kepada-Nya {{tempat kebangkitan|tempat kembali}}."},
+{h:"Teguh di atas Islam",ar:"{{أَصْبَحْنَا|أَمْسَيْنَا}} عَلٰى فِطْرَةِ الْإِسْلَامِ، وَكَلِمَةِ الْإِخْلَاصِ، وَعَلٰى دِيْنِ نَبِيِّنَا مُحَمَّدٍ صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ، وَعَلٰى مِلَّةِ أَبِيْنَا إِبْرَاهِيْمَ حَنِيْفًا وَمَا كَانَ مِنَ الْمُشْرِكِيْنَ.",
+ tr:"Kami berada di waktu {{pagi|petang}} di atas fitrah Islam, kalimah ikhlas (tauhid), agama Nabi kami Muhammad ﷺ, dan millah bapa kami Ibrahim yang lurus, dan dia bukanlah daripada golongan musyrikin."},
+{h:"Mensyukuri nikmat",x:"3×",ar:"اَللّٰهُمَّ إِنِّيْ {{أَصْبَحْتُ|أَمْسَيْتُ}} مِنْكَ فِيْ نِعْمَةٍ وَعَافِيَةٍ وَسِتْرٍ، فَأَتِمَّ عَلَيَّ نِعْمَتَكَ وَعَافِيَتَكَ وَسِتْرَكَ فِي الدُّنْيَا وَالْاٰخِرَةِ.",
+ tr:"Ya Allah, aku berada di waktu {{pagi|petang}} dalam nikmat, kesejahteraan dan perlindungan (aib) daripada-Mu; maka sempurnakanlah ke atasku nikmat-Mu, kesejahteraan-Mu dan perlindungan-Mu di dunia dan akhirat."},
+{h:"Pengakuan nikmat daripada Allah",ar:"اَللّٰهُمَّ مَا {{أَصْبَحَ|أَمْسَى}} بِيْ مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيْكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ.",
+ tr:"Ya Allah, apa jua nikmat yang ada padaku atau pada sesiapa daripada makhluk-Mu pada waktu {{pagi|petang}} ini, semuanya daripada-Mu semata-mata, tiada sekutu bagi-Mu. Maka bagi-Mu segala puji dan bagi-Mu segala syukur."},
+{h:"Pujian bagi Allah",ar:"يَا رَبِّ لَكَ الْحَمْدُ كَمَا يَنْبَغِيْ لِجَلَالِ وَجْهِكَ وَعَظِيْمِ سُلْطَانِكَ.",
+ tr:"Wahai Tuhanku, bagi-Mu segala puji sebagaimana layak bagi kebesaran wajah-Mu dan keagungan kekuasaan-Mu."},
+{h:"Ikrar",x:"3×",ar:"رَضِيْتُ بِاللّٰهِ رَبًّا، وَبِالْإِسْلَامِ دِيْنًا، وَبِمُحَمَّدٍ نَبِيًّا وَرَسُوْلًا.",
+ tr:"Aku reda Allah sebagai Tuhanku, Islam sebagai agamaku, dan Muhammad sebagai nabi dan rasul."},
+{h:"Bertasbih kepada Allah",x:"3×",ar:"سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ، عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ.",
+ tr:"Maha Suci Allah dan segala puji bagi-Nya, sebanyak bilangan makhluk-Nya, sebanyak yang Dia redai, seberat timbangan Arasy-Nya dan sebanyak tinta kalimah-kalimah-Nya."},
+{h:"Perlindungan dengan nama Allah",x:"3×",ar:"بِسْمِ اللّٰهِ الَّذِيْ لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ، وَهُوَ السَّمِيْعُ الْعَلِيْمُ.",
+ tr:"Dengan nama Allah, yang bersama nama-Nya tiada sesuatu pun di bumi dan di langit dapat memberi mudarat, dan Dialah Yang Maha Mendengar lagi Maha Mengetahui."},
+{h:"Terhindar daripada syirik",x:"3×",ar:"اَللّٰهُمَّ إِنَّا نَعُوْذُ بِكَ مِنْ أَنْ نُشْرِكَ بِكَ شَيْئًا نَعْلَمُهُ، وَنَسْتَغْفِرُكَ لِمَا لَا نَعْلَمُهُ.",
+ tr:"Ya Allah, kami berlindung kepada-Mu daripada menyekutukan-Mu dengan sesuatu yang kami ketahui, dan kami memohon keampunan-Mu atas apa yang tidak kami ketahui."},
+{h:"Berlindung daripada kejahatan makhluk",x:"3×",ar:"أَعُوْذُ بِكَلِمَاتِ اللّٰهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ.",
+ tr:"Aku berlindung dengan kalimah-kalimah Allah yang sempurna daripada kejahatan makhluk yang Dia ciptakan."},
+{h:"Terhindar daripada belenggu hutang",x:"3×",ar:"اَللّٰهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوْذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوْذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوْذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ.",
+ tr:"Ya Allah, aku berlindung kepada-Mu daripada kebimbangan dan kesedihan; aku berlindung kepada-Mu daripada kelemahan dan kemalasan; aku berlindung kepada-Mu daripada sifat pengecut dan bakhil; dan aku berlindung kepada-Mu daripada belenggu hutang dan penindasan manusia."},
+{h:"Memohon kesihatan",ar:"اَللّٰهُمَّ عَافِنِيْ فِيْ بَدَنِيْ، اَللّٰهُمَّ عَافِنِيْ فِيْ سَمْعِيْ، اَللّٰهُمَّ عَافِنِيْ فِيْ بَصَرِيْ.",
+ tr:"Ya Allah, sihatkanlah tubuh badanku. Ya Allah, sihatkanlah pendengaranku. Ya Allah, sihatkanlah penglihatanku."},
+{h:"Terhindar daripada kekufuran & kefakiran",x:"3×",ar:"اَللّٰهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ، اَللّٰهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلٰهَ إِلَّا أَنْتَ.",
+ tr:"Ya Allah, aku berlindung kepada-Mu daripada kekufuran dan kefakiran. Ya Allah, aku berlindung kepada-Mu daripada azab kubur. Tiada Tuhan melainkan Engkau."},
+{h:"Penghulu istighfar",x:"3×",ar:"اَللّٰهُمَّ أَنْتَ رَبِّيْ لَا إِلٰهَ إِلَّا أَنْتَ، خَلَقْتَنِيْ وَأَنَا عَبْدُكَ، وَأَنَا عَلٰى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوْذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوْءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوْءُ بِذَنْبِيْ، فَاغْفِرْ لِيْ فَإِنَّهُ لَا يَغْفِرُ الذُّنُوْبَ إِلَّا أَنْتَ.",
+ tr:"Ya Allah, Engkaulah Tuhanku, tiada Tuhan melainkan Engkau. Engkau menciptakan aku dan aku hamba-Mu. Aku berpegang pada perjanjian dan janji-Mu sedaya upayaku. Aku berlindung kepada-Mu daripada kejahatan apa yang aku lakukan. Aku mengakui nikmat-Mu ke atasku dan aku mengakui dosaku; maka ampunilah aku, kerana tiada yang mengampuni dosa melainkan Engkau."},
+{h:"Istighfar",x:"3×",ar:"أَسْتَغْفِرُ اللّٰهَ الَّذِيْ لَا إِلٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّوْمُ وَأَتُوْبُ إِلَيْهِ.",
+ tr:"Aku memohon ampun kepada Allah, tiada Tuhan melainkan Dia, Yang Maha Hidup lagi terus-menerus mentadbir makhluk-Nya, dan aku bertaubat kepada-Nya."},
+{h:"Selawat ke atas Nabi ﷺ",ar:"اَللّٰهُمَّ صَلِّ عَلٰى سَيِّدِنَا مُحَمَّدٍ وَعَلٰى آلِ سَيِّدِنَا مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلٰى سَيِّدِنَا إِبْرَاهِيْمَ وَعَلٰى آلِ سَيِّدِنَا إِبْرَاهِيْمَ، وَبَارِكْ عَلٰى سَيِّدِنَا مُحَمَّدٍ وَعَلٰى آلِ سَيِّدِنَا مُحَمَّدٍ، كَمَا بَارَكْتَ عَلٰى سَيِّدِنَا إِبْرَاهِيْمَ وَعَلٰى آلِ سَيِّدِنَا إِبْرَاهِيْمَ، فِي الْعَالَمِيْنَ إِنَّكَ حَمِيْدٌ مَجِيْدٌ.",
+ tr:"Ya Allah, limpahkanlah selawat ke atas penghulu kami Muhammad dan keluarganya sebagaimana Engkau limpahkan selawat ke atas penghulu kami Ibrahim dan keluarganya; dan berkatilah penghulu kami Muhammad dan keluarganya sebagaimana Engkau berkati penghulu kami Ibrahim dan keluarganya di seluruh alam. Sesungguhnya Engkau Maha Terpuji lagi Maha Mulia."},
+{h:"Tasbih, tahmid, tahlil & takbir",x:"100×",ar:"سُبْحَانَ اللّٰهِ، وَالْحَمْدُ لِلّٰهِ، وَلَا إِلٰهَ إِلَّا اللّٰهُ، وَاللّٰهُ أَكْبَرُ.",
+ tr:"Maha Suci Allah, segala puji bagi Allah, tiada Tuhan melainkan Allah, dan Allah Maha Besar."},
+{h:"Keesaan Allah",ar:"لَا إِلٰهَ إِلَّا اللّٰهُ وَحْدَهُ لَا شَرِيْكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلٰى كُلِّ شَيْءٍ قَدِيْرٌ.",
+ tr:"Tiada Tuhan melainkan Allah, Yang Esa, tiada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala puji, dan Dia berkuasa atas segala sesuatu."},
+{h:"Pujian & mohon taubat",ar:"سُبْحَانَكَ اللّٰهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوْبُ إِلَيْكَ.",
+ tr:"Maha Suci Engkau ya Allah dan segala puji bagi-Mu. Aku bersaksi bahawa tiada Tuhan melainkan Engkau. Aku memohon ampun dan bertaubat kepada-Mu."},
+{h:"Selawat ke atas Nabi ﷺ",ar:"اَللّٰهُمَّ صَلِّ عَلٰى سَيِّدِنَا مُحَمَّدٍ عَبْدِكَ وَنَبِيِّكَ وَرَسُوْلِكَ النَّبِيِّ الْأُمِّيِّ، وَعَلٰى آلِهِ وَصَحْبِهِ وَسَلِّمْ تَسْلِيْمًا، عَدَدَ مَا أَحَاطَ بِهِ عِلْمُكَ، وَخَطَّ بِهِ قَلَمُكَ، وَأَحْصَاهُ كِتَابُكَ. وَارْضَ اللّٰهُمَّ عَنْ سَادَاتِنَا أَبِيْ بَكْرٍ وَعُمَرَ وَعُثْمَانَ وَعَلِيٍّ، وَعَنِ الصَّحَابَةِ أَجْمَعِيْنَ، وَعَنِ التَّابِعِيْنَ وَتَابِعِيْهِمْ بِإِحْسَانٍ إِلٰى يَوْمِ الدِّيْنِ. سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُوْنَ، وَسَلَامٌ عَلَى الْمُرْسَلِيْنَ، وَالْحَمْدُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ.",
+ tr:"Ya Allah, limpahkanlah selawat ke atas penghulu kami Muhammad, hamba-Mu, nabi-Mu dan rasul-Mu, Nabi yang ummi, serta ke atas keluarga dan sahabatnya, dan kurniakanlah kesejahteraan yang sempurna, sebanyak apa yang diliputi oleh ilmu-Mu, yang ditulis oleh qalam-Mu dan yang dihitung oleh kitab-Mu. Redailah ya Allah para pemimpin kami, Abu Bakar, Umar, Uthman dan Ali, seluruh sahabat, para tabi'in dan pengikut mereka dengan baik hingga hari pembalasan. Maha Suci Tuhanmu, Tuhan yang mempunyai keagungan, daripada apa yang mereka sifatkan. Kesejahteraan ke atas para rasul, dan segala puji bagi Allah, Tuhan sekalian alam."},
+{h:"Doa selepas wirid Ma'thurat",ar:"اَللّٰهُمَّ إِنَّا نَسْأَلُكَ لِسَانًا رَطْبًا بِذِكْرِكَ، وَقَلْبًا مُفْعَمًا بِشُكْرِكَ، وَبَدَنًا هَيِّنًا لَيِّنًا بِطَاعَتِكَ. اَللّٰهُمَّ إِنَّا نَسْأَلُكَ إِيْمَانًا كَامِلًا، وَنَسْأَلُكَ قَلْبًا خَاشِعًا، وَنَسْأَلُكَ عِلْمًا نَافِعًا، وَنَسْأَلُكَ يَقِيْنًا صَادِقًا، وَنَسْأَلُكَ دِيْنًا قَيِّمًا، وَنَسْأَلُكَ الْعَافِيَةَ مِنْ كُلِّ بَلِيَّةٍ، وَنَسْأَلُكَ تَمَامَ الْغِنٰى عَنِ النَّاسِ، وَهَبْ لَنَا حَقِيْقَةَ الْإِيْمَانِ بِكَ حَتّٰى لَا نَخَافَ وَلَا نَرْجُوَ غَيْرَكَ، وَلَا نَعْبُدَ شَيْئًا سِوَاكَ، وَاجْعَلْ يَدَكَ مَبْسُوْطَةً عَلَيْنَا وَعَلٰى أَهْلِيْنَا وَأَوْلَادِنَا وَمَنْ مَعَنَا بِرَحْمَتِكَ، وَلَا تَكِلْنَا إِلٰى أَنْفُسِنَا طَرْفَةَ عَيْنٍ وَلَا أَقَلَّ مِنْ ذٰلِكَ، يَا نِعْمَ الْمُجِيْبُ. وَصَلَّى اللّٰهُ عَلٰى سَيِّدِنَا مُحَمَّدٍ النَّبِيِّ الْكَرِيْمِ وَعَلٰى آلِهِ وَصَحْبِهِ أَجْمَعِيْنَ.",
+ tr:"Ya Allah, kami memohon kepada-Mu lidah yang sentiasa basah dengan zikir kepada-Mu, hati yang penuh dengan syukur kepada-Mu, dan tubuh yang mudah dan ringan untuk mentaati-Mu. Ya Allah, kami memohon kepada-Mu iman yang sempurna, hati yang khusyuk, ilmu yang bermanfaat, keyakinan yang benar, agama yang lurus, kesejahteraan daripada segala bala, dan kecukupan yang sempurna sehingga tidak bergantung kepada manusia. Kurniakanlah kami hakikat iman kepada-Mu sehingga kami tidak takut dan tidak berharap kepada selain-Mu, dan tidak menyembah sesuatu pun selain-Mu. Bentangkanlah tangan (rahmat)-Mu ke atas kami, keluarga kami, anak-anak kami dan sesiapa yang bersama kami, dengan rahmat-Mu. Janganlah Engkau serahkan urusan kami kepada diri kami sendiri walau sekelip mata atau lebih singkat daripada itu, wahai sebaik-baik Tuhan yang memperkenankan doa. Semoga Allah melimpahkan selawat ke atas penghulu kami Muhammad, Nabi yang mulia, serta ke atas keluarga dan seluruh sahabatnya."},
+{h:"Pengakuan kekuasaan Allah",ref:"Ali 'Imran 26–27",s:26,q:["قُلِ اللّٰهُمَّ مٰلِكَ الْمُلْكِ تُؤْتِى الْمُلْكَ مَنْ تَشَآءُ وَتَنْزِعُ الْمُلْكَ مِمَّنْ تَشَآءُ ۖ وَتُعِزُّ مَنْ تَشَآءُ وَتُذِلُّ مَنْ تَشَآءُ ۖ بِيَدِكَ الْخَيْرُ ۖ إِنَّكَ عَلٰى كُلِّ شَيْءٍ قَدِيْرٌ","تُوْلِجُ الَّيْلَ فِي النَّهَارِ وَتُوْلِجُ النَّهَارَ فِي الَّيْلِ ۖ وَتُخْرِجُ الْحَيَّ مِنَ الْمَيِّتِ وَتُخْرِجُ الْمَيِّتَ مِنَ الْحَيِّ ۖ وَتَرْزُقُ مَنْ تَشَآءُ بِغَيْرِ حِسَابٍ"],
+ tr:"Katakanlah: \"Wahai Tuhan yang memiliki kerajaan, Engkau berikan kerajaan kepada sesiapa yang Engkau kehendaki dan Engkau cabut kerajaan daripada sesiapa yang Engkau kehendaki. Engkau muliakan sesiapa yang Engkau kehendaki dan Engkau hinakan sesiapa yang Engkau kehendaki. Di tangan-Mu segala kebaikan; sesungguhnya Engkau berkuasa atas segala sesuatu. Engkau masukkan malam ke dalam siang dan Engkau masukkan siang ke dalam malam; Engkau keluarkan yang hidup daripada yang mati dan Engkau keluarkan yang mati daripada yang hidup; dan Engkau beri rezeki kepada sesiapa yang Engkau kehendaki tanpa hitungan.\""},
+{h:"Doa Rabitah",ar:"اَللّٰهُمَّ إِنَّ هٰذَا إِقْبَالُ {{نَهَارِكَ وَإِدْبَارُ لَيْلِكَ|لَيْلِكَ وَإِدْبَارُ نَهَارِكَ}} وَأَصْوَاتُ دُعَائِكَ فَاغْفِرْ لِيْ. اَللّٰهُمَّ إِنَّكَ تَعْلَمُ أَنَّ هٰذِهِ الْقُلُوْبَ قَدِ اجْتَمَعَتْ عَلٰى مَحَبَّتِكَ، وَالْتَقَتْ عَلٰى طَاعَتِكَ، وَتَوَحَّدَتْ عَلٰى دَعْوَتِكَ، وَتَعَاهَدَتْ عَلٰى نُصْرَةِ شَرِيْعَتِكَ، فَوَثِّقِ اللّٰهُمَّ رَابِطَتَهَا، وَأَدِمْ وُدَّهَا، وَاهْدِهَا سُبُلَهَا، وَامْلَأْهَا بِنُوْرِكَ الَّذِيْ لَا يَخْبُوْ، وَاشْرَحْ صُدُوْرَهَا بِفَيْضِ الْإِيْمَانِ بِكَ وَجَمِيْلِ التَّوَكُّلِ عَلَيْكَ، وَأَحْيِهَا بِمَعْرِفَتِكَ، وَأَمِتْهَا عَلَى الشَّهَادَةِ فِيْ سَبِيْلِكَ، إِنَّكَ نِعْمَ الْمَوْلٰى وَنِعْمَ النَّصِيْرُ. وَصَلِّ اللّٰهُمَّ عَلٰى سَيِّدِنَا مُحَمَّدٍ وَعَلٰى آلِهِ وَصَحْبِهِ وَسَلِّمْ. آمِيْنَ، وَالْحَمْدُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ.",
+ tr:"Ya Allah, inilah saat datangnya {{siang-Mu dan berlalunya malam-Mu|malam-Mu dan berlalunya siang-Mu}}, serta suara-suara mereka yang berdoa kepada-Mu; maka ampunilah aku. Ya Allah, sesungguhnya Engkau mengetahui bahawa hati-hati ini telah berhimpun kerana cinta kepada-Mu, bertemu dalam ketaatan kepada-Mu, bersatu di atas dakwah-Mu, dan berjanji setia untuk membela syariat-Mu. Maka eratkanlah ya Allah ikatannya, kekalkanlah kasih sayangnya, tunjukkanlah jalan-jalannya, penuhilah hati-hati ini dengan cahaya-Mu yang tidak pernah malap, lapangkanlah dadanya dengan limpahan iman kepada-Mu dan keindahan tawakal kepada-Mu, hidupkanlah ia dengan makrifah kepada-Mu, dan matikanlah ia dalam keadaan syahid di jalan-Mu. Sesungguhnya Engkaulah sebaik-baik Pelindung dan sebaik-baik Penolong. Limpahkanlah ya Allah selawat dan salam ke atas penghulu kami Muhammad, keluarga dan sahabatnya. Amin, dan segala puji bagi Allah, Tuhan sekalian alam."}
+];
+
+const AD='٠١٢٣٤٥٦٧٨٩', an=n=>String(n).replace(/\d/g,d=>AD[d]);
+let mt=LS.get('mat_t',null), mk=LS.get('mat_k','k');
+const pt=()=>mt||(new Date(Date.now()+8*3600e3).getUTCHours()>=12?'petang':'pagi');
+const pv=s=>s.replace(/\{\{([^|}]*)\|([^}]*)\}\}/g,(m,a,b)=>pt()==='pagi'?a:b);
+function mRender(){
+  $('mtPagi').classList.toggle('on',pt()==='pagi');$('mtPetang').classList.toggle('on',pt()==='petang');
+  $('mtSughra').classList.toggle('on',mk==='s');$('mtKubra').classList.toggle('on',mk==='k');
+  const L=MAT.filter(m=>mk==='k'||!m.k);
+  $('mInfo').textContent=`Bacaan ${pt()}${mk==='k'?' · Kubra':' · Sughra'} · ${L.length} bacaan`;
+  $('mList').innerHTML=L.map(m=>{
+    let ar;
+    if(m.q){ar=(m.b?'<span class="bsm">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</span>':'')+m.q.map((a,i)=>`${esc(a)} ﴿${an(m.s+i)}﴾`).join(' ');}
+    else ar=esc(pv(m.ar));
+    return `<div class="mitem${m.k?' kub':''}"><div class="mh"><b>${esc(m.h)}</b>${m.ref?`<span>${esc(m.ref)}</span>`:''}${m.k?'<span class="kb">Kubra</span>':''}</div>
+      <div class="arb">${ar}${m.x?`<span class="rep">${m.x}</span>`:''}</div>
+      <div class="mtr${trOn?'':' hide'}">${esc(pv(m.tr))}${m.x?` (${m.x})`:''}</div></div>`;}).join('');
+}
+function mOpen(){$('dList').classList.add('hide');$('mView').classList.remove('hide');$('mTrOn').checked=trOn;mRender();window.scrollTo(0,0);}
+$('mBack').onclick=()=>{$('mView').classList.add('hide');$('dList').classList.remove('hide');window.scrollTo(0,0);};
+$('mtPagi').onclick=()=>{mt='pagi';LS.set('mat_t',mt);mRender();};
+$('mtPetang').onclick=()=>{mt='petang';LS.set('mat_t',mt);mRender();};
+$('mtSughra').onclick=()=>{mk='s';LS.set('mat_k',mk);mRender();};
+$('mtKubra').onclick=()=>{mk='k';LS.set('mat_k',mk);mRender();};
+$('mMinus').onclick=()=>$('dMinus').click(); $('mPlus').onclick=()=>$('dPlus').click();
+$('mTrOn').onchange=()=>{trOn=$('mTrOn').checked;LS.set('doa_tr',trOn);$('dTrOn').checked=trOn;showTr();document.querySelectorAll('.mtr').forEach(e=>e.classList.toggle('hide',!trOn));};
+
+let fs=LS.get('doa_fs',30), trOn=LS.get('doa_tr',true), cur=null;
+function applyFs(){document.documentElement.style.setProperty('--ars',fs+'px');}
+$('dCards').innerHTML=DOA.map((d,i)=>`<button class="dcard" data-i="${i}"><b>${d.title}</b><span>${d.sub}</span></button>`).join('')+`<button class="dcard" data-i="mat"><b>Al-Ma'thurat</b><span>Zikir pagi & petang · Sughra / Kubra</span></button>`;
+$('dCards').querySelectorAll('button').forEach(b=>b.onclick=()=>b.dataset.i==='mat'?mOpen():open(+b.dataset.i));
+function open(i){
+  const d=DOA[i];cur=i;LS.set('doa_last',i);
+  $('dTitle').textContent=d.title;$('dSub').textContent=d.sub;
+  $('dAr').innerHTML=d.ar.map(p=>typeof p==='string'?`<p>${esc(p)}</p>`:p.i?`<div class="inst">${esc(p.i)}</div>`:`<p>${esc(p.t)}<span class="rep">${p.x}</span></p>`).join('');
+  $('dTr').innerHTML='<h4>Terjemahan</h4>'+d.tr.map(p=>typeof p==='string'?`<p>${esc(p)}</p>`:`<p class="inst">${esc(p.i)}</p>`).join('');
+  $('dSrc').textContent='Sumber: '+d.src;
+  $('dList').classList.add('hide');$('dView').classList.remove('hide');window.scrollTo(0,0);
+}
+$('dBack').onclick=()=>{$('dView').classList.add('hide');$('dList').classList.remove('hide');window.scrollTo(0,0);};
+$('dMinus').onclick=()=>{fs=Math.max(20,fs-2);LS.set('doa_fs',fs);applyFs();};
+$('dPlus').onclick=()=>{fs=Math.min(48,fs+2);LS.set('doa_fs',fs);applyFs();};
+$('dTrOn').checked=trOn; const showTr=()=>$('dTr').classList.toggle('hide',!trOn);
+$('dTrOn').onchange=()=>{trOn=$('dTrOn').checked;LS.set('doa_tr',trOn);showTr();};
+applyFs();showTr();
+})();
+</script>
+<script>
+/* ================= SURAH LAZIM (Al-Quran) ================= */
+(function(){
+const $=id=>document.getElementById(id);
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const API='https://api.alquran.cloud/v1/surah/', QC='myqiblat-quran';
+const AD='٠١٢٣٤٥٦٧٨٩', an=n=>String(n).replace(/\d/g,d=>AD[d]);
+const LAZIM=[[36,'Yasin',83,'Malam Jumaat · Tahlil'],[67,'Al-Mulk',30,'Sebelum tidur'],[56,"Al-Waqi'ah",96,'Amalan malam'],[18,'Al-Kahfi',110,'Hari Jumaat'],[32,'As-Sajdah',30,'Sebelum tidur'],[55,'Ar-Rahman',78,''],[44,'Ad-Dukhan',59,'Malam Jumaat']];
+const JUZ30=[[78,"An-Naba'",40],[79,"An-Nazi'at",46],[80,"'Abasa",42],[81,'At-Takwir',29],[82,'Al-Infitar',19],[83,'Al-Mutaffifin',36],[84,'Al-Insyiqaq',25],[85,'Al-Buruj',22],[86,'At-Tariq',17],[87,"Al-A'la",19],[88,'Al-Ghasyiyah',26],[89,'Al-Fajr',30],[90,'Al-Balad',20],[91,'Asy-Syams',15],[92,'Al-Lail',21],[93,'Ad-Duha',11],[94,'Asy-Syarh',8],[95,'At-Tin',8],[96,"Al-'Alaq",19],[97,'Al-Qadr',5],[98,'Al-Bayyinah',8],[99,'Az-Zalzalah',8],[100,"Al-'Adiyat",11],[101,"Al-Qari'ah",11],[102,'At-Takathur',8],[103,"Al-'Asr",3],[104,'Al-Humazah',9],[105,'Al-Fil',5],[106,'Quraisy',4],[107,"Al-Ma'un",7],[108,'Al-Kauthar',3],[109,'Al-Kafirun',6],[110,'An-Nasr',3],[111,'Al-Masad',5],[112,'Al-Ikhlas',4],[113,'Al-Falaq',5],[114,'An-Nas',6]];
+const NAME=Object.fromEntries([...LAZIM,...JUZ30].map(x=>[x[0],x[1]]));
+let cur=null, obs=null;
+function card(s,n,c,tag){return `<button class="dcard" data-s="${s}"><b>${s}. ${esc(n)}</b><span>${c} ayat${tag?' · '+esc(tag):''}</span></button>`;}
+function lastCard(){const l=LS.get('qs_last',null);return l?`<button class="dcard" data-s="${l.s}" style="border-color:var(--gold)"><b>📖 Sambung bacaan</b><span>${esc(NAME[l.s]||('Surah '+l.s))} · ayat ${l.a}</span></button>`:'';}
+const BM=()=>LS.get('qs_bm',[]);
+function bmCard(){const b=BM();if(!b.length)return '';
+  return `<button class="dcard" id="bmBtn" style="border-color:var(--gold)"><b>🔖 Penanda ayat (${b.length})</b><span>Ayat kegemaran yang anda simpan</span></button><div id="bmList" class="hide">`+
+   b.map((x,i)=>`<div class="bmi"><button class="dcard" data-s="${x.s}" data-a="${x.a}"><b>${esc(NAME[x.s]||('Surah '+x.s))} · ayat ${x.a}</b><span class="bmAr">${esc(x.t||'')}</span></button><button class="bmx" data-i="${i}" aria-label="Buang">✕</button></div>`).join('')+'</div>';}
+function drawList(){
+  $('qsCards').innerHTML=lastCard()+bmCard()+LAZIM.map(x=>card(x[0],x[1],x[2],x[3])).join('')+`<button class="dcard" id="qsJuzBtn"><b>📚 Juz 'Amma</b><span>Surah An-Naba' hingga An-Nas (37 surah)</span></button><div id="qsJuz" class="hide">${JUZ30.map(x=>card(x[0],x[1],x[2])).join('')}</div>`;
+  $('qsJuzBtn').onclick=()=>$('qsJuz').classList.toggle('hide');
+  if($('bmBtn'))$('bmBtn').onclick=()=>$('bmList').classList.toggle('hide');
+  $('qsCards').querySelectorAll('button[data-s]').forEach(b=>b.onclick=()=>openS(+b.dataset.s,b.dataset.a?+b.dataset.a:0));
+  $('qsCards').querySelectorAll('.bmx').forEach(b=>b.onclick=()=>{const l=BM();l.splice(+b.dataset.i,1);LS.set('qs_bm',l);drawList();if($('bmList'))$('bmList').classList.remove('hide');});
+}
+async function getSurah(s){
+  const url=`${API}${s}/editions/quran-uthmani,ms.basmeih`;
+  let c=null; try{c=await caches.open(QC);const m=await c.match(url);if(m)return await m.json();}catch(e){}
+  const r=await fetch(url); if(!r.ok) throw new Error('HTTP '+r.status);
+  const j=await r.json(); if(j.code!==200||!Array.isArray(j.data)) throw new Error('data tidak sah');
+  try{c&&await c.put(url,new Response(JSON.stringify(j),{headers:{'Content-Type':'application/json'}}));}catch(e){}
+  return j;
+}
+async function openS(s,go){
+  cur=s; $('dList').classList.add('hide'); $('sView').classList.remove('hide'); window.scrollTo(0,0);
+  $('sTitle').textContent=`${s}. ${NAME[s]||''}`; $('sInfo').textContent=''; $('sBody').innerHTML='<div class="note">Memuatkan surah…</div>';
+  $('sTrOn').checked=LS.get('doa_tr',true);
+  let j; try{j=await getSurah(s);}catch(e){$('sBody').innerHTML=`<div class="note warn">Gagal memuatkan surah (${esc(e.message)}). Buka sekali ketika ada internet; selepas itu surah boleh dibaca tanpa internet.</div>`;return;}
+  const ar=j.data.find(d=>d.edition&&d.edition.identifier==='quran-uthmani')||j.data[0];
+  const ms=j.data.find(d=>d.edition&&d.edition.language==='ms')||j.data[1];
+  $('sTitle').innerHTML=`${s}. ${esc(NAME[s]||ar.englishName)} <span class="sAr">${esc(ar.name)}</span>`;
+  $('sInfo').textContent=`${ar.numberOfAyahs} ayat · ${ar.revelationType==='Meccan'?'Makkiyah':'Madaniyah'}`;
+  let basm='';
+  const ay=ar.ayahs.map((a,i)=>{let t=a.text.replace(/^﻿/,'');
+    if(i===0&&s!==1&&s!==9&&t.startsWith('بِسْمِ')){const w=t.split(' ');basm=w.slice(0,4).join(' ');t=w.slice(4).join(' ');}
+    return {n:a.numberInSurah,t,tr:ms&&ms.ayahs[i]?ms.ayahs[i].text:''};});
+  const trOn=$('sTrOn').checked;
+  $('sBody').innerHTML=(basm?`<div class="qbsm">${esc(basm)}</div>`:'')+ay.map(a=>`<div class="ayah" id="ay${a.n}" data-n="${a.n}"><button class="bm${BM().some(x=>x.s===s&&x.a===a.n)?' on':''}" data-a="${a.n}" aria-label="Penanda ayat">🔖</button><div class="qar">${esc(a.t)} <span class="qno">﴿${an(a.n)}﴾</span></div><div class="mtr qtr${trOn?'':' hide'}"><b>${a.n}.</b> ${esc(a.tr)}</div></div>`).join('')+
+    `<div class="note" style="margin-top:14px">Teks al-Quran: Tanzil (rasm Uthmani) melalui alquran.cloud. Terjemahan: Abdullah Muhammad Basmeih, Tafsir Pimpinan Ar-Rahman.</div>`;
+  $('sBody').querySelectorAll('.bm').forEach(b=>b.onclick=()=>{const n=+b.dataset.a,l=BM(),i=l.findIndex(x=>x.s===s&&x.a===n);
+    if(i>=0)l.splice(i,1);else{const t=(ay.find(x=>x.n===n)||{t:''}).t.split(' ').slice(0,7).join(' ');l.unshift({s,a:n,t,at:Date.now()});}
+    LS.set('qs_bm',l.slice(0,200));b.classList.toggle('on',i<0);});
+  if(go){setTimeout(()=>{const el=$('ay'+go);if(el)el.scrollIntoView({block:'start'});},50);}
+  const l=LS.get('qs_last',null);
+  if(!go&&l&&l.s===s&&l.a>1){$('sInfo').innerHTML+=` · <a href="#" id="sGo" style="color:var(--gold)">Ke ayat ${l.a}</a>`;$('sGo').onclick=e=>{e.preventDefault();const el=$('ay'+l.a);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});};}
+  if(obs)obs.disconnect();
+  if('IntersectionObserver' in window){obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting&&e.boundingClientRect.top<window.innerHeight*0.5){LS.set('qs_last',{s:cur,a:+e.target.dataset.n});}});},{rootMargin:'0px 0px -60% 0px'});
+    document.querySelectorAll('#sBody .ayah').forEach(el=>obs.observe(el));}
+}
+$('sBack').onclick=()=>{if(obs)obs.disconnect();$('sView').classList.add('hide');$('dList').classList.remove('hide');drawList();window.scrollTo(0,0);};
+$('sMinus').onclick=()=>$('dMinus').click(); $('sPlus').onclick=()=>$('dPlus').click();
+$('sTrOn').onchange=()=>{const on=$('sTrOn').checked;LS.set('doa_tr',on);document.querySelectorAll('.qtr').forEach(e=>e.classList.toggle('hide',!on));};
+drawList();
+})();
+</script>
+
+
+
+
+
+
+<script>
+/* ================= TAHLIL RINGKAS & DOA ARWAH ================= */
+(function(){
+const $=id=>document.getElementById(id);
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const API='https://api.alquran.cloud/v1/surah/', QC='myqiblat-quran';
+const AD='٠١٢٣٤٥٦٧٨٩', an=n=>String(n).replace(/\d/g,d=>AD[d]);
+const BSM='بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ';
+const TT='لَا إِلٰهَ إِلَّا اللّٰهُ وَاللّٰهُ أَكْبَرُ', TTm='Tiada Tuhan melainkan Allah, dan Allah Maha Besar.';
+const FAT={h:'Al-Fatihah',q:[1,1,7]};
+const SEL=(g,gm)=>({h:'Selawat',ar:`اَللّٰهُمَّ صَلِّ أَفْضَلَ الصَّلَاةِ عَلٰى أَسْعَدِ مَخْلُوْقَاتِكَ ${g} سَيِّدِنَا مُحَمَّدٍ وَعَلٰى آلِهِ وَصَحْبِهِ وَسَلِّمْ، عَدَدَ مَعْلُوْمَاتِكَ وَمِدَادَ كَلِمَاتِكَ، كُلَّمَا ذَكَرَكَ الذَّاكِرُوْنَ وَغَفَلَ عَنْ ذِكْرِكَ الْغَافِلُوْنَ`,
+ tr:`Ya Allah, limpahkanlah selawat yang paling utama ke atas makhluk-Mu yang paling bahagia, ${gm}, penghulu kami Muhammad, serta ke atas keluarga dan sahabatnya, dan kurniakanlah kesejahteraan, sebanyak segala yang Engkau ketahui dan sebanyak tinta kalimah-kalimah-Mu, setiap kali Engkau diingati oleh orang yang mengingati-Mu dan dilalaikan daripada mengingati-Mu oleh orang yang lalai.`});
+/* q:[surah, ayat mula, ayat akhir]; x: ulangan; sec: tajuk bahagian */
+const T=[
+{sec:'Tahlil Ringkas'},
+{h:'Hadiah al-Fatihah',ar:'إِلٰى حَضْرَةِ النَّبِيِّ صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ وَآلِهِ وَصَحْبِهِ شَيْءٌ لِلّٰهِ لَهُمُ الْفَاتِحَةُ',tr:'Kepada hadrat Nabi ﷺ, keluarga dan sahabat baginda; sesuatu kerana Allah, bagi mereka al-Fatihah.'},
+FAT,
+{h:'Al-Ikhlas',q:[112,1,4],x:'3×'},
+{h:'Tahlil & takbir',ar:TT,tr:TTm},
+{h:'Al-Falaq',q:[113,1,5]},
+{h:'Tahlil & takbir',ar:TT,tr:TTm},
+{h:'An-Nas',q:[114,1,6]},
+{h:'Tahlil & takbir',ar:TT,tr:TTm},
+FAT,
+{h:'Al-Baqarah',q:[2,1,5]},
+{h:'Al-Baqarah',q:[2,163,163]},
+{h:'Ayat Kursi · Al-Baqarah',q:[2,255,255]},
+{h:'Al-Baqarah',q:[2,284,286]},
+{h:'Istirham',ar:'يَا أَرْحَمَ الرَّاحِمِيْنَ ارْحَمْنَا',x:'3×',tr:'Wahai Tuhan Yang Paling Pengasih di antara yang pengasih, kasihanilah kami.'},
+{h:'Hud',q:[11,73,73]},
+{h:'Al-Ahzab',q:[33,33,33]},
+{h:'Al-Ahzab',q:[33,56,56]},
+SEL('حَبِيْبِ اللّٰهِ','kekasih Allah'),
+SEL('شَمْسِ الضُّحٰى','mentari waktu dhuha'),
+SEL('بَدْرِ الدُّجٰى','bulan purnama di malam gelap'),
+{h:'Doa reda untuk sahabat',ar:'وَسَلِّمْ وَرَضِيَ اللّٰهُ تَعَالٰى عَنْ أَصْحَابِ سَيِّدِنَا رَسُوْلِ اللّٰهِ أَجْمَعِيْنَ',tr:'Dan kurniakanlah kesejahteraan; semoga Allah Ta\'ala meredai seluruh sahabat penghulu kami Rasulullah.'},
+{h:'Hasbunallah',ar:'حَسْبُنَا اللّٰهُ وَنِعْمَ الْوَكِيْلُ، نِعْمَ الْمَوْلٰى وَنِعْمَ النَّصِيْرُ',tr:'Cukuplah Allah bagi kami dan Dialah sebaik-baik tempat berserah; Dialah sebaik-baik Pelindung dan sebaik-baik Penolong.'},
+{h:'Hauqalah',ar:'وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ الْعَلِيِّ الْعَظِيْمِ',tr:'Tiada daya dan tiada kekuatan melainkan dengan Allah Yang Maha Tinggi lagi Maha Agung.'},
+{h:'Istighfar',ar:'أَسْتَغْفِرُ اللّٰهَ الْعَظِيْمَ',x:'3×',tr:'Aku memohon ampun kepada Allah Yang Maha Agung.'},
+{h:'Afdhaluz zikri',ar:'أَفْضَلُ الذِّكْرِ فَاعْلَمْ أَنَّهُ لَا إِلٰهَ إِلَّا اللّٰهُ',tr:'Zikir yang paling utama, maka ketahuilah, ialah: Tiada Tuhan melainkan Allah.'},
+{h:'Tahlil',ar:'لَا إِلٰهَ إِلَّا اللّٰهُ',x:'33× / 100×',tr:'Tiada Tuhan melainkan Allah.',tasbih:1},
+{h:'Syahadah',ar:'لَا إِلٰهَ إِلَّا اللّٰهُ مُحَمَّدٌ رَسُوْلُ اللّٰهِ صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ، عَلَيْهَا نَحْيَا وَعَلَيْهَا نَمُوْتُ وَعَلَيْهَا نُبْعَثُ إِنْ شَاءَ اللّٰهُ تَعَالٰى مِنَ الْآمِنِيْنَ، الْفَاتِحَةُ',tr:'Tiada Tuhan melainkan Allah, Muhammad pesuruh Allah ﷺ. Di atas kalimah inilah kami hidup, di atasnya kami mati dan di atasnya kami dibangkitkan, insya-Allah Ta\'ala, dalam golongan orang yang aman sentosa. Al-Fatihah.'},
+FAT,
+{sec:'Doa Tahlil Arwah'},
+{h:'Pujian',ar:BSM+'. اَلْحَمْدُ لِلّٰهِ رَبِّ الْعٰلَمِيْنَ، حَمْدًا يُوَافِيْ نِعَمَهُ وَيُكَافِئُ مَزِيْدَهُ، يَا رَبَّنَا لَكَ الْحَمْدُ كَمَا يَنْبَغِيْ لِجَلَالِ وَجْهِكَ وَعَظِيْمِ سُلْطَانِكَ.',tr:'Dengan nama Allah Yang Maha Pemurah lagi Maha Penyayang. Segala puji bagi Allah, Tuhan sekalian alam, pujian yang menyamai nikmat-nikmat-Nya dan menandingi tambahan kurniaan-Nya. Wahai Tuhan kami, bagi-Mu segala puji sebagaimana yang layak bagi keagungan wajah-Mu dan kebesaran kekuasaan-Mu.'},
+{h:'Selawat Tunjina',ar:'اَللّٰهُمَّ صَلِّ عَلٰى سَيِّدِنَا مُحَمَّدٍ صَلَاةً تُنَجِّيْنَا بِهَا مِنْ جَمِيْعِ الْأَهْوَالِ وَالْآفَاتِ، وَتَقْضِيْ لَنَا بِهَا جَمِيْعَ الْحَاجَاتِ، وَتُطَهِّرُنَا بِهَا مِنْ جَمِيْعِ السَّيِّئَاتِ، وَتَرْفَعُنَا بِهَا عِنْدَكَ أَعْلَى الدَّرَجَاتِ، وَتُبَلِّغُنَا بِهَا أَقْصَى الْغَايَاتِ، مِنْ جَمِيْعِ الْخَيْرَاتِ فِي الْحَيَاةِ وَبَعْدَ الْمَمَاتِ.',tr:'Ya Allah, limpahkanlah selawat ke atas penghulu kami Muhammad, selawat yang dengannya Engkau selamatkan kami daripada segala ketakutan dan bencana, Engkau tunaikan segala hajat kami, Engkau sucikan kami daripada segala kejahatan, Engkau angkat kami ke darjat tertinggi di sisi-Mu, dan Engkau sampaikan kami ke puncak matlamat dalam segala kebaikan, semasa hidup dan selepas mati.'},
+{h:'Menghadiahkan pahala',ar:'اَللّٰهُمَّ تَقَبَّلْ وَأَوْصِلْ ثَوَابَ مَا قَرَأْنَاهُ مِنَ الْقُرْآنِ الْعَظِيْمِ، وَمَا اسْتَغْفَرْنَاهُ مِنْ قَوْلِ أَسْتَغْفِرُ اللّٰهَ الْعَظِيْمَ، وَمَا هَلَّلْنَاهُ مِنْ قَوْلِ لَا إِلٰهَ إِلَّا اللّٰهُ، وَمَا سَبَّحْنَاهُ مِنْ قَوْلِ سُبْحَانَ اللّٰهِ، وَمَا صَلَّيْنَاهُ عَلٰى سَيِّدِنَا مُحَمَّدٍ صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ فِيْ هٰذَا الْمَجْلِسِ الْمُبَارَكِ، هَدِيَّةً مِنَّا وَاصِلَةً، وَرَحْمَةً مِنْكَ نَازِلَةً، وَبَرَكَةً شَامِلَةً، نُهْدِيْهَا وَنُقَدِّمُهَا إِلٰى حَضْرَةِ النَّبِيِّ مُحَمَّدٍ صَلَّى اللّٰهُ عَلَيْهِ وَسَلَّمَ.',tr:'Ya Allah, terimalah dan sampaikanlah pahala al-Quran yang agung yang telah kami baca, istighfar yang kami ucapkan dengan lafaz "astaghfirullahal \'azim", tahlil "la ilaha illallah", tasbih "subhanallah", dan selawat kami ke atas penghulu kami Muhammad ﷺ dalam majlis yang diberkati ini, sebagai hadiah daripada kami yang sampai, rahmat daripada-Mu yang turun dan keberkatan yang menyeluruh. Kami hadiahkan dan persembahkannya kepada hadrat Nabi Muhammad ﷺ.'},
+{h:'Kepada para nabi, sahabat & ulama',ar:'ثُمَّ إِلٰى جَمِيْعِ إِخْوَانِهِ مِنَ الْأَنْبِيَاءِ وَالْمُرْسَلِيْنَ وَآلِهِ وَأَصْحَابِهِ وَأَزْوَاجِهِ وَذُرِّيَّاتِهِ وَأَهْلِ بَيْتِهِ أَجْمَعِيْنَ، وَالتَّابِعِيْنَ وَتَابِعِ التَّابِعِيْنَ، وَالْخُلَفَاءِ الرَّاشِدِيْنَ، وَالْأَئِمَّةِ الْمُجْتَهِدِيْنَ، وَالْأَوْلِيَاءِ وَالشُّهَدَاءِ وَالصَّالِحِيْنَ، وَالْعُلَمَاءِ الْعَامِلِيْنَ، وَجَمِيْعِ مَشَايِخِنَا وَأَسَاتِذَتِنَا.',tr:'Kemudian kepada seluruh saudara baginda daripada kalangan para nabi dan rasul, keluarga, sahabat, isteri, zuriat dan ahli bait baginda semuanya; para tabi\'in dan tabi\' tabi\'in, al-Khulafa\' ar-Rasyidin, para imam mujtahid, para wali, syuhada\' dan orang soleh, para ulama yang beramal, serta seluruh guru dan pendidik kami.'},
+{h:'Kepada ahli kubur',ar:'ثُمَّ إِلٰى جَمِيْعِ أَهْلِ قُبُوْرٍ مِنَ الْمُسْلِمِيْنَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِيْنَ وَالْمُؤْمِنَاتِ، مِنْ مَشَارِقِ الْأَرْضِ وَمَغَارِبِهَا، بَرِّهَا وَبَحْرِهَا، آبَائِنَا وَأُمَّهَاتِنَا وَأَجْدَادِنَا وَجَدَّاتِنَا، وَنَخُصُّ خُصُوْصًا مَنِ اجْتَمَعْنَا هٰهُنَا بِسَبَبِهِ وَلِأَجْلِهِ.',tr:'Kemudian kepada seluruh ahli kubur daripada kalangan muslimin dan muslimat, mukminin dan mukminat, dari timur hingga ke barat bumi, di darat dan di lautan; bapa-bapa, ibu-ibu, datuk-datuk dan nenek-nenek kami; dan khususnya kepada orang yang kerananya kami berhimpun di sini.'},
+{h:'Nama arwah',arwah:1},
+{h:'Doa keampunan',ar:'اَللّٰهُمَّ اغْفِرْ لَهُمْ وَارْحَمْهُمْ وَعَافِهِمْ وَاعْفُ عَنْهُمْ',x:'3×',tr:'Ya Allah, ampunilah mereka, rahmatilah mereka, sejahterakanlah mereka dan maafkanlah mereka.'},
+{h:'Kubur sebagai taman syurga',ar:'اَللّٰهُمَّ اجْعَلْ قُبُوْرَهُمْ رَوْضَةً مِنْ رِيَاضِ الْجِنَانِ، وَلَا تَجْعَلْ قُبُوْرَهُمْ حُفْرَةً مِنْ حُفَرِ النِّيْرَانِ.',tr:'Ya Allah, jadikanlah kubur mereka sebuah taman daripada taman-taman syurga, dan janganlah Engkau jadikan kubur mereka sebuah lubang daripada lubang-lubang neraka.'},
+{h:'Tebusan daripada neraka',ar:'اَللّٰهُمَّ بِحَقِّ الْقُرْآنِ الْعَظِيْمِ، بِجَاهِ كَلَامِكَ الْقَدِيْمِ، اِجْعَلِ اللّٰهُمَّ ثَوَابَ ذٰلِكَ بَعْدَ الْقَبُوْلِ فِدَاءً لَهُمْ مِنَ النَّارِ، وَسِتْرًا لَهُمْ مِنَ النَّارِ.',tr:'Ya Allah, dengan hak al-Quran yang agung dan kemuliaan kalam-Mu yang qadim, jadikanlah ya Allah pahala bacaan itu, setelah Engkau terima, sebagai tebusan bagi mereka daripada neraka dan pendinding bagi mereka daripada neraka.'},
+{h:'Al-Quran sebagai peneman',ar:'اِجْعَلِ اللّٰهُمَّ الْقُرْآنَ يَا اللّٰهُ فِيْ قُبُوْرِهِمْ مُؤْنِسًا لَهُمْ، وَفِي الْقِيَامَةِ شَافِعًا، عَلَى النَّارِ سِتْرًا وَحِجَابًا، وَاجْعَلِ اللّٰهُمَّ الْجَنَّةَ مَأْوَاهُمْ.',tr:'Jadikanlah ya Allah al-Quran sebagai peneman bagi mereka di dalam kubur, pemberi syafaat pada hari kiamat, serta pendinding dan hijab daripada neraka; dan jadikanlah ya Allah syurga tempat kembali mereka.'},
+{h:'Rahmat untuk seluruh ahli kubur',ar:'اَللّٰهُمَّ أَنْزِلِ الرَّحْمَةَ وَالشَّفَاعَةَ وَالْمَغْفِرَةَ عَلٰى جَمِيْعِ أَهْلِ قُبُوْرٍ مِنَ الْمُسْلِمِيْنَ وَالْمُسْلِمَاتِ وَالْمُؤْمِنِيْنَ وَالْمُؤْمِنَاتِ، اِرْفَعْ لَهُمُ الدَّرَجَاتِ وَضَاعِفْ لَهُمُ الْحَسَنَاتِ وَكَفِّرْ عَنْهُمُ السَّيِّئَاتِ وَأَدْخِلْهُمُ الْجَنَّةَ مَعَ الْآبَاءِ وَالْأُمَّهَاتِ.',tr:'Ya Allah, turunkanlah rahmat, syafaat dan keampunan ke atas seluruh ahli kubur daripada kalangan muslimin dan muslimat, mukminin dan mukminat. Angkatlah darjat mereka, gandakanlah kebaikan mereka, hapuskanlah kesalahan mereka dan masukkanlah mereka ke dalam syurga bersama bapa-bapa dan ibu-ibu.'},
+{h:'Untuk saudara seiman',ar:'رَبَّنَا اغْفِرْ لَنَا وَلِإِخْوَانِنَا الَّذِيْنَ سَبَقُوْنَا بِالْإِيْمَانِ، رَبَّنَا إِنَّكَ رَؤُوْفٌ رَحِيْمٌ.',tr:'Wahai Tuhan kami, ampunilah kami dan saudara-saudara kami yang telah mendahului kami dengan iman. Wahai Tuhan kami, sesungguhnya Engkau Maha Belas Kasihan lagi Maha Penyayang.'},
+{h:'Al-Fajr',q:[89,27,30]},
+{h:'Doa penutup',ar:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ. وَصَلَّى اللّٰهُ عَلٰى سَيِّدِنَا مُحَمَّدٍ وَعَلٰى آلِهِ وَصَحْبِهِ وَسَلَّمَ، سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُوْنَ، وَسَلَامٌ عَلَى الْمُرْسَلِيْنَ، وَالْحَمْدُ لِلّٰهِ رَبِّ الْعٰلَمِيْنَ. الْفَاتِحَةُ.',tr:'Wahai Tuhan kami, kurniakanlah kami kebaikan di dunia dan kebaikan di akhirat, dan peliharalah kami daripada azab neraka. Semoga Allah melimpahkan selawat dan salam ke atas penghulu kami Muhammad, keluarga dan sahabatnya. Maha Suci Tuhanmu, Tuhan Yang Maha Perkasa, daripada apa yang mereka sifatkan; kesejahteraan ke atas para rasul; dan segala puji bagi Allah, Tuhan sekalian alam. Al-Fatihah.'},
+FAT,
+{h:'Amin & penutup majlis',ar:'آمِيْنَ آمِيْنَ آمِيْنَ يَا رَبَّ الْعَالَمِيْنَ، رَبَّنَا تَقَبَّلْ مِنَّا دُعَاءَنَا إِنَّكَ أَنْتَ السَّمِيْعُ الْعَلِيْمُ، وَتُبْ عَلَيْنَا يَا مَوْلَانَا إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيْمُ، وَلَا تُؤَاخِذْنَا بِالْعَظَائِمِ وَالْجَرَائِمِ يَا كَرِيْمُ، وَآخِرُ دَعْوَانَا أَنِ الْحَمْدُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ. تَقَبَّلَ اللّٰهُ مِنَّا وَمِنْكُمْ. (تَقَبَّلْ مِنَّا يَا كَرِيْمُ)',tr:'Perkenankanlah, perkenankanlah, perkenankanlah, wahai Tuhan sekalian alam. Wahai Tuhan kami, terimalah doa kami; sesungguhnya Engkau Maha Mendengar lagi Maha Mengetahui. Terimalah taubat kami, wahai Tuhan kami; sesungguhnya Engkau Maha Penerima taubat lagi Maha Penyayang. Janganlah Engkau hukum kami kerana dosa-dosa besar dan kesalahan kami, wahai Tuhan Yang Maha Pemurah. Dan akhir doa kami ialah segala puji bagi Allah, Tuhan sekalian alam. Semoga Allah menerima (amalan) kami dan kamu. (Terimalah daripada kami, wahai Tuhan Yang Maha Pemurah.)'}
+];
+let g=LS.get('tah_g','L'), nama=LS.get('tah_nama',''), Q={};
+function arwah(){
+  const n=nama.trim()?`<span class="tnm" dir="auto">${esc(nama.trim())}</span>`:'……';
+  return g==='L'
+   ?{ar:`وَخُصُوْصًا إِلٰى رُوْحِ الْمَرْحُوْمِ ${n} وَأُصُوْلِهِ وَفُرُوْعِهِ وَمَنْ يَنْتَسِبُ إِلَيْهِ أَجْمَعِيْنَ.`,tr:`Dan khususnya kepada roh almarhum ${n}, serta usul (asal keturunan) dan furu' (keturunan)nya dan sesiapa yang bernasab kepadanya, semuanya.`}
+   :{ar:`وَخُصُوْصًا إِلٰى رُوْحِ الْمَرْحُوْمَةِ ${n} وَأُصُوْلِهَا وَفُرُوْعِهَا وَمَنْ يَنْتَسِبُ إِلَيْهَا أَجْمَعِيْنَ.`,tr:`Dan khususnya kepada roh almarhumah ${n}, serta usul (asal keturunan) dan furu' (keturunan)nya dan sesiapa yang bernasab kepadanya, semuanya.`};
+}
+async function getS(s){
+  const url=`${API}${s}/editions/quran-uthmani,ms.basmeih`;
+  let c=null; try{c=await caches.open(QC);const m=await c.match(url);if(m)return await m.json();}catch(e){}
+  const r=await fetch(url); if(!r.ok) throw new Error('HTTP '+r.status);
+  const j=await r.json(); if(j.code!==200||!Array.isArray(j.data)) throw new Error('data tidak sah');
+  try{c&&await c.put(url,new Response(JSON.stringify(j),{headers:{'Content-Type':'application/json'}}));}catch(e){}
+  return j;
+}
+function qHtml(it){
+  const [s,a,b]=it.q, j=Q[s];
+  if(!j) return {ar:'<span class="small">Memuatkan ayat…</span>',tr:''};
+  if(j.err) return {ar:`<span class="small">Gagal memuatkan ayat (${esc(j.err)}). Buka sekali ketika ada internet.</span>`,tr:''};
+  const ar=j.data.find(d=>d.edition&&d.edition.identifier==='quran-uthmani')||j.data[0];
+  const ms=j.data.find(d=>d.edition&&d.edition.language==='ms')||j.data[1];
+  let bsm='', A=[], M=[];
+  for(let n=a;n<=b;n++){let t=(ar.ayahs[n-1].text||'').replace(/^﻿/,'');
+    if(n===1&&s!==1&&s!==9&&t.startsWith('بِسْمِ')){const w=t.split(' ');bsm=w.slice(0,4).join(' ');t=w.slice(4).join(' ');}
+    A.push(`${esc(t)} ﴿${an(n)}﴾`); M.push(`(${n}) ${esc(ms&&ms.ayahs[n-1]?ms.ayahs[n-1].text:'')}`);}
+  return {ar:(bsm?`<span class="bsm">${esc(bsm)}</span>`:'')+A.join(' '),tr:M.join(' ')};
+}
+function render(){
+  $('tgL').classList.toggle('on',g==='L');$('tgP').classList.toggle('on',g==='P');
+  const trOn=LS.get('doa_tr',true); let k=0;
+  $('tList').innerHTML=T.map(it=>{
+    if(it.sec) return `<h3 style="color:var(--gold);font-size:.98rem;margin-top:18px;text-align:center">${esc(it.sec)}</h3>`;
+    k++; let ar,tr,ref='';
+    if(it.q){const r=qHtml(it);ar=r.ar;tr=r.tr;ref=`${it.q[1]===it.q[2]?'ayat '+it.q[1]:'ayat '+it.q[1]+'–'+it.q[2]}`;}
+    else if(it.arwah){const r=arwah();ar=r.ar;tr=r.tr;}
+    else {ar=esc(it.ar);tr=esc(it.tr);}
+    const rep=it.x?`<span class="rep">${it.x}</span>`:'';
+    return `<div class="mitem${it.arwah?' kub':''}"><div class="mh"><b>${k}. ${esc(it.h)}</b>${ref?`<span>${ref}</span>`:''}${it.arwah?'<span class="kb">'+(g==='L'?'Arwah lelaki':'Arwah wanita')+'</span>':''}</div>
+      <div class="arb">${ar}${rep}</div>
+      <div class="mtr${trOn?'':' hide'}">${tr}${it.x?` (${it.x})`:''}</div>${it.tasbih?'<button class="btn sec ttb" style="margin-top:8px;padding:6px">📿 Kira dengan Tasbih</button>':''}</div>`;}).join('');
+  const tb=$('tList').querySelector('.ttb'); if(tb) tb.onclick=()=>{const b=document.getElementById('tT'); if(b) b.click();};
+}
+async function loadQ(){
+  const ss=[...new Set(T.filter(x=>x.q).map(x=>x.q[0]))];
+  await Promise.all(ss.map(async s=>{if(Q[s]&&!Q[s].err)return;try{Q[s]=await getS(s);}catch(e){Q[s]={err:e.message};}}));
+  if(!$('tView').classList.contains('hide')) render();
+}
+function tOpen(){
+  $('dList').classList.add('hide');$('tView').classList.remove('hide');
+  $('tTrOn').checked=LS.get('doa_tr',true);$('tNama').value=nama;
+  $('tInfo').textContent='Bacaan bertanda ulangan (3×, 33×) dibaca berulang. Taip nama arwah di atas untuk dimasukkan ke dalam doa.';
+  render();window.scrollTo(0,0);loadQ();
+}
+$('tBack').onclick=()=>{$('tView').classList.add('hide');$('dList').classList.remove('hide');window.scrollTo(0,0);};
+$('tgL').onclick=()=>{g='L';LS.set('tah_g',g);render();};
+$('tgP').onclick=()=>{g='P';LS.set('tah_g',g);render();};
+$('tNama').oninput=()=>{nama=$('tNama').value;LS.set('tah_nama',nama);
+  const it=T.find(x=>x.arwah); const r=arwah(); const box=[...document.querySelectorAll('#tList .mitem.kub')][0];
+  if(box){box.querySelector('.arb').innerHTML=r.ar;box.querySelector('.mtr').innerHTML=r.tr;}};
+$('tMinus').onclick=()=>$('dMinus').click(); $('tPlus').onclick=()=>$('dPlus').click();
+$('tTrOn').onchange=()=>{const on=$('tTrOn').checked;LS.set('doa_tr',on);document.querySelectorAll('#tList .mtr').forEach(e=>e.classList.toggle('hide',!on));};
+const btn=document.createElement('button');btn.className='dcard';
+btn.innerHTML='<b>Tahlil Ringkas &amp; Doa Arwah</b><span>Susunan tahlil · nama arwah lelaki / wanita</span>';
+btn.onclick=tOpen;
+const dc=$('dCards'); const mb=dc.querySelector('[data-i="mat"]'); dc.insertBefore(btn,mb);
+})();
+</script>
+
+<script>
+/* ================= B5: QIBLAT KAMERA (AR) ================= */
+(function(){
+const $=id=>document.getElementById(id);
+const R=Math.PI/180, D=180/Math.PI, norm=a=>((a%360)+360)%360, sdiff=a=>{a=norm(a);return a>180?a-360:a;};
+const FOV=48; // anggaran sudut pandang mendatar kamera belakang (potret)
+let stream=null, on=false, sS=0,cS=0,has=false, camH=null, flat=false, sensor=null, lastSensor=0, wasAl=false, raf=0;
+function qib(){
+  if(window.QIB&&window.QIB.q()!=null)return window.QIB.q();
+  try{const s=JSON.parse(localStorage.getItem('qiblat_loc'));if(s){const p1=s.lat*R,p2=21.422524*R,dl=(39.826206-s.lon)*R;
+    return norm(Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*D);}}catch(e){}
+  return null;
+}
+function push(vx,vy,vz){
+  const hor=Math.hypot(vx,vy); flat=hor<0.45;
+  if(flat)return;
+  const decl=(window.QIB&&window.QIB.decl())||0;
+  const h=(Math.atan2(vx,vy)*D+decl)*R;
+  if(!has){sS=Math.sin(h);cS=Math.cos(h);has=true;}else{const k=0.2;sS+=k*(Math.sin(h)-sS);cS+=k*(Math.cos(h)-cS);}
+  camH=norm(Math.atan2(sS,cS)*D);
+}
+/* kamera = paksi -Z peranti dalam rangka bumi (X=timur, Y=utara) */
+function onAbs(e){
+  if(e.alpha==null||Date.now()-lastSensor<600)return;
+  const a=e.alpha*R,b=e.beta*R,g=(e.gamma||0)*R, ca=Math.cos(a),sa=Math.sin(a),cb=Math.cos(b),sb=Math.sin(b),cg=Math.cos(g),sg=Math.sin(g);
+  push(-ca*sg-sa*sb*cg, -sa*sg+ca*sb*cg, -cb*cg);
+}
+function onIOS(e){ if(e.webkitCompassHeading==null)return; // iOS: tegak = arah kamera
+  if(Math.abs(e.beta)<45){flat=true;return;} flat=false; push(Math.sin(e.webkitCompassHeading*R),Math.cos(e.webkitCompassHeading*R),0);}
+function startSensors(){
+  window.addEventListener('deviceorientationabsolute',onAbs,true);
+  window.addEventListener('deviceorientation',onIOS,true);
+  if('AbsoluteOrientationSensor' in window){try{sensor=new AbsoluteOrientationSensor({frequency:30,referenceFrame:'device'});
+    sensor.addEventListener('reading',()=>{const [x,y,z,w]=sensor.quaternion;lastSensor=Date.now();push(-2*(x*z+w*y),-2*(y*z-w*x),-(1-2*(x*x+y*y)));});
+    sensor.addEventListener('error',()=>{});sensor.start();}catch(e){sensor=null;}}
+}
+function stopSensors(){window.removeEventListener('deviceorientationabsolute',onAbs,true);window.removeEventListener('deviceorientation',onIOS,true);if(sensor){try{sensor.stop();}catch(e){}sensor=null;}}
+function draw(){
+  if(!on)return;
+  const q=qib(), W=$('arView').clientWidth, mk=$('arMark'), msg=$('arMsg'), info=$('arInfo');
+  if(q==null){msg.textContent='Lokasi belum ada. Tekan "Mula" di tab Qiblat dahulu.';mk.style.display='none';}
+  else if(camH==null){msg.textContent=flat?'Tegakkan telefon — halakan kamera ke hadapan.':'Menunggu data kompas… gerakkan telefon membentuk angka 8.';mk.style.display='none';$('arL').style.display=$('arR').style.display='none';}
+  else if(flat){msg.textContent='Tegakkan telefon — halakan kamera ke hadapan.';}
+  else{
+    const d=sdiff(q-camH), ad=Math.abs(d), al=ad<=3;
+    info.textContent=`Kamera ${camH.toFixed(0)}° · Qiblat ${q.toFixed(1)}°`;
+    if(ad<=FOV/2){mk.style.display='block';mk.style.left=(W/2+d*W/FOV)+'px';$('arL').style.display=$('arR').style.display='none';}
+    else{mk.style.display='none';$('arL').style.display=d<0?'block':'none';$('arR').style.display=d>0?'block':'none';$(d<0?'arL':'arR').textContent=(d<0?'◀ ':'')+ad.toFixed(0)+'°'+(d>0?' ▶':'');}
+    msg.textContent=al?'✅ Menghadap Qiblat':(d>0?`Pusing ke kanan ${ad.toFixed(0)}°`:`Pusing ke kiri ${ad.toFixed(0)}°`);
+    $('ar').classList.toggle('al',al);
+    if(al&&!wasAl&&navigator.vibrate)navigator.vibrate(120); wasAl=al;
+  }
+  raf=requestAnimationFrame(draw);
+}
+async function open(){
+  $('ar').classList.remove('hide'); on=true; has=false; camH=null; wasAl=false;
+  $('arMsg').textContent='Membuka kamera…'; $('arErr').textContent='';
+  if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){try{await DeviceOrientationEvent.requestPermission();}catch(e){}}
+  startSensors(); raf=requestAnimationFrame(draw);
+  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});$('arVid').srcObject=stream;await $('arVid').play().catch(()=>{});}
+  catch(e){$('arErr').innerHTML=`Kamera tidak dapat dibuka (${e.name||e.message}). Benarkan akses kamera untuk laman ini dalam tetapan Chrome. Anak panah masih berfungsi tanpa kamera.`;}
+}
+function close(){on=false;cancelAnimationFrame(raf);stopSensors();if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}$('arVid').srcObject=null;$('ar').classList.add('hide');$('ar').classList.remove('al');}
+$('arBtn').onclick=open; $('arClose').onclick=close;
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible'&&on)close();});
+})();
+</script>
+<script>
+/* ================= C2: TETAPAN & SANDARAN · C1: PANDUAN KALI PERTAMA ================= */
+(function(){
+const $=id=>document.getElementById(id);
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const VER='v16';
+const NAT=!!window.__NAT, CP=NAT?window.Capacitor:null;
+const plug=n=>CP?((CP.Plugins&&CP.Plugins[n])||CP.registerPlugin(n)):null;
+if(NAT){ /* navigator.share dalam WebView APK -> plugin Share */
+  const SH=plug('Share');
+  navigator.share=d=>SH.share({title:d.title,text:d.text,url:d.url,dialogTitle:d.title||'Kongsi'});
+  navigator.canShare=d=>!(d&&d.files);
+}
+async function natSave(f){
+  const FS=plug('Filesystem'), SH=plug('Share');
+  const r=await FS.writeFile({path:f.name,data:await f.text(),directory:'CACHE',encoding:'utf8'});
+  await SH.share({title:'Sandaran myQiblat',url:r.uri,dialogTitle:'Simpan / hantar fail sandaran'});
+}
+const EXCL=['ws_days','ws_zones','ws_fired','mq_last','ws_synced','imsk_cache','hij_off','ws_lastpos','ws_tab'];
+const SND={azan:'Azan',notif:'Bunyi notifikasi telefon',chime:'Nada lembut',vib:'Getar sahaja'};
+function goto(tab,id){closeSet();window.showTab&&window.showTab(tab);setTimeout(()=>{const e=$(id);if(e)e.scrollIntoView({behavior:'smooth',block:'center'});},120);}
+function row(ic,lbl,val,btn){return `<div class="srow"><i>${ic}</i><div><span>${lbl}</span><b>${val}</b></div>${btn||''}</div>`;}
+function render(){
+  const c=LS.get('ws_cfg',{}), home=LS.get('mf_home',null), ql=LS.get('qiblat_loc',null), sh=LS.get('ram_sahur',45);
+  const zone=c.zone?`${c.zone} · ${c.mode==='man'?'manual':'ikut GPS'}`:'Belum dipilih';
+  const snd=(SND[c.sound]||'Bunyi notifikasi telefon')+(c.sound==='azan'?(c.azanSrc==='own'?' (fail sendiri)':' (azan myQiblat)'):'');
+  const nb=Object.entries(c.bells||{}).filter(x=>x[1]).length;
+  $('setBody').innerHTML=
+   `<h3 class="sh">Waktu solat & azan</h3>`+
+   row('🕰️','Zon waktu solat JAKIM',esc(zone),'<button class="chip" data-go="1,zSel">Ubah</button>')+
+   row('🔔','Bunyi azan',esc(snd)+(c.pre?` · awal ${c.pre} min`:''),'<button class="chip" data-go="1,sMode">Ubah</button>')+
+   row('⏰','Waktu yang diberi azan/peringatan',nb?nb+' waktu':'Ikut tetapan asal','<button class="chip" data-go="1,plist">Ubah</button>')+
+   `<div class="srow"><i>🌙</i><div><span>Peringatan sahur (bulan Ramadan sahaja)</span>
+     <select id="setSahur" style="margin-top:4px">${[0,30,45,60,90].map(v=>`<option value="${v}"${v===sh?' selected':''}>${v?v+' minit sebelum imsak':'Tutup'}</option>`).join('')}</select></div></div>`+
+   `<h3 class="sh">Lokasi</h3>`+
+   row('🏠','Lokasi rumah (musafir)',home?esc(home.name||'Rumah')+` · ${(+home.lat).toFixed(3)}, ${(+home.lon).toFixed(3)}`:'Belum ditetapkan','<button class="chip" data-go="2,tabM">Ubah</button>')+
+   row('🧭','Lokasi qiblat terakhir',ql?`${(+ql.lat).toFixed(4)}, ${(+ql.lon).toFixed(4)}`:'Belum ada','<button class="chip" data-go="0,startBtn">Kemas kini</button>')+
+   `<h3 class="sh">Sandaran (tukar telefon)</h3>
+    <div class="note">Simpan semua tetapan (zon, bunyi, lokasi rumah, tasbih, penanda ayat, nama arwah dan lain-lain) ke dalam satu fail. Buka fail itu di telefon baharu melalui "Pulihkan".</div>
+    <div class="row"><button class="btn" id="setExp">💾 Simpan fail sandaran</button><button class="btn sec" id="setShare">📤 Kongsi</button></div>
+    <button class="btn sec" id="setImpBtn">📂 Pulihkan daripada fail sandaran</button><input type="file" id="setImp" accept=".json,application/json" class="hide">
+    <div class="note" id="setNote"></div>
+    <div class="note">Tidak termasuk dalam sandaran: fail azan sendiri (pilih semula selepas pulih) dan data yang dimuat turun semula secara automatik (waktu solat, surah).</div>`+
+   `<h3 class="sh">Lain-lain</h3>
+    <button class="btn sec" id="setGuide">📘 Tunjuk semula panduan kali pertama</button>
+    <button class="btn sec" id="setReset" style="border-color:#ff6b6b66">🗑️ Padam semua tetapan & data app</button>
+    <div class="note" style="text-align:center;margin-top:12px">myQiblat ${VER}${NAT?' (APK)':''} · Waktu solat: e-Solat JAKIM · Al-Quran: Tanzil</div>`;
+  $('setBody').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{const [t,id]=b.dataset.go.split(',');goto(+t,id);});
+  $('setSahur').onchange=e=>{LS.set('ram_sahur',+e.target.value);};
+  $('setExp').onclick=async()=>{const f=pack();if(NAT){try{await natSave(f);note('✅ Pilih Google Drive, WhatsApp atau Fail untuk simpan sandaran.');}catch(e){if(!/cancel/i.test(e.message||''))note('⚠️ '+esc(e.message||e),1);}return;}const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);note(`✅ Fail <b>${f.name}</b> disimpan dalam folder Muat Turun (Download).`);};
+  $('setShare').onclick=async()=>{const f=pack();if(NAT)return $('setExp').click();if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'Sandaran myQiblat'});note('✅ Dikongsi.');}catch(e){}}else $('setExp').click();};
+  $('setImpBtn').onclick=()=>$('setImp').click();
+  $('setImp').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{restore(JSON.parse(await f.text()));}catch(err){note('⚠️ Fail tidak sah: '+esc(err.message),1);}e.target.value='';};
+  $('setGuide').onclick=()=>{closeSet();openGuide();};
+  $('setReset').onclick=async()=>{if(!confirm('Padam SEMUA tetapan dan data myQiblat dalam telefon ini? Tindakan ini tidak boleh diundur.'))return;
+    try{localStorage.clear();}catch(e){}try{indexedDB.deleteDatabase('myqiblat');}catch(e){}
+    try{for(const k of await caches.keys())if(k.startsWith('myqiblat'))await caches.delete(k);}catch(e){}
+    location.reload();};
+}
+function note(t,w){$('setNote').innerHTML=w?`<span class="warn">${t}</span>`:t;}
+function pack(){
+  const data={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!EXCL.includes(k))data[k]=localStorage.getItem(k);}
+  const d=new Date(Date.now()+8*3600e3).toISOString().slice(0,10).replace(/-/g,'');
+  return new File([JSON.stringify({app:'myQiblat',ver:VER,at:new Date().toISOString(),data},null,1)],`myQiblat-sandaran-${d}.json`,{type:'application/json'});
+}
+function restore(j){
+  if(!j||j.app!=='myQiblat'||typeof j.data!=='object')throw new Error('bukan fail sandaran myQiblat');
+  const ks=Object.keys(j.data);
+  if(!confirm(`Pulihkan ${ks.length} tetapan daripada sandaran ${j.at?new Date(j.at).toLocaleString('ms-MY'):''}? Tetapan semasa akan diganti.`))return;
+  ks.forEach(k=>{if(typeof j.data[k]==='string'&&!EXCL.includes(k))localStorage.setItem(k,j.data[k]);});
+  ['ws_days','ws_synced','imsk_cache','hij_off'].forEach(k=>localStorage.removeItem(k));
+  localStorage.setItem('onb_done','1');
+  note('✅ Dipulihkan. Memuat semula app…'); setTimeout(()=>location.reload(),900);
+}
+function openSet(){render();$('setM').classList.remove('hide');}
+function closeSet(){$('setM').classList.add('hide');}
+$('setBtn').onclick=openSet; $('setClose').onclick=closeSet;
+
+/* ---------- C1: Panduan kali pertama ---------- */
+let gi=0, gT=0;
+function openGuide(){gi=0;$('guide').classList.remove('hide');gDraw();clearInterval(gT);gT=setInterval(gLive,400);}
+function closeGuide(){LS.set('onb_done',1);$('guide').classList.add('hide');clearInterval(gT);}
+function gLive(){
+  if(gi===0){const t=$('locTxt').textContent;$('gStat').textContent=/^📍/.test(t)?'✅ '+t.replace('📍','Lokasi:'):(/gagal/i.test(t)?'⚠️ '+t:'');}
+  if(gi===1){const h=$('hd').textContent;$('gStat').innerHTML=h&&h!=='--'?`✅ Kompas berfungsi · arah telefon <b>${h}</b>`:'Belum menerima data kompas.';}
+  if(gi===2){const p=('Notification' in window)?Notification.permission:'x';$('gStat').textContent=p==='granted'?'✅ Notifikasi dibenarkan':p==='denied'?'⛔ Notifikasi disekat — buka tetapan Chrome untuk membenarkan.':p==='x'?'Pelayar ini tidak menyokong notifikasi.':'';}
+}
+const G=[
+ {i:'📍',t:'Benarkan lokasi',p:'Lokasi digunakan untuk mengira arah qiblat dan memilih zon waktu solat JAKIM secara automatik. Tiada akaun diperlukan. Lokasi disimpan dalam telefon ini dan hanya dihantar kepada perkhidmatan zon waktu solat, peta dan carian masjid apabila diperlukan.',b:'Benarkan lokasi',f:()=>{const s=$('startBtn');s.click();}},
+ {i:'🧭',t:'Kompas',p:'Pegang telefon mendatar, jauh daripada besi dan magnet. Jika arah tidak stabil, gerakkan telefon membentuk angka <b>8</b>. Jika Chrome menyekat, benarkan <b>Penderia gerakan (Motion sensors)</b> dalam tetapan laman.',b:'Mulakan kompas',f:()=>{if(!window.QIB||!window.QIB.started())$('startBtn').click();}},
+ {i:'🔔',t:'Notifikasi azan',p:'Benarkan notifikasi supaya azan dan peringatan waktu solat boleh dipaparkan. Azan paling pasti berbunyi ketika app <b>sedang dibuka</b> (skrin boleh malap).',b:'Benarkan notifikasi',f:()=>{$('sPerm').click();}}
+];
+function gDraw(){const g=G[gi];
+  $('gBody').innerHTML=`<div class="gIc">${g.i}</div><h2>${g.t}</h2><p>${g.p}</p><button class="btn" id="gAct">${g.b}</button><div class="note" id="gStat"></div>`;
+  $('gAct').onclick=g.f; $('gDots').innerHTML=G.map((_,i)=>`<span class="${i===gi?'on':''}"></span>`).join('');
+  $('gNext').textContent=gi<G.length-1?'Seterusnya ›':'Mula guna ✓'; gLive();}
+$('gNext').onclick=()=>{if(gi<G.length-1){gi++;gDraw();}else closeGuide();};
+$('gSkip').onclick=closeGuide;
+if(window.__myqNew)setTimeout(openGuide,300);
+else if(!LS.get('onb_done',0))LS.set('onb_done',1);
+})();
+</script>
+
+</body>
+</html>
