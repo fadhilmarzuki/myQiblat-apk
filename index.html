@@ -1109,7 +1109,8 @@ setTimeout(renderTakwim,50);
 
 /* ---------- VERSI APK (Capacitor): azan dijadual oleh Android ---------- */
 const NAT=!!window.__NAT;
-const LN=NAT?((window.Capacitor.Plugins&&window.Capacitor.Plugins.LocalNotifications)||window.Capacitor.registerPlugin('LocalNotifications')):null;
+const capPlug=n=>{if(!NAT)return null;const C=window.Capacitor;try{if(C.Plugins&&C.Plugins[n])return C.Plugins[n];}catch(e){}try{if(typeof C.registerPlugin==='function')return C.registerPlugin(n);}catch(e){}return null;};
+const LN=capPlug('LocalNotifications');
 let natPerm='prompt';
 async function natSetup(){
   if(!LN)return;
@@ -1144,10 +1145,10 @@ async function natDo(){
   }catch(e){setStatus('Gagal menjadualkan azan: '+(e.message||e),1);}
 }
 /* data untuk widget skrin utama (APK) */
-const WG=NAT?window.Capacitor.registerPlugin('MyqWidget'):null;
+const WG=capPlug('MyqWidget'), PREF=capPlug('Preferences');
 const tmo=(p,ms,n)=>Promise.race([p,new Promise((_,r)=>setTimeout(()=>r(new Error(n+' tiada jawapan')),ms))]);
 async function natWidget(){
-  if(!WG){LS.set('wg_st',{ok:0,e:'plugin widget tiada (NAT='+NAT+')',at:Date.now()});return;}
+  if(!WG&&!PREF){LS.set('wg_st',{ok:0,e:'plugin widget tiada',at:Date.now()});return;}
   LS.set('wg_st',{ok:0,e:'sedang menghantar… (langkah 1)',at:Date.now()});
   try{
     const ks=Object.keys(days).filter(k=>k>=ymd(Date.now()-864e5)).sort().slice(0,32), D={};
@@ -1157,8 +1158,8 @@ async function natWidget(){
     const json=JSON.stringify({zone:z?`${(z.daerah||'').split(',')[0]} (${cfg.zone})`:cfg.zone,qibla:q!=null?q.toFixed(0)+'°':'',days:D});
     let ok=0,err='';
     LS.set('wg_st',{ok:0,e:'sedang menghantar… (langkah 2, '+ks.length+' hari)',at:Date.now()});
-    try{await tmo(window.Capacitor.registerPlugin('Preferences').set({key:'myq_widget',value:json}),5000,'Preferences');ok++;}catch(e){err='Pref: '+(e.message||e);}
-    try{await tmo(WG.setData({data:json}),5000,'MyqWidget');ok++;}catch(e){err+=(err?' · ':'')+'Bridge: '+(e.message||e);}
+    try{if(!PREF)throw new Error('plugin tiada');await tmo(PREF.set({key:'myq_widget',value:json}),5000,'Preferences');ok++;}catch(e){err='Pref: '+(e.message||e);}
+    try{if(!WG)throw new Error('plugin tiada');await tmo(WG.setData({data:json}),5000,'MyqWidget');ok++;}catch(e){err+=(err?' · ':'')+'Bridge: '+(e.message||e);}
     LS.set('wg_st',ok?{ok:1,n:ks.length,at:Date.now(),w:ok===2?'':err}:{ok:0,e:err,at:Date.now()});
   }catch(e){LS.set('wg_st',{ok:0,e:String(e&&e.message||e),at:Date.now()});}
 }
@@ -1957,12 +1958,12 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState!==
 const $=id=>document.getElementById(id);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const VER='v22';
+const VER='v23';
 const NAT=!!window.__NAT, CP=NAT?window.Capacitor:null;
-const plug=n=>CP?((CP.Plugins&&CP.Plugins[n])||CP.registerPlugin(n)):null;
+const plug=n=>{if(!CP)return null;try{if(CP.Plugins&&CP.Plugins[n])return CP.Plugins[n];}catch(e){}try{if(typeof CP.registerPlugin==='function')return CP.registerPlugin(n);}catch(e){}return null;};
 if(NAT){ /* navigator.share dalam WebView APK -> plugin Share */
   const SH=plug('Share');
-  navigator.share=d=>SH.share({title:d.title,text:d.text,url:d.url,dialogTitle:d.title||'Kongsi'});
+  if(SH)navigator.share=d=>SH.share({title:d.title,text:d.text,url:d.url,dialogTitle:d.title||'Kongsi'});
   navigator.canShare=d=>!(d&&d.files);
 }
 async function natSave(f){
