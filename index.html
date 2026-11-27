@@ -1152,7 +1152,7 @@ async function natWidget(){
   LS.set('wg_st',{ok:0,e:'sedang menghantar… (langkah 1)',at:Date.now()});
   try{
     const ks=Object.keys(days).filter(k=>k>=ymd(Date.now()-864e5)).sort().slice(0,32), D={};
-    ks.forEach(k=>{const t=days[k];D[k]={t:MAIN.map(x=>t[x]),h:hijriTxt(t.hijri),g:new Date(Date.parse(k+'T12:00:00+08:00')).toLocaleDateString('ms-MY',{weekday:'long',day:'numeric',month:'short',year:'numeric',timeZone:TZ})};});
+    ks.forEach(k=>{const t=days[k],hh=hOf(k),ram=!!(hh&&hh.m===9&&t.imsak),keys=ram?['imsak',...MAIN]:MAIN;D[k]={t:keys.map(x=>t[x]),n:keys.map(x=>LABEL[x]),h:hijriTxt(t.hijri),g:new Date(Date.parse(k+'T12:00:00+08:00')).toLocaleDateString('ms-MY',{weekday:'long',day:'numeric',month:'short',year:'numeric',timeZone:TZ})};});
     const z=(zones||[]).find(x=>x.jakimCode===cfg.zone), q=window.QIB&&window.QIB.q();
     if(!ks.length){LS.set('wg_st',{ok:0,e:'tiada data waktu solat',at:Date.now()});return;}
     const json=JSON.stringify({zone:z?`${(z.daerah||'').split(',')[0]} (${cfg.zone})`:cfg.zone,qibla:q!=null?q.toFixed(0)+'°':'',days:D});
@@ -1958,7 +1958,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState!==
 const $=id=>document.getElementById(id);
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const VER='v23';
+const VER='v24';
 const NAT=!!window.__NAT, CP=NAT?window.Capacitor:null;
 const plug=n=>{if(!CP)return null;try{if(CP.Plugins&&CP.Plugins[n])return CP.Plugins[n];}catch(e){}try{if(typeof CP.registerPlugin==='function')return CP.registerPlugin(n);}catch(e){}return null;};
 if(NAT){ /* navigator.share dalam WebView APK -> plugin Share */
