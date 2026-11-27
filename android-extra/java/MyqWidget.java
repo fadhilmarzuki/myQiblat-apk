@@ -24,9 +24,22 @@ public class MyqWidget extends AppWidgetProvider {
     static final String PREF = "myq_widget";
     static final String TICK = "com.fadhilmarzuki.myqiblat.WIDGET_TICK";
     static final String[] NM = {"Subuh", "Zohor", "Asar", "Maghrib", "Isyak"};
-    static final int[] COL = {R.id.w_c0, R.id.w_c1, R.id.w_c2, R.id.w_c3, R.id.w_c4};
-    static final int[] NAMES = {R.id.w_n0, R.id.w_n1, R.id.w_n2, R.id.w_n3, R.id.w_n4};
-    static final int[] TIMES = {R.id.w_t0, R.id.w_t1, R.id.w_t2, R.id.w_t3, R.id.w_t4};
+    static final int[] COL = {R.id.w_c0, R.id.w_c1, R.id.w_c2, R.id.w_c3, R.id.w_c4, R.id.w_c5};
+    static final int[] NAMES = {R.id.w_n0, R.id.w_n1, R.id.w_n2, R.id.w_n3, R.id.w_n4, R.id.w_n5};
+    static final int[] TIMES = {R.id.w_t0, R.id.w_t1, R.id.w_t2, R.id.w_t3, R.id.w_t4, R.id.w_t5};
+
+    static String nameOf(JSONObject day, int i) {
+        JSONArray n = day.optJSONArray("n");
+        return (n != null && i < n.length()) ? n.optString(i) : (i < NM.length ? NM[i] : "");
+    }
+
+    static String hm(long ms) {
+        Calendar k = Calendar.getInstance();
+        k.setTimeInMillis(ms);
+        int h = k.get(Calendar.HOUR_OF_DAY), mi = k.get(Calendar.MINUTE);
+        int h12 = h % 12 == 0 ? 12 : h % 12;
+        return h12 + ":" + (mi < 10 ? "0" : "") + mi;
+    }
     static final int GOLD = Color.parseColor("#E8C468");
     static final int DARK = Color.parseColor("#1D1A0C");
     static final int WHITE = Color.parseColor("#F3F1E8");
@@ -102,7 +115,7 @@ public class MyqWidget extends AppWidgetProvider {
                 JSONObject o = days.optJSONObject(key(now + d * 86400000L));
                 if (o == null) continue;
                 JSONArray t = o.getJSONArray("t");
-                for (int i = 0; i < 5; i++) if (t.getLong(i) > now) return new long[]{t.getLong(i), i, d};
+                for (int i = 0; i < t.length() && i < 6; i++) if (t.getLong(i) > now) return new long[]{t.getLong(i), i, d};
             }
         } catch (Exception e) { }
         return null;
@@ -137,15 +150,19 @@ public class MyqWidget extends AppWidgetProvider {
             JSONArray t = d.getJSONArray("t");
             long[] nx = next(days, now);
             int hi = (nx != null && nx[2] == 0) ? (int) nx[1] : -1;
-            for (int i = 0; i < 5; i++) {
-                v.setTextViewText(TIMES[i], fmt(t.getLong(i)));
+            for (int i = 0; i < 6; i++) {
+                if (i >= t.length()) { v.setViewVisibility(COL[i], android.view.View.GONE); continue; }
+                v.setViewVisibility(COL[i], android.view.View.VISIBLE);
+                v.setTextViewText(NAMES[i], nameOf(d, i));
+                v.setTextViewText(TIMES[i], hm(t.getLong(i)));
                 boolean on = i == hi;
                 v.setInt(COL[i], "setBackgroundResource", on ? R.drawable.widget_pill : 0);
                 v.setTextColor(NAMES[i], on ? DARK : GOLD);
                 v.setTextColor(TIMES[i], on ? DARK : WHITE);
             }
             if (nx != null) {
-                String nm = NM[(int) nx[1]];
+                JSONObject nd = days.optJSONObject(key(now + nx[2] * 86400000L));
+                String nm = nd != null ? nameOf(nd, (int) nx[1]) : "";
                 v.setTextViewText(R.id.w_next, "Menjelang " + nm + (nx[2] == 1 ? " (esok)" : "") + " · " + fmt(nx[0]));
                 long base = SystemClock.elapsedRealtime() + (nx[0] - now);
                 v.setChronometer(R.id.w_cd, base, null, true);
